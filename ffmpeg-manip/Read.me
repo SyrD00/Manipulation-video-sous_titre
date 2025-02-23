@@ -1,0 +1,45 @@
+ajouter ffmpeg au PATH
+
+1.menu Démarrer_>tape variable d'env...
+2.Appuie sur modifier les variables.....
+3.appuie sur variable d'environnement
+4.Variables d'utilisateur pour<usr>
+appuie sur le path-> appuie sur modifier->Nouveau->met le chemin vers le bin de ffmpeg
+
+Variables systeme
+appui sur Nouveau->met chemin vers bin ffmpeg
+
+
+hardsub-generate.ps1
+@'
+1. ffmpeg
+FFmpeg est un outil en ligne de commande puissant utilisé pour convertir, encoder, et traiter des fichiers multimédia (audio et vidéo). C'est le programme principal que nous invoquons ici.
+2. -hwaccel dxva2
+-hwaccel dxva2 : Cette option permet l'accélération matérielle. dxva2 est un mode qui utilise le matériel graphique (GPU) de ta machine pour accélérer le traitement vidéo. Cela permet d'encoder plus rapidement les vidéos, notamment avec les cartes graphiques AMD ou Intel. Cela permet de déléguer certaines tâches à ton GPU plutôt qu'à ton CPU.
+3. -i $inputFile
+-i : C'est l'option qui indique le fichier d'entrée (la vidéo à traiter).
+$inputFile : C'est une variable PowerShell qui contient le chemin complet de la vidéo d'entrée. Cela permet de rendre le script plus flexible et réutilisable.
+4. -vf "ass=FUSION.ass"
+-vf : Cela permet de spécifier un filtre vidéo. Les filtres peuvent être utilisés pour appliquer des effets, redimensionner la vidéo, ajouter des sous-titres, etc.
+"ass=FUSION.ass" : Ici, on applique un filtre ASS pour ajouter des sous-titres au format .ass à la vidéo. FUSION.ass est le fichier de sous-titres que tu veux appliquer à la vidéo.
+5. -c:v h264_amf
+-c:v : Cela spécifie quel codec vidéo utiliser. -c:v signifie que nous choisissons un codec vidéo.
+h264_amf : Le codec vidéo sélectionné ici est H.264 avec AMF (Advanced Media Framework), qui est un ensemble d'outils d'encodage vidéo via GPU pour les cartes graphiques AMD. Ce codec permet de compresser la vidéo tout en conservant une bonne qualité.
+6. -quality speed
+-quality speed : Cette option définit la qualité de l'encodage. Le paramètre speed est un mode pré-configuré qui optimise la vitesse de l'encodage, au détriment d'une légère perte de qualité. L'option speed est idéale si la rapidité est plus importante que la perfection du rendu.
+7. -rc cqp
+-rc cqp : Rate Control (RC) est un mécanisme qui contrôle la manière dont le débit binaire de la vidéo est géré pendant l'encodage.
+cqp signifie Constant Quantization Parameter, qui utilise une qualité constante pour chaque image (c'est une méthode rapide mais qui peut rendre le fichier de taille variable).
+8. -qp_i 22 -qp_p 25 -qp_b 27
+-qp_i, -qp_p, -qp_b : Ce sont les valeurs de quantification pour différents types d'images dans la vidéo :
+qp_i : C'est la quantification des images I (keyframes), qui sont les images de référence dans une vidéo.
+qp_p : C'est la quantification des images P (images prédictives).
+qp_b : C'est la quantification des images B (images bidirectionnelles).
+Les valeurs (22, 25, 27) sont des paramètres qui affectent la qualité de chaque type d'image : plus la valeur est faible, plus la qualité sera élevée, mais l'encodage sera plus lent. Plus la valeur est élevée, plus l'encodage sera rapide, mais avec une qualité réduite.
+9. -c:a copy
+-c:a copy : Cette option indique que l'audio ne doit pas être réencodé. copy signifie simplement copier la piste audio d'origine dans le fichier de sortie sans la modifier. Cela accélère l'ensemble du processus, car il n'y a pas de travail supplémentaire sur l'audio.
+10. $outputFile
+$outputFile : Comme pour l'entrée, c'est une variable qui contient le chemin du fichier de sortie. C'est là où le fichier vidéo encodé sera sauvegardé après traitement.
+Résumé :
+Ce script fait appel à FFmpeg, utilise ton GPU pour accélérer l'encodage vidéo via h264_amf, applique des sous-titres et utilise des paramètres d'encodage optimisés pour une vitesse maximale. Le fichier audio est copié sans modification et le fichier final est enregistré dans un chemin de sortie défini.
+'@
