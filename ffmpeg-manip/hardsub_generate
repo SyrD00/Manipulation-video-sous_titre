@@ -6,6 +6,9 @@
 #si tu n'est pas dans le repertoire C:/Users/mamou/Videos/1/SL/SL8
 ffmpeg -hwaccel dxva2 -i "C:/Users/mamou/Videos/1/SL/SL8.mp4"  -vf "ass=F.ass" -c:v h264_amf -quality speed -rc cqp -qp_i 22 -qp_p 25 -qp_b 27 -c:a copy "C:/Users/mamou/Videos/1/SL/SL8sub.mp4" 
 
+
+
+#A noter que j'utilise hwaccel pour AMD
 #si tu es dans ce repertoire
 ffmpeg -hwaccel dxva2 -i "SL8.mp4"  -vf "ass=F.ass" -c:v h264_amf -quality speed -rc cqp -qp_i 22 -qp_p 25 -qp_b 27 -c:a copy "SL8sub.mp4" 
 
@@ -13,5 +16,7 @@ ffmpeg -hwaccel dxva2 -i "SL8.mp4"  -vf "ass=F.ass" -c:v h264_amf -quality speed
 
 
 ffmpeg -i "JP.mp4" -vf "ass=M.ass" -c:v h264_amf -quality speed -crf 22 -pix_fmt yuv420p -c:a copy "F.mp4"
+
+ffmpeg -hwaccel d3d11va -i FF.mp4 -pix_fmt yuv420p -c:v h264_amf -c:a aac -b:a 192k FF1sub.mp4
 
 # Fin du script
