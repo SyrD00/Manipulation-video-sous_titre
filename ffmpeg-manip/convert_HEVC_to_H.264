@@ -1,0 +1,57 @@
+
+ffmpeg -hwaccel d3d11va -i FF.mp4 -pix_fmt yuv420p -c:v h264_amf -c:a aac -b:a 192k FF1sub.mp4
+
+
+
+NB1
+ffmpeg -hwaccel d3d11va -i FF.mp4 -c:v h264_amf -c:a aac -b:a 192k FF1sub.mp4 //marche que si ton amd supporte 10bit
+ffmpeg -hwaccel d3d11va -i FF.mp4 -pix_fmt yuv420p -c:v h264_amf -c:a aac -b:a 192k FF1sub.mp4
+🔑 Explications :
+-hwaccel d3d11va : Utilisation de l'accélération matérielle Direct3D 11 pour décoder la vidéo.
+
+-c:v h264_amf : Utilisation de l'encodeur matériel AMD pour encoder la vidéo.
+
+-pix_fmt yuv420p : Conversion en 8 bits, nécessaire si ton GPU ne supporte pas le 10 bits.
+
+
+NB
+Pour les cartes graphiques AMD, les meilleurs accélérateurs matériels (hwaccel) sont :
+
+🔥 1. h264_amf (AMD Advanced Media Framework)
+Le plus performant pour l'encodage H.264 et H.265 sur AMD.
+
+Utilise l'API AMF d'AMD, spécialement optimisée pour les cartes graphiques Radeon.
+
+Compatible avec les cartes AMD récentes (RX 400 et plus récentes).
+
+Fonctionne particulièrement bien sur Windows.
+
+🔥 2. d3d11va (Direct3D 11 Video Acceleration)
+Très bon pour le décodage matériel de vidéos H.264, H.265, VP9, etc.
+
+Compatible avec les cartes AMD modernes sur Windows.
+
+Supporté par FFmpeg pour l'encodage et le décodage.
+
+Généralement utilisé pour la décodage et non pour l'encodage.
+
+🔥 3. vaapi (Video Acceleration API)
+Fonctionne sur Linux principalement.
+
+Supporte l'encodage et le décodage H.264, H.265, VP9, etc.
+
+Peut fonctionner avec des cartes AMD, mais mieux adapté aux processeurs graphiques intégrés d'Intel.
+
+✅ Meilleur choix pour toi :
+Puisque tu es sous Windows avec une carte AMD, le meilleur choix pour l'encodage est :
+
+bash
+Copier
+Modifier
+-hwaccel h264_amf
+Pour le décodage, tu peux utiliser :
+
+bash
+Copier
+Modifier
+-hwaccel d3d11va
