@@ -1,0 +1,9 @@
+Cré dans C:\ un dossier nommé yt-dlp ensitemet dedans yt-dlp.exe que tu peux trouver sur :https://github.com/yt-dlp/yt-dlp/releases
+
+Ajouter yt-dlp au PATH
+Menu Démarrer->environ...-> variab....->appuis sur PATH->Nouveau->C:\yt-dlp
+Variable systeme->Nouveau->Nom de la variable:yt-dlp & valeur variable=C:\yt-dlp
+
+utilise VPN (Bright VPN ) et connecte toi au japon
+exemple:one piece episode 1123=https://tver.jp/episodes/epcbuofry2
+PS C:\Users\babak\Videos\1\OP> yt-dlp https://tver.jp/episodes/epcbuofry2
