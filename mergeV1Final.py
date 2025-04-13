@@ -83,8 +83,8 @@ def merge_subtitles(fr_file, eng_file, output_file):
 
 # Utilisation
 merge_subtitles(
-    "C:/Users/mamou/Videos/1/FF/FF1FR.ass",  
-    "C:/Users/mamou/Videos/1/FF/FF1ENG.ass",  
-    "C:/Users/mamou/Videos/1/FF/F.ass"
+    "C:/Users/mamou/Videos/1/TBATE/TBATE2FR.ass",  
+    "C:/Users/mamou/Videos/1/TBATE/TBATE2ENG.ass",  
+    "C:/Users/mamou/Videos/1/TBATE/F.ass"
     
 )
