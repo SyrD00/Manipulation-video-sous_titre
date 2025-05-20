@@ -12,7 +12,7 @@ ffmpeg -hwaccel dxva2 -i "C:/Users/mamou/Videos/1/SL/SL8.mp4"  -vf "ass=F.ass" -
 #si tu es dans ce repertoire
 ffmpeg -hwaccel dxva2 -i "SL8.mp4"  -vf "ass=F.ass" -c:v h264_amf -quality speed -rc cqp -qp_i 22 -qp_p 25 -qp_b 27 -c:a copy "SL8sub.mp4" 
 
-
+ffmpeg -hwaccel dxva2 -i "PSO6.mp4" -vf "ass=PSO6.ass" -c:v h264_amf -quality speed -rc cqp -qp_i 22 -qp_p 25 -qp_b 27 -c:a copy "PSO6sub.mp4"
 
 
 ffmpeg -i "JP.mp4" -vf "ass=M.ass" -c:v h264_amf -quality speed -crf 22 -pix_fmt yuv420p -c:a copy "F.mp4"
