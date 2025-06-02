@@ -1,0 +1,35 @@
+ Le développeur de WhisperX recommande d’utiliser WSL (Windows Subsystem for Linux) pour garantir une compatibilité maximale, et voici pourquoi :
+
+🔎 Pourquoi WhisperX recommande WSL ?
+✅ 1. Compatibilité avec les bibliothèques Linux-only
+Certains outils de diarisation vocale (comme pyannote.audio) et certaines dépendances de WhisperX :
+
+sont initialement conçus pour Linux,
+
+utilisent des fonctions système ou compilations spécifiques à Linux,
+
+posent souvent des problèmes sur Windows natif (erreurs d’installation, plantages à l’exécution).
+
+👉 Ex : librosa, ffmpeg, libtorch, pyannote fonctionnent bien sous Linux, mais sous Windows, il peut manquer des DLL ou poser des erreurs d’alignement ou de threads.
+
+🐍 2. Environnement Python plus stable
+Sous WSL (Ubuntu), tu bénéficies d’un environnement Python proche des standards utilisés en recherche ou en production.
+
+Les paquets sont mieux supportés (même les versions récentes de PyTorch ou des modèles HF).
+
+Moins de bugs liés à Windows (espaces dans les chemins, encodages, locales…).
+
+⚙️ 3. Support GPU avec CUDA dans WSL 2
+Si tu as une carte NVIDIA :
+
+WSL 2 supporte CUDA via un pilote spécial (NVIDIA CUDA on WSL),
+
+Tu peux utiliser WhisperX avec accélération GPU dans Ubuntu, tout en restant sous Windows.
+
+🧪 4. Tests du développeur
+Le développeur indique qu’il développe et teste sur Linux/WSL, donc :
+
+Tu auras moins d’erreurs non prises en compte,
+
+Tu peux suivre les instructions du repo à la lettre.
+

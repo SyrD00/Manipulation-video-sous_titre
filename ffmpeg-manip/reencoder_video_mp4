@@ -1,0 +1,42 @@
+MP4 est un conteneur, pas un codec vidéo ou audio.
+
+             🔴C’est quoi un conteneur ?
+Le conteneur MP4, c’est comme une boîte dans laquelle on met la vidéo, l’audio, les sous-titres, les chapitres, etc.
+
+À l’intérieur, la vidéo peut être encodée avec différents codecs : H.264, HEVC (H.265), MPEG-4 Part 2, AV1, etc.
+
+L’audio aussi peut être en AAC, MP3, AC3, opus, etc.
+
+Donc :
+Beaucoup de fichiers MP4 utilisent H.264 pour la vidéo et AAC pour l’audio, parce que c’est très compatible.
+
+Mais ce n’est pas obligatoire : un MP4 peut contenir d’autres codecs vidéo/audio.
+
+Par exemple, tu peux avoir un MP4 avec de la vidéo en HEVC (H.265) et audio en AC3.
+
+Pourquoi réencoder ?
+Si ton fichier d’origine a une vidéo en HEVC, ou un codec que tu ne veux pas, ou un audio dans un format moins compatible, tu peux le réencoder en H.264 + AAC pour être sûr que ça marche partout.
+
+En résumé :
+MP4 = boîte (conteneur)
+
+H.264, AAC = contenu (codecs)
+MP4 peut contenir plusieurs formats différents.
+
+Tu veux que je t’aide à vérifier les codecs de ta vidéo d’origine ?
+
+
+
+ 🔴 CAS AMD 
+ffmpeg -hwaccel d3d11va -i FF.mp4 -pix_fmt yuv420p -c:v h264_amf -c:a aac -b:a 192k FF1sub.mp4
+
+NB1
+ffmpeg -hwaccel d3d11va -i FF.mp4 -c:v h264_amf -c:a aac -b:a 192k FF1sub.mp4 //marche que si ton amd supporte 10bit
+ffmpeg -hwaccel d3d11va -i FF.mp4 -pix_fmt yuv420p -c:v h264_amf -c:a aac -b:a 192k FF1sub.mp4
+
+🔑 Explications :
+-hwaccel d3d11va : Utilisation de l'accélération matérielle Direct3D 11 pour décoder la vidéo.
+
+-c:v h264_amf : Utilisation de l'encodeur matériel AMD pour encoder la vidéo.
+
+-pix_fmt yuv420p : Conversion en 8 bits, nécessaire si ton GPU ne supporte pas le 10 bits.

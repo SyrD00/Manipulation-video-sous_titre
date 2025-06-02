@@ -1,0 +1,333 @@
+✅ Commande de base (conversion rapide sans ré-encodage) :
+ffmpeg -i IP17.mkv -c copy IP17s.mp4
+-i input.mkv : le fichier source.
+
+-c copy : copie les pistes vidéo et audio sans ré-encodage (rapide, sans perte de qualité).
+
+output.mp4 : le fichier de sortie.
+
+🔸 Limite : cette méthode ne marche que si les codecs de la vidéo et de l’audio sont compatibles avec le conteneur MP4 (ex. H.264 pour la vidéo, AAC pour l’audio).
+
+✅ Détail :
+libx264 = encodeur logiciel universel pour H.264.
+Fonctionne sur tous les processeurs : Intel, AMD, ARM, etc.
+Utilise le CPU (pas le GPU).
+
+
+       🔴CAS A:libx264() Universel)
+🚀 Si tu veux la commande la plus rapide possible pour réencoder en H.264 :
+
+ffmpeg -i IP17.mkv -c:v libx264 -preset ultrafast -crf 23 -c:a copy IP17s.mp4
+
+-c:v libx264 → réencode la vidéo en H.264 (au lieu de HEVC).
+
+-crf 23 → qualité constante. Plus petit = meilleure qualité (valeurs typiques : 18–28).
+reste un bon équilibre (tu peux ajuster : plus bas = meilleure qualité, plus haut = plus rapide).
+
+-preset ultrafast → vitesse maximale, taille de fichier plus grande et qualité légèrement inférieure à bitrate équivalent.
+
+-c:a copy → copie l'audio sans le réencoder (pour éviter perte de qualité).
+
+
+🆚 Résumé :
+Commande	              Vitesse	             Qualité	     Fichier
+-preset ultrafast	      🚀 Très rapide	    😐 Moyenne	   📦 Grand
+-preset fast ou medium	  ⚖️ Moyen	            😊 Bonne	   📦 Moyen
+-preset slow ou slower	  🐢 Lent	            😍 Excellente  📦 Petit
+-preset slow = équilibre 
+   entre vitesse d'encodage et 
+   efficacité de compression 
+   (tu peux mettre medium ou faster si tu es pressé).
+
+
+📝 Si tu veux réencoder aussi l’audio (pour compatibilité maximale) :
+ffmpeg -i IP17.mkv -c:v libx264 -crf 23 -preset slow -c:a aac -b:a 192k IP17s.mp4
+
+
+
+
+
+
+
+🔄 Si tu veux une version optimisée pour Intel GPU (Quick Sync Video) :
+🔎 Pour vérifier si FFmpeg supporte QSV :
+Dans le terminal :
+
+Linux:
+ffmpeg -encoders | grep qsv
+
+Windows PowerShell:
+ffmpeg -encoders | Select-String qsv
+
+Tu devrais voir des lignes comme :
+
+css
+ V..... h264_qsv           Intel Quick Sync Video H.264 encoder (codec h264)
+ V..... hevc_qsv           Intel Quick Sync Video HEVC encoder (codec hevc)
+Si tu ne les vois pas, tu dois :
+
+installer FFmpeg compilé avec QSV support (souvent le cas dans les versions récentes)
+
+ou compiler FFmpeg toi-même avec les bons flags
+
+
+
+
+
+GPU : Intel HD Graphics 520 → supporte Quick Sync Video (QSV)
+CPU : Intel Core i5 (probablement de 6e génération, Skylake) → compatible avec Intel Quick Sync
+
+✅ FFmpeg + Intel Quick Sync (QSV)
+FFmpeg peut utiliser Quick Sync Video pour encoder/décoder plus rapidement (moins de charge CPU).
+
+
+
+
+🔧 Commande pour encoder en H.264 avec QSV :
+ Tu peux utiliser l’encodeur matériel Intel :
+ ffmpeg -hwaccel qsv -i IP17.mkv -c:v h264_qsv -c:a aac IP17s.mp4
+
+  -hwaccel qsv : utilise Quick Sync pour le décodage.
+
+  -c:v h264_qsv : encode la vidéo en H.264 avec le GPU Intel.
+
+  -c:a aac : encode l’audio normalement (AAC).
+
+
+Si tu as l''erreur:
+ [h264_qsv @ ...] Current pixel format is unsupported
+[vost#0:0/h264_qsv @ ...] Error while opening encoder - maybe incorrect parameters such as bit_rate, rate, 
+ width or height.
+
+Cela indique que le format de pixel 10 bits (yuv420p10le)car c’est un HEVC 10 bits. utilisé par la vidéo 
+d''entrée n''est pas compatible avec le codec Intel QSV H.264, qui n''accepte que du 8 bits (comme yuv420p).
+
+✅ Solution : Forcer une conversion en 8 bits (yuv420p)
+
+ffmpeg -c:v hevc_qsv -i IP17.mkv -vf format=nv12,hwupload -c:v h264_qsv -b:v 4M -c:a copy IP17s.mp4 
+
+ h264_qsv n''accepte pas nativement le 10 bits, il attend du NV12 8 bits.
+
+ L’erreur peut survenir si hwaccel qsv est activé et que le décodage matériel n’est pas en QSV, ou bien que le décodage QSV produit un format incompatible.
+
+ -c:v hevc_qsv	Force FFmpeg à utiliser le décodage matériel Intel Quick Sync Video (QSV) pour le codec HEVC (H.265). Cela accélère le décodage.
+
+ -i IP17.mkv	Spécifie le fichier d’entrée vidéo, ici IP17.mkv.
+
+ -Le filtre format=nv12,hwupload doit faire la conversion vers NV12 8 bits puis remonter sur le GPU.
+   vf format=nv12,hwupload	Applique une chaîne de filtres vidéo (-vf = video filter) :
+    - format=nv12 convertit la vidéo en format NV12 8 bits, compatible avec QSV.
+    - hwupload télécharge (upload) la vidéo convertie sur le GPU pour l’encodage matériel.
+
+ -c:v h264_qsv	Utilise l’encodeur matériel Intel QSV pour encoder la vidéo en H.264 (AVC).
+
+ -b:v 4M	Définit le débit vidéo (bitrate) à 4 mégabits par seconde. Tu peux ajuster ce chiffre pour plus ou moins de qualité.
+
+ -c:a copy	Copie le flux audio sans le réencoder (gain de temps et préservation de la qualité audio).
+
+ IP17s.mp4	Nom du fichier de sortie final, ici un MP4 contenant la vidéo H.264 encodée avec QSV.
+
+🟢 Pourquoi cette commande ?
+ Décodage accéléré QSV (-c:v hevc_qsv) : Permet de décoder rapidement les vidéos HEVC 10 bits sur CPU Intel avec support QSV.
+
+Conversion en NV12 8 bits (format=nv12) :
+ Le décodage QSV produit du 10 bits, mais l’encodeur H264 QSV ne supporte que le 8 bits. Il faut donc 
+ convertir la vidéo dans un format compatible (NV12 = YUV 4:2:0 8 bits).
+
+ Upload matériel (hwupload) : Après conversion, la vidéo est envoyée sur le GPU Intel pour que l’encodeur
+  QSV puisse y accéder.
+
+ Encodage matériel H264 QSV (-c:v h264_qsv) : Encodage rapide en H.264 grâce au matériel Intel.
+
+ Copie audio (-c:a copy) : Pour ne pas perdre de temps à réencoder le son, il est simplement copié tel quel.
+
+ Bitrate défini (-b:v 4M) : Fixe la qualité vidéo pour un bon compromis vitesse/qualité.
+
+
+Résumé
+ Cette commande est optimisée pour un PC Intel avec Quick Sync. Elle décode le HEVC 10 bits avec accélération matérielle, convertit la vidéo dans un format compatible 8 bits, puis encode en H264 8 bits avec accélération matérielle, tout en copiant l’audio d’origine.
+
+
+
+⌛ Pour afficher le temps total pris par ta commande ffmpeg à la fin de son exécution, voici plusieurs méthodes simples :
+
+🟢 Sur Windows cmd.exe (PowerShell) : utiliser Measure-Command
+   
+Si tu es sous PowerShell, lance ta commande ainsi :
+ Measure-Command { ffmpeg -c:v hevc_qsv -i IP17.mkv -vf format=nv12,hwupload -c:v h264_qsv -b:v 4M -c:a copy IP17s.mp4 }
+
+Résultat:
+Days              : 0
+Hours             : 0
+Minutes           : 12
+Seconds           : 52
+Milliseconds      : 382
+Ticks             : 7723820642
+TotalDays         : 0,00893960722453704
+TotalHours        : 0,214550573388889
+TotalMinutes      : 12,8730344033333
+TotalSeconds      : 772,3820642
+TotalMilliseconds : 772382,0642
+
+
+Sans filtre : 
+ FFmpeg gère automatiquement les formats, ça peut prendre plus de temps si la conversion est complexe.
+ ffmpeg -c:v hevc_qsv -i IP17.mkv -c:v h264_qsv -b:v 4M -c:a copy IP17p.mp4
+
+Avec filtre: 
+ format=nv12: tu forces un format optimal, donc gain de performance avec QSV.
+              sert à forcer la conversion de la vidéo en format NV12
+              (un format de pixel YUV 4:2:0 très courant et optimisé pour les encodeurs matériels comme QSV).
+
+ NV12 est souvent la seule ou la meilleure format d''entrée que le codec Quick Sync (Intel QSV) accepte pour l’encodage.
+
+En gros, ça prépare la vidéo dans un format que QSV adore, souvent nécessaire si la vidéo source est dans un format « exotique » ou pas compatible directement.
+
+En forçant format=nv12, tu donnes directement à l’encodeur la bonne entrée, donc la conversion est plus optimisée, moins d’étapes, moins de latence.
+
+🟡Pour une commande plus rapide: ajouter -preset veryfast
+
+Measure-Command {
+  ffmpeg -hwaccel qsv -c:v hevc_qsv -i IP17.mkv -vf format=nv12 -c:v h264_qsv -preset veryfast -b:v 4M -look_ahead 0 -c:a copy IP17_fast.mp4
+}
+
+🟡Presets disponibles pour h264_qsv :
+ | Preset         | Qualité 📈 | Vitesse 📉 |
+| -------------- | ----------  | ----------  |
+| `veryslow`     | ⭐⭐⭐⭐  | 🐢🐢🐢🐢  |
+| `slower`       | ⭐⭐⭐⭐  | 🐢🐢🐢     |
+| `slow`         | ⭐⭐⭐     | 🐢🐢       |
+| `medium` (def) | ⭐⭐       | 🐢          |
+| `fast`         | ⭐         | 🚶‍♂️           |
+| `faster`       | ⭐         | 🏃‍♂️          |
+| `veryfast`     | ⭐         | 🚀          |
+
+
+
+ 🔴Remarque
+   **-c:v hevc_qsv -i input.mkv** → tu décodes une vidéo encodée en HEVC à l’aide du décodage matériel QSV.
+
+   **-c:v h264_qsv** → tu ré-encodes la vidéo en H.264 avec l’encodeur matériel QSV.
+
+   Tu spécifies aussi -preset veryfast, mais comme expliqué, ce preset a un impact faible sur la qualité/taille finale avec h264_qsv si tu imposes déjà un bitrate fixe (-b:v 4M).
+
+   Avec -b:v 4M, tu forces le débit vidéo à 4 Mbps → donc la taille finale reste proche quel que soit le preset.
+
+
+
+🟢Sur  Linux/macOS ou Windows avec Git Bash
+ Utiliser la commande time 
+ time ffmpeg -c:v hevc_qsv -i IP17.mkv -vf format=nv12 -c:v h264_qsv -b:v 4M -c:a copy IP17s.mp4
+
+À la fin, tu verras un résumé comme :
+ real    0m35.123s
+ user    0m30.456s
+ sys     0m4.567s
+ real = temps écoulé total (temps « réel »)
+
+user = temps CPU utilisateur
+
+sys = temps CPU noyau
+
+
+
+
+
+🔄Pour NVIDIA (GPU avec NVENC) :
+ffmpeg -hwaccel cuda -i IP17.mkv -c:v h264_nvenc -preset fast -cq 23 -c:a copy IP17s.mp4
+✅ Explication :
+-hwaccel cuda : utilise l’accélération GPU NVIDIA.
+
+-c:v h264_nvenc : encodeur matériel H.264 de NVIDIA.
+
+-preset fast : vitesse d’encodage.
+
+-cq 23 : qualité constante (23 = qualité moyenne, baisse = mieux).
+
+-c:a copy : conserve l’audio sans le réencoder.
+
+🔹 Très rapide, parfait pour une conversion simple sans perte notable.
+
+
+
+🟧 Pour AMD (GPU avec AMF / VCE) :
+
+
+ffmpeg -hwaccel dxva2 -i IP17.mkv -c:v h264_amf -quality speed -c:a copy IP17s.mp4
+✅ Explication :
+-hwaccel dxva2 : active l’accélération sur Windows pour AMD.
+
+-c:v h264_amf : encodeur matériel AMD (AMF = Advanced Media Framework).
+
+-quality speed : privilégie la rapidité.
+
+-c:a copy : copie l’audio tel quel.
+
+🔸 Rapide aussi, mais plus dépendant du support de ton driver AMD. Assure-toi d’avoir les pilotes GPU à jour.
+
+
+NB
+Pour les cartes graphiques AMD, les meilleurs accélérateurs matériels (hwaccel) sont :
+
+🔥 1. h264_amf (AMD Advanced Media Framework)
+Le plus performant pour l'encodage H.264 et H.265 sur AMD.
+
+Utilise l'API AMF d'AMD, spécialement optimisée pour les cartes graphiques Radeon.
+
+Compatible avec les cartes AMD récentes (RX 400 et plus récentes).
+
+Fonctionne particulièrement bien sur Windows.
+
+🔥 2. d3d11va (Direct3D 11 Video Acceleration)
+Très bon pour le décodage matériel de vidéos H.264, H.265, VP9, etc.
+
+Compatible avec les cartes AMD modernes sur Windows.
+
+Supporté par FFmpeg pour l'encodage et le décodage.
+
+Généralement utilisé pour la décodage et non pour l'encodage.
+
+🔥 3. vaapi (Video Acceleration API)
+Fonctionne sur Linux principalement.
+
+Supporte l'encodage et le décodage H.264, H.265, VP9, etc.
+
+Peut fonctionner avec des cartes AMD, mais mieux adapté aux processeurs graphiques intégrés d'Intel.
+
+✅ Meilleur choix pour toi :
+Puisque tu es sous Windows avec une carte AMD, le meilleur choix pour l'encodage est : -hwaccel h264_amf
+Pour le décodage, tu peux utiliser :-hwaccel d3d11va
+
+
+🔁 Résumé rapide :
+Marque GPU	Commande optimisée
+NVIDIA	-c:v h264_nvenc + -hwaccel cuda
+AMD	-c:v h264_amf + -hwaccel dxva2
+
+Tu peux tester la vitesse avec -benchmark à la fin de ta commande si tu veux comparer.
+
+
+
+
+🎯 Astuce bonus : Script pour convertir tous les .mkv d’un dossier
+Tu peux coller ce script PowerShell dans ta console pour convertir tous tes .mkv en .mp4 avec QSV :
+
+Powershell
+Get-ChildItem *.mkv | ForEach-Object {
+    $input = $_.FullName
+    $output = $_.BaseName + ".mp4"
+    ffmpeg -hwaccel qsv -c:v h264_qsv -i "$input" -c:v h264_qsv -c:a aac -b:a 192k "$output" //tu peux adapter
+}
+
+Script Bash (Linux) 
+ convert_mkv_to_mp4.sh
+  #!/bin/bash
+
+  for file in *.mkv; do
+    output="${file%.mkv}.mp4"
+    ffmpeg -hwaccel qsv -c:v h264_qsv -i "$file" -c:v h264_qsv -c:a aac -b:a 192k "$output"
+  done
+
+
+chmod +x convert.sh
+./convert_mkv_to_mp4.sh
