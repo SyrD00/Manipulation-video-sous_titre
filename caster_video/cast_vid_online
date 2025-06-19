@@ -1,0 +1,30 @@
+pip install catt
+
+📡 Connecter catt à ton Chromecast
+Une fois installé :
+catt scan
+→ te montre tous les Chromecast trouvés.
+
+Par exemple:Scanning Chromecasts...
+192.168.1.127 - Freebox Player POP - Freebox Freebox Player POP
+
+Puis :
+catt cast "https://URL_DE_LA_VIDEO"
+
+
+Pour extraire l'URL_DE_LA_VIDEO utilise yt-dlp :
+yt-dlp -g "https://...lien de vidéo..."
+→ te donne l'URL directe de la vidéo.
+    NB:
+        Différence entre URL "page" et URL "vidéo directe"
+        ✅ URL de page Crunchyroll
+        👉 C’est ce que tu ouvres dans ton navigateur :
+        https://www.crunchyroll.com/fr/watch/EXEMPLE
+        ❌ Ce n’est pas une URL vidéo utilisable par un Chromecast ou catt.
+        yt-dlp → peut parfois extraire l'URL directe de la vidéo, mais pas toujours, surtout avec DRM.
+
+
+
+
+
+catt cast "https://...lien de vidéo..."

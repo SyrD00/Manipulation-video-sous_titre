@@ -19,14 +19,14 @@ Utilise le CPU (pas le GPU).
 
 ffmpeg -i IP17.mkv -c:v libx264 -preset ultrafast -crf 23 -c:a copy IP17s.mp4
 
--c:v libx264 → réencode la vidéo en H.264 (au lieu de HEVC).
+ 🟣-c:v libx264 → réencode la vidéo en H.264 (au lieu de HEVC).
 
--crf 23 → qualité constante. Plus petit = meilleure qualité (valeurs typiques : 18–28).
+ 🟣-crf 23 → qualité constante. Plus petit = meilleure qualité (valeurs typiques : 18–28).
 reste un bon équilibre (tu peux ajuster : plus bas = meilleure qualité, plus haut = plus rapide).
 
--preset ultrafast → vitesse maximale, taille de fichier plus grande et qualité légèrement inférieure à bitrate équivalent.
+ 🟣-preset ultrafast → vitesse maximale, taille de fichier plus grande et qualité légèrement inférieure à bitrate équivalent.
 
--c:a copy → copie l'audio sans le réencoder (pour éviter perte de qualité).
+ 🟣-c:a copy → copie l'audio sans le réencoder (pour éviter perte de qualité).
 
 
 🆚 Résumé :
@@ -46,10 +46,7 @@ ffmpeg -i IP17.mkv -c:v libx264 -crf 23 -preset slow -c:a aac -b:a 192k IP17s.mp
 
 
 
-
-
-
-🔄 Si tu veux une version optimisée pour Intel GPU (Quick Sync Video) :
+🔴 Si tu veux une version optimisée pour Intel GPU (Quick Sync Video) :
 🔎 Pour vérifier si FFmpeg supporte QSV :
 Dans le terminal :
 
@@ -84,16 +81,107 @@ FFmpeg peut utiliser Quick Sync Video pour encoder/décoder plus rapidement (moi
 
 
 🔧 Commande pour encoder en H.264 avec QSV :
- Tu peux utiliser l’encodeur matériel Intel :
- ffmpeg -hwaccel qsv -i IP17.mkv -c:v h264_qsv -c:a aac IP17s.mp4
+ 🟠 Tu peux utiliser l’encodeur matériel Intel :
 
-  -hwaccel qsv : utilise Quick Sync pour le décodage.
+   🔵1. Avec ré-encodage audio (ex : -c:a aac)
+     ffmpeg -i IP17.mkv -c:v h264_qsv -preset veryfast -c:a aac output.mp4
+        Vidéo : encodée matériellement via QuickSync → rapide.
+        Audio : ré-encodé en AAC → dépend du CPU, ajoute du temps.
+        Peut aussi perdre un peu en qualité selon les paramètres.
+        Vitesse globale : bonne, mais l’audio ralentit un peu le processus.
 
-  -c:v h264_qsv : encode la vidéo en H.264 avec le GPU Intel.
+    🔵2. Sans ré-encodage audio (copie directe)
+        
+      Vidéo : encodée matériellement via QuickSync → très rapide.
+      Audio : copié sans ré-encodage → pas de perte de qualité, gain de temps.
+      Vitesse globale : encore meilleure.
+      Moins de charge CPU, pas de perte de qualité.
 
-  -c:a aac : encode l’audio normalement (AAC).
+        🟣A/ffmpeg -i IP17.mkv -c:v h264_qsv -preset veryfast -c:a copy IP17s1.mp4
 
+           Décodage logiciel (par défaut) : FFmpeg utilise le décodage logiciel du flux HEVC.
 
+           Encodage matériel (QSV) : Tu réencode en H.264 avec Intel Quick Sync Video (h264_qsv).
+
+           Pas de bitrate fixé : FFmpeg utilise l'encodage en mode CQP (quantité fixe de qualité) par défaut (pas de contrôle sur le poids final).
+
+           Audio copié sans modification.
+
+           Preset veryfast : priorité à la vitesse, moins de compression.
+
+          ✅ Avantages :
+             Simple et rapide si tu n’as pas besoin d’un bitrate fixe.
+
+             Peut être plus compatible avec une machine où le décodage matériel HEVC ne marche pas bien.
+
+        🟣B/
+          🔴B1/ffmpeg -c:v hevc_qsv -i IP17.mkv  -c:v h264_qsv -preset veryfast -b:v 4M -c:a copy IP17s2.mp4 
+
+            Matériel utilisé= GPU (hevc_qsv)
+            Décodage matériel HEVC avec Quick Sync Video (hevc_qsv) → plus rapide et économique en CPU.
+
+             Encodage matériel H.264 QSV, bitrate fixé à 4 Mbps.
+
+             Audio copié.
+
+             Preset veryfast : comme avant.
+          ✅ Avantages :
+            Plus rapide si ton GPU Intel supporte bien hevc_qsv.
+
+            Le bitrate fixe de 4M te donne un contrôle sur la taille finale.
+
+            Idéal pour garder un débit raisonnable (pour YouTube, stockage, etc.).
+
+        Conclusion: B1 est plus rapide meme sans controle de qualité(bitrate) car travaille sur gpu
+         et A travaille sur cpu
+
+         🔴B2/On ajoute --vf format=nv12
+          ffmpeg -c:v hevc_qsv -i IP17.mkv -vf format=nv12 -c:v h264_qsv -preset veryfast -b:v 4M -c:a copy IP17s2.mp4
+            
+            La différence ici est qu'on forces manuellement le format vidéo à nv12, 
+            qui est le format préféré du QSV encoder (h264_qsv).
+            Cela garantit la compatibilité entre le filtre de décodage QSV et l'encodage H.264 QSV.
+          
+          🔴Comparaison entre B1 et 🔴B2
+            
+                                            Sans -vf format=nv12 	                Avec -vf format=nv12
+Format de pixel              	               Automatique (FFmpeg décide)	           Forcé à nv12
+Sécurité / compatibilité QSV	               Moins garanti	                         Plus robuste
+Stabilité entre différentes                  Peut échouer sur certains systèmes      Presque toujours fonctionne
+machines/pilotes	                   	
+Vitesse / performance	                      Pareil (à 99 %)	                          Peut avoir un tout petit overhead
+
+    B2 est légérement plus rapide(diff trés minime secondes ou max min) et plus stable, car il force le format vidéo à nv12,
+
+    ⚠️ Attention : compatibilité audio
+        Vérifie que la piste audio de départ est en AAC ou un codec MP4-compatible (ex : MP3, AAC, ALAC…).
+
+       Si l’audio est en EAC3 ou DTS, MP4 ne supporte pas toujours directement → -c:a copy peut échouer ou 
+       rendre le fichier non lisible.
+
+       Pour les vidéos venant de MKV avec audio en EAC3 : mieux vaut encoder en AAC, sauf si tu veux sortir en MKV aussi.
+
+  🔵 Formats audio compatibles avec MP4 (standards ou largement supportés)
+      Codec     	Extension    	Détails
+       AAC	        .aac	      Le plus courant et recommandé. Support universel.
+       MP3	        .mp3	      Supporté par la majorité des lecteurs MP4.
+       ALAC	        .m4a	      Format Apple Lossless, pris en charge dans MP4 (surtout Apple devices).
+       AC-3*	      .ac3	      Parfois accepté (ex : VLC), mais pas officiellement supporté dans MP4.
+       Opus*	      .opus	       Support expérimental dans MP4, pas garanti sur tous les lecteurs.
+ 
+   ❌ Formats audio à éviter dans MP4
+     Codec	       Pourquoi éviter ?
+      EAC3	         Rarement pris en charge dans MP4. Mieux dans MKV.
+      DTS	           Non supporté dans MP4. Cause souvent des erreurs de lecture ou de muxing.
+      FLAC        	 Non standard dans MP4 (préféré dans MKV).
+      Vorbis      	 Pas compatible avec MP4.
+
+  🟠Si tu veux utiliser l’accélération matérielle pour le décodage et l’encodage, voici la commande complète
+   ffmpeg -hwaccel qsv -i IP17.mkv -c:v h264_qsv -preset veryfast -c:a aac output.mp4   
+    
+   ffmpeg -hwaccel qsv -c:v hevc_qsv -i IP17.mkv -c:v h264_qsv -preset veryfast -b:v 4M -c:a copy IP17P.mp4
+
+ 
 Si tu as l''erreur:
  [h264_qsv @ ...] Current pixel format is unsupported
 [vost#0:0/h264_qsv @ ...] Error while opening encoder - maybe incorrect parameters such as bit_rate, rate, 
@@ -102,32 +190,84 @@ Si tu as l''erreur:
 Cela indique que le format de pixel 10 bits (yuv420p10le)car c’est un HEVC 10 bits. utilisé par la vidéo 
 d''entrée n''est pas compatible avec le codec Intel QSV H.264, qui n''accepte que du 8 bits (comme yuv420p).
 
+
+ce genre d’erreur est classique quand tu combines -hwaccel qsv et -c:v h264_qsv sans gérer correctement la
+ décodage matériel et la conversion des formats pixel.
+
+Pourquoi ta commande avec -hwaccel qsv plante ?
+-hwaccel qsv active l’accélération matérielle Intel QuickSync au décodage.
+
+Par contre, le décodeur renvoie des images dans un format matériel (ex: nv12 en mémoire vidéo).
+
+L’encodeur h264_qsv attend une image dans un format spécifique, souvent en mémoire accessible CPU ou bien
+compatible.
+
+Si tu ne convertis pas ce format, FFmpeg se plaint de Current pixel format is unsupported ou Function 
+not implemented.
+
+
+
+
 ✅ Solution : Forcer une conversion en 8 bits (yuv420p)
+   🟡 sans hwaccel
+ffmpeg -c:v hevc_qsv -i IP17.mkv -vf format=nv12 -c:v h264_qsv -preset veryfast -b:v 4M -c:a copy IP17s1.mp4 
+ffmpeg -init_hw_device qsv=hw -filter_hw_device hw -c:v hevc_qsv -i IP17.mkv -vf format=nv12,hwupload -c:v h264_qsv -b:v 4M -c:a copy IP17s.mp4 
 
-ffmpeg -c:v hevc_qsv -i IP17.mkv -vf format=nv12,hwupload -c:v h264_qsv -b:v 4M -c:a copy IP17s.mp4 
 
- h264_qsv n''accepte pas nativement le 10 bits, il attend du NV12 8 bits.
+ 🟣 -init_hw_device qsv=hw
+    initialise un périphérique matériel de type qsv (Quick Sync Video d’Intel).
+    qsv=hw : on crée un alias appelé hw que l’on pourra réutiliser ensuite.
+    ⚙️ Cela prépare le GPU Intel pour qu’il puisse être utilisé par le reste de la commande.
 
- L’erreur peut survenir si hwaccel qsv est activé et que le décodage matériel n’est pas en QSV, ou bien que le décodage QSV produit un format incompatible.
+  🟣 -filter_hw_device hw
+      indique que tous les filtres vidéo matériels (comme hwupload, scale_qsv, etc.) utiliseront le
+      périphérique hw que tu viens d'initialiser.
 
- -c:v hevc_qsv	Force FFmpeg à utiliser le décodage matériel Intel Quick Sync Video (QSV) pour le codec HEVC (H.265). Cela accélère le décodage.
+     ⚠️ Obligatoire si tu utilises hwupload ou un filtre qui traite des frames en mémoire GPU.
 
- -i IP17.mkv	Spécifie le fichier d’entrée vidéo, ici IP17.mkv.
+        FFmpeg, quand tu lui demandes d’utiliser hwupload, doit savoir vers quel périphérique graphique
+         (GPU Intel) envoyer les images à encoder avec h264_qsv.
+        Mais par défaut, il ne sait pas quel périphérique utiliser, surtout si :
+        Tu ne précises pas -init_hw_device qsv=hw.
+        Tu fais un traitement avec des filtres (comme -vf format=nv12,hwupload) avant de lui dire quel
+         matériel utiliser.
+ 
+ 🟣 h264_qsv n''accepte pas nativement le 10 bits, il attend du NV12 8 bits.
 
- -Le filtre format=nv12,hwupload doit faire la conversion vers NV12 8 bits puis remonter sur le GPU.
+ 🟣L’erreur peut survenir si hwaccel qsv est activé et que le décodage matériel n’est pas en QSV, ou bien que le décodage QSV produit un format incompatible.
+
+ 🟣-c:v hevc_qsv	Force FFmpeg à utiliser le décodage matériel Intel Quick Sync Video (QSV) pour le codec HEVC (H.265). Cela accélère le décodage.
+
+ 🟣-i IP17.mkv	Spécifie le fichier d’entrée vidéo, ici IP17.mkv.
+
+ 🟣-Le filtre format=nv12,hwupload doit faire la conversion vers NV12 8 bits puis remonter sur le GPU.
    vf format=nv12,hwupload	Applique une chaîne de filtres vidéo (-vf = video filter) :
     - format=nv12 convertit la vidéo en format NV12 8 bits, compatible avec QSV.
     - hwupload télécharge (upload) la vidéo convertie sur le GPU pour l’encodage matériel.
 
- -c:v h264_qsv	Utilise l’encodeur matériel Intel QSV pour encoder la vidéo en H.264 (AVC).
+    NB:L’ajout de hwupload est utile seulement si tu rencontres :
 
- -b:v 4M	Définit le débit vidéo (bitrate) à 4 mégabits par seconde. Tu peux ajuster ce chiffre pour plus ou moins de qualité.
+          des erreurs comme unsupported pixel format,
 
- -c:a copy	Copie le flux audio sans le réencoder (gain de temps et préservation de la qualité audio).
+          ou des encodages très lents malgré qsv.
 
- IP17s.mp4	Nom du fichier de sortie final, ici un MP4 contenant la vidéo H.264 encodée avec QSV.
+ 🟣-c:v h264_qsv	Utilise l’encodeur matériel Intel QSV pour encoder la vidéo en H.264 (AVC).
 
-🟢 Pourquoi cette commande ?
+ 🟣-b:v 4M	Définit le débit vidéo (bitrate) à 4 mégabits par seconde. Tu peux ajuster ce chiffre pour plus ou moins de qualité.
+
+ 🟣-c:a copy	Copie le flux audio sans le réencoder (gain de temps et préservation de la qualité audio).
+
+ 🟣IP17s.mp4	Nom du fichier de sortie final, ici un MP4 contenant la vidéo H.264 encodée avec QSV.
+  
+
+ 
+🟡 Avec hwaccel(accélération matérielle)
+ ffmpeg -init_hw_device qsv=hw -filter_hw_device hw -c:v hevc_qsv -i IP17.mkv -vf "format=nv12,hwupload" -c:v h264_qsv -preset veryfast -b:v 4M -c:a copy IP17_fixed.mp4 
+
+
+
+
+   🟢 Pourquoi cette commande ?
  Décodage accéléré QSV (-c:v hevc_qsv) : Permet de décoder rapidement les vidéos HEVC 10 bits sur CPU Intel avec support QSV.
 
 Conversion en NV12 8 bits (format=nv12) :
@@ -147,6 +287,166 @@ Conversion en NV12 8 bits (format=nv12) :
 Résumé
  Cette commande est optimisée pour un PC Intel avec Quick Sync. Elle décode le HEVC 10 bits avec accélération matérielle, convertit la vidéo dans un format compatible 8 bits, puis encode en H264 8 bits avec accélération matérielle, tout en copiant l’audio d’origine.
 
+🟡Pour une commande plus rapide: ajouter -preset veryfast
+
+ Measure-Command { ffmpeg -init_hw_device qsv=hw -filter_hw_device hw -c:v hevc_qsv -i IP17.mkv -vf format=nv12,hwupload -c:v h264_qsv -preset veryfast -b:v 4M -c:a copy IP17s.mp4 }
+
+
+
+
+
+
+L’option -look_ahead active ou désactive la fonction de "look-ahead" du QSV encoder (Quick Sync Video) d’Intel.
+Cela permet au codeur de regarder plusieurs images à l'avance pour optimiser la qualité d'encodage ou le débit binaire.
+
+✅ Avec -look_ahead 1 (activé)
+ Le codeur regarde les images futures avant de décider comment encoder la frame actuelle.
+
+ Meilleure qualité visuelle à débit identique, surtout sur les mouvements complexes ou rapides.
+
+ Potentiellement meilleure compression.
+
+ Peut augmenter la latence (important si vous streamez en direct).
+
+ Utilise plus de ressources CPU/GPU.
+
+❌ Avec -look_ahead 0 (désactivé)   
+ Le codeur encode image par image, sans pré-analyse.
+
+ Résultats plus rapides, latence minimale.
+
+ Qualité potentiellement inférieure à débit égal.
+
+ Moins de consommation de ressources.
+
+
+NB
+Par défaut, -look_ahead est souvent désactivé (0) si tu utilises :
+
+-preset veryfast
+
+un mode CBR ou VBR classique
+
+Mais si tu actives certains autres paramètres comme :
+
+ -rc_mode la (look-ahead rate control) ou -preset slow
+
+Alors FFmpeg peut activer automatiquement look_ahead=1, sauf si tu le forces à 0.
+
+
+✅ Donc, pour être sûr :
+Si tu veux désactiver explicitement la pré-analyse ➜ mets -look_ahead 0
+
+Si tu veux en profiter pour optimiser la qualité ➜ mets -look_ahead 1
+
+Si tu ne mets rien, le comportement peut varier selon le contexte, donc pas 100 % prévisible.
+
+🟧 Pour sélectionner un sous-titre parmi ceux présents dans ta vidéo HEVC .mkv, et le graver en "hardsub"
+ (sous-titres incrustés dans la vidéo) lors de la conversion en H.264, voici comment faire avec ffmpeg.
+
+✅ 
+🔍 1. Vérifie les sous-titres présents
+Lance cette commande pour voir les pistes (streams) dans ton fichier IP17.mkv :
+  ffmpeg -i IP17.mkv
+
+Tu verras une sortie comme ceci :
+  Stream #0:0: Video: hevc
+  Stream #0:1: Audio: ...
+  Stream #0:2: Subtitle: ass (default)
+  Stream #0:3: Subtitle: srt
+  Stream #0:4: Subtitle: ass
+
+Note bien le numéro du flux de sous-titres que tu veux incruster 
+
+
+La commande sur mon ordi me donne
+Par exemple
+ Stream #0:0(jpn): Video: hevc (Main 10), yuv420p10le(tv), 1920x1080, SAR 1:1 DAR 16:9, 23.98 fps, 23.98 tbr, 1k tbn (default)
+      Metadata:
+        title           : [Erai-raws]_CR_HEVC
+        BPS             : 3336693
+        DURATION        : 00:24:17.748000000
+        NUMBER_OF_FRAMES: 34951
+        NUMBER_OF_BYTES : 608007301
+        _STATISTICS_WRITING_APP: mkvmerge v92.0 ('Everglow') 64-bit
+        _STATISTICS_WRITING_DATE_UTC: 2025-06-01 13:51:40
+        _STATISTICS_TAGS: BPS DURATION NUMBER_OF_FRAMES NUMBER_OF_BYTES
+  Stream #0:1(jpn): Audio: eac3, 48000 Hz, stereo, fltp, 224 kb/s (default)
+      Metadata:
+        title           : AMZN_EAC3
+        BPS             : 224000
+        DURATION        : 00:24:17.696000000
+        NUMBER_OF_FRAMES: 45553
+        NUMBER_OF_BYTES : 40815488
+        _STATISTICS_WRITING_APP: mkvmerge v92.0 ('Everglow') 64-bit
+        _STATISTICS_WRITING_DATE_UTC: 2025-06-01 13:51:40
+        _STATISTICS_TAGS: BPS DURATION NUMBER_OF_FRAMES NUMBER_OF_BYTES
+  Stream #0:2(eng): Subtitle: ass (ssa) (default)
+      Metadata:
+        title           : CR_English
+        BPS             : 129
+        DURATION        : 00:24:02.520000000
+        NUMBER_OF_FRAMES: 384
+        NUMBER_OF_BYTES : 23397
+        _STATISTICS_WRITING_APP: mkvmerge v92.0 ('Everglow') 64-bit
+        _STATISTICS_WRITING_DATE_UTC: 2025-06-01 13:51:40
+        _STATISTICS_TAGS: BPS DURATION NUMBER_OF_FRAMES NUMBER_OF_BYTES
+  Stream #0:3(por): Subtitle: ass (ssa)
+      Metadata:
+        title           : CR_Portuguese(Brazil)
+        BPS             : 167
+        DURATION        : 00:24:06.510000000
+        NUMBER_OF_FRAMES: 391
+        NUMBER_OF_BYTES : 30280
+        _STATISTICS_WRITING_APP: mkvmerge v92.0 ('Everglow') 64-bit
+        _STATISTICS_WRITING_DATE_UTC: 2025-06-01 13:51:40
+        _STATISTICS_TAGS: BPS DURATION NUMBER_OF_FRAMES NUMBER_OF_BYTES
+  Stream #0:4(spa): Subtitle: ass (ssa)
+      Metadata:
+        title           : CR_Spanish(Latin_America)
+        BPS             : 118
+        DURATION        : 00:24:02.630000000
+        NUMBER_OF_FRAMES: 329
+        NUMBER_OF_BYTES : 21408
+        _STATISTICS_WRITING_APP: mkvmerge v92.0 ('Everglow') 64-bit
+        _STATISTICS_WRITING_DATE_UTC: 2025-06-01 13:51:40
+        _STATISTICS_TAGS: BPS DURATION NUMBER_OF_FRAMES NUMBER_OF_BYTES
+
+
+Si tu veux incrustr celui d'eng(Stream #0:2) sur la video
+Tableau sous titre s=[eng,por,spa]
+donc l'anglais est si=0
+
+
+🔨 2. Commande pour graver un sous-titre (hardsub)
+Tu ne peux graver qu’un seul sous-titre à la fois, et il faut que ce soit en format texte lisible 
+(.ass, .srt), pas des sous-titres bitmap (.pgs, .dvd_subtitle).
+
+Exemple avec le sous-titre en piste 0:2 :
+
+         ✅Version avec libx264
+ffmpeg -i IP17.mkv -vf "subtitles=IP17.mkv:si=0" -c:v libx264 -preset fast -b:v 4M -c:a copy IP17_hardsub.mp4
+
+
+🟡 Remplace si=...par le bon index si le sous-titre à incruster est sur une autre piste
+
+        ✅ Version avec Intel QSV (h264_qsv) :
+ffmpeg -i IP17.mkv -map 0:v -map 0:a -c:v h264_qsv -c:a aac -vf "subtitles=IP17.mkv:si=2" IP17_hardsub.mp4
+
+  -vf "subtitles=tonfichier.mkv:si=2" : incruste le sous-titre piste 2 du MKV.
+
+  -c:v h264_qsv : encode en H.264 matériel (tu peux changer en libx264 si pas QSV).
+
+  -c:a aac : encode l’audio en AAC.
+
+  -map 0:v et -map 0:a : récupère vidéo et audio.
+
+Plus rapide :utiliser vveryfast
+  Measure-Command {ffmpeg -i IP17.mkv -map 0:v -map 0:a -c:v h264_qsv -preset veryfast -c:a aac -vf "subtitles=IP17.mkv:si=0" IP17eng.mp4}
+
+
+
+
 
 
 ⌛ Pour afficher le temps total pris par ta commande ffmpeg à la fin de son exécution, voici plusieurs méthodes simples :
@@ -154,7 +454,8 @@ Résumé
 🟢 Sur Windows cmd.exe (PowerShell) : utiliser Measure-Command
    
 Si tu es sous PowerShell, lance ta commande ainsi :
- Measure-Command { ffmpeg -c:v hevc_qsv -i IP17.mkv -vf format=nv12,hwupload -c:v h264_qsv -b:v 4M -c:a copy IP17s.mp4 }
+Measure-Command { ffmpeg -init_hw_device qsv=hw -filter_hw_device hw -c:v hevc_qsv -i IP17.mkv -vf format=nv12,hwupload -c:v h264_qsv -b:v 4M -c:a copy IP17s.mp4 }
+
 
 Résultat:
 Days              : 0
@@ -185,11 +486,7 @@ En gros, ça prépare la vidéo dans un format que QSV adore, souvent nécessair
 
 En forçant format=nv12, tu donnes directement à l’encodeur la bonne entrée, donc la conversion est plus optimisée, moins d’étapes, moins de latence.
 
-🟡Pour une commande plus rapide: ajouter -preset veryfast
 
-Measure-Command {
-  ffmpeg -hwaccel qsv -c:v hevc_qsv -i IP17.mkv -vf format=nv12 -c:v h264_qsv -preset veryfast -b:v 4M -look_ahead 0 -c:a copy IP17_fast.mp4
-}
 
 🟡Presets disponibles pour h264_qsv :
  | Preset         | Qualité 📈 | Vitesse 📉 |
@@ -233,7 +530,7 @@ sys = temps CPU noyau
 
 
 
-🔄Pour NVIDIA (GPU avec NVENC) :
+🟧 Pour NVIDIA (GPU avec NVENC) :
 ffmpeg -hwaccel cuda -i IP17.mkv -c:v h264_nvenc -preset fast -cq 23 -c:a copy IP17s.mp4
 ✅ Explication :
 -hwaccel cuda : utilise l’accélération GPU NVIDIA.
