@@ -1,56 +1,77 @@
-# extract_sub_capcut.py
+#voir plsu detail sur l'explication de ce script ici :https://chatgpt.com/s/t_68751a9063f48191a42b4b2af88cc54a
 import json
-from typing import List, Tuple
+import math
+from datetime import timedelta
 
-def collect_subtitles(obj, subs: List[Tuple[int,int,str]], global_offset: int = 0):
-    """
-    Parcourt dicts et listes pour extraire tous les blocs de type 'subtitle'
-    et calcule leurs timestamps absolus si besoin.
-    """
-    if isinstance(obj, dict):
-        # cas d’un vrai sous-titre
-        if obj.get("type") == "subtitle":
-            words = obj.get("words", {})
-            start = words.get("start_time")
-            end   = words.get("end_time")
-            text  = words.get("text") or "".join(words.get("words", []))
-            if isinstance(start, int) and isinstance(end, int) and text:
-                # si target_timerange existe, l’ajouter à l’offset
-                tr = obj.get("segment", {}).get("target_timerange", {})
-                offset = tr.get("start", 0)
-                subs.append((offset + start, offset + end, text))
-        # continuer le parcours
-        for v in obj.values():
-            collect_subtitles(v, subs, global_offset)
-    elif isinstance(obj, list):
-        for item in obj:
-            collect_subtitles(item, subs, global_offset)
+# === Chemins ===
+file_path = "C:/Users/babak/AppData/Local/CapCut/User Data/Projects/com.lveditor.draft/Auto_caption_vid/draft_content.json"
+srt_output_path = "C:/Users/babak/Videos/capcut_sub11.srt"
 
-def format_srt_timestamp(ms: int) -> str:
-    h = ms // 3600000
-    m = (ms % 3600000) // 60000
-    s = (ms % 60000) // 1000
-    ms_rem = ms % 1000
-    return f"{h:02}:{m:02}:{s:02},{ms_rem:03}"
+# === Fonction ms → SRT
+def ms_to_srt_time(ms):
+    t = timedelta(milliseconds=ms)
+    return f"{t.seconds//3600:02}:{(t.seconds//60)%60:02}:{t.seconds%60:02},{ms%1000:03}"
 
-def main():
-    # 1) chargez votre fichier JSON CapCut
-    with open("draft_content.json", "r", encoding="utf-8") as f:
-        data = json.load(f)
+# === Fonction pour arrondir à la frame CapCut (30 fps)
+def capcut_end_align(ms):
+    frame_ms = 1000 / 30  # ≈ 33.333...
+    #return int(round(ms / frame_ms) * frame_ms)
+    return int(math.ceil(ms / frame_ms) * frame_ms)
+    
+# === Lecture JSON
+with open(file_path, "r", encoding="utf-8") as f:
+    data = json.load(f)
 
-    # 2) collectez tous les sous-titres
-    subtitles = []
-    collect_subtitles(data, subtitles)
-    subtitles.sort(key=lambda x: x[0])  # trier par timecode
+# === Étape 1 : récupération des offsets temporels (start) via les segments
+material_start_times = {}
+tracks = data.get("tracks", [])
+for track in tracks:
+    if track.get("type") == "text":
+        for seg in track.get("segments", []):
+            mat_id = seg.get("material_id")
+            timerange = seg.get("target_timerange", {})
+            start_offset = timerange.get("start")
+            if mat_id and start_offset is not None:
+                material_start_times[mat_id] = start_offset // 1000  # µs → ms
 
-    # 3) écriture du .srt
-    with open("output.srt", "w", encoding="utf-8") as out:
-        for i, (start, end, text) in enumerate(subtitles, 1):
-            out.write(f"{i}\n")
-            out.write(f"{format_srt_timestamp(start)} --> {format_srt_timestamp(end)}\n")
-            out.write(f"{text}\n\n")
+# === Étape 2 : lecture des sous-titres depuis les materials
+texts = data.get("materials", {}).get("texts", [])
+subtitle_blocks = []
 
-    print(f"Fichier SRT généré avec {len(subtitles)} sous-titres.")
+for text in texts:
+    mat_id = text.get("id")
+    words = text.get("words")
+    if not mat_id or not isinstance(words, dict):
+        continue
+    if not all(k in words for k in ["start_time", "end_time", "text"]):
+        continue
+    offset = material_start_times.get(mat_id)
+    if offset is None:
+        continue
 
-if __name__ == "__main__":
-    main()
+    starts = words["start_time"]
+    ends = words["end_time"]
+    texts_list = words["text"]
+
+    if len(starts) == len(ends) == len(texts_list):
+        start_time = starts[0] + offset
+        end_time = ends[-1] + offset
+        aligned_end = capcut_end_align(end_time)
+        subtitle_blocks.append({
+            "start": start_time,
+            "end": int(aligned_end),
+            "text": ''.join(texts_list)
+        })
+
+# === Export SRT
+srt_lines = []
+for idx, sub in enumerate(subtitle_blocks, 1):
+    srt_lines.append(str(idx))
+    srt_lines.append(f"{ms_to_srt_time(sub['start'])} --> {ms_to_srt_time(sub['end'])}")
+    srt_lines.append(sub['text'])
+    srt_lines.append("")
+
+with open(srt_output_path, "w", encoding="utf-8") as f:
+    f.write("\n".join(srt_lines))
+
+print(f"✅ SRT 100% fidèle généré : {srt_output_path}")
