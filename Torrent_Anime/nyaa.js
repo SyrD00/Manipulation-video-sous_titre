@@ -1,4 +1,4 @@
-import AbstractSource from './abstract-source.js'
+/*import AbstractSource from './abstract-source.js'
 
 export default class NyaaSource extends AbstractSource {
   name = 'Nyaa.si'
@@ -10,7 +10,7 @@ export default class NyaaSource extends AbstractSource {
    * Recherche un seul épisode ou une série
    * @param {{ query: string }} options
    */
-  async single({ query }) {
+/*  async single({ query }) {
     let results = [];
     let page = 1;
     const maxPages = 3; // Nombre de pages à scraper pour limiter la charge
@@ -79,3 +79,102 @@ export default class NyaaSource extends AbstractSource {
     return this.single(options);
   }
 }
+*/
+
+import AbstractSource from './abstract.js'
+
+const MAX_PAGES = 3 // nombre de pages à scraper par défaut
+
+export default new class Nyaa extends AbstractSource {
+  name = 'Nyaa.si'
+  description = 'Anime torrents from Nyaa.si (robust version)'
+  accuracy = 'High'
+
+  /**
+   * Transforme les entrées en format standard Hayase
+   * @param {Array} entries 
+   */
+  map(entries) {
+    return entries.map(entry => ({
+      title: entry.title,
+      link: entry.magnet,
+      seeders: entry.seeders,
+      leechers: entry.leechers,
+      size: entry.size,
+      date: entry.date,
+      uploader: entry.uploader,
+      type: entry.type
+    }))
+  }
+
+  /**
+   * Recherche un épisode ou une série
+   * @param {{ query: string }} options
+   */
+  async single({ query }) {
+    let results = []
+
+    for (let page = 1; page <= MAX_PAGES; page++) {
+      const url = `https://nyaa.si/?f=0&c=1_2&q=${encodeURIComponent(query)}&p=${page}`
+      const html = await fetch(url).then(r => r.text())
+
+      // Extraire les lignes <tr> du tableau
+      const rowRegex = /<tr>([\s\S]*?)<\/tr>/g
+      let rowMatch
+
+      while ((rowMatch = rowRegex.exec(html)) !== null) {
+        const row = rowMatch[1]
+
+        // Titre
+        const titleMatch = row.match(/<a href="\/view\/\d+" title="([^"]+)"/)
+        if (!titleMatch) continue
+        const title = titleMatch[1]
+
+        // Magnet
+        const magnetMatch = row.match(/href="(magnet:\?xt=urn:btih:[^"]+)"/)
+        if (!magnetMatch) continue
+        const magnet = magnetMatch[1]
+
+        // Taille
+        const sizeMatch = row.match(/<td class="text-center">([\d.]+\s(?:KiB|MiB|GiB|TiB))<\/td>/)
+        const size = sizeMatch ? sizeMatch[1] : "N/A"
+
+        // Seeders / Leechers
+        const slMatch = row.match(/<td class="text-center">(\d+)<\/td>\s*<td class="text-center">(\d+)<\/td>/)
+        const seeders = slMatch ? parseInt(slMatch[1]) : 0
+        const leechers = slMatch ? parseInt(slMatch[2]) : 0
+
+        // Date
+        const dateMatch = row.match(/<td class="text-center" title="[^"]+">([^<]+)<\/td>/)
+        const date = dateMatch ? new Date(dateMatch[1]) : null
+
+        // Uploader
+        const uploaderMatch = row.match(/<td class="text-center"><a href="\/user\/[^"]+">([^<]+)<\/a><\/td>/)
+        const uploader = uploaderMatch ? uploaderMatch[1] : "N/A"
+
+        // Type de release (RAW/SUB)
+        const typeMatch = row.match(/<td class="text-center">([A-Z]+)<\/td>/)
+        const type = typeMatch ? typeMatch[1] : "N/A"
+
+        results.push({ title, magnet, seeders, leechers, size, date, uploader, type })
+      }
+
+      // Stop si page vide ou moins de 75 résultats
+      if (!html.includes('<tr>')) break
+    }
+
+    // Tri décroissant par seeders
+    results.sort((a, b) => (b.seeders || 0) - (a.seeders || 0))
+
+    return this.map(results)
+  }
+
+  async batch(options) { return this.single(options) }
+  async movie(options) { return this.single(options) }
+  
+  // Test de disponibilité
+  async test() {
+    const res = await fetch('https://nyaa.si/')
+    return res.ok
+  }
+}();
