@@ -1,0 +1,7 @@
+{
+  "name": "Nyaa.si Provider",
+  "version": "1.0.0",
+  "description": "Anime torrents from Nyaa.si",
+  "type": "source",
+  "file": "file:C:/Users/babak/Documents/GitHub/Manipulation-video-sous_titre/Torrent_Anime\nyaa.js"
+}
