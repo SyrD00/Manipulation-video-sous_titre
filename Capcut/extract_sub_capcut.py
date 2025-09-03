@@ -4,8 +4,8 @@ import math
 from datetime import timedelta
 
 # === Chemins ===
-file_path = "C:/Users/babak/AppData/Local/CapCut/User Data/Projects/com.lveditor.draft/Auto_caption_vid/draft_content.json"
-srt_output_path = "C:/Users/babak/Videos/capcut_sub11.srt"
+file_path = "C:/Users/babak/AppData/Local/CapCut/User Data/Projects/com.lveditor.draft/0832/draft_content.json"
+srt_output_path = "C:/Users/babak/Videos/PSO/Fight Might Me!.srt"
 
 # === Fonction ms → SRT
 def ms_to_srt_time(ms):

@@ -441,7 +441,7 @@ ffmpeg -i IP17.mkv -map 0:v -map 0:a -c:v h264_qsv -c:a aac -vf "subtitles=IP17.
 
   -map 0:v et -map 0:a : récupère vidéo et audio.
 
-Plus rapide :utiliser vveryfast
+Plus rapide :utiliser veryfast
   Measure-Command {ffmpeg -i IP17.mkv -map 0:v -map 0:a -c:v h264_qsv -preset veryfast -c:a aac -vf "subtitles=IP17.mkv:si=0" IP17eng.mp4}
 
 

@@ -23,8 +23,29 @@ yt-dlp -g "https://...lien de vidéo..."
         ❌ Ce n’est pas une URL vidéo utilisable par un Chromecast ou catt.
         yt-dlp → peut parfois extraire l'URL directe de la vidéo, mais pas toujours, surtout avec DRM.
 
-
-
-
-
 catt cast "https://...lien de vidéo..."
+
+
+
+ Caster la vidéo locale
+ Lance cette commande :
+catt scan
+>>
+Scanning Chromecasts...
+192.168.1.184 - B UHD Android TV - Expressluck B UHD Android TV
+192.168.1.2 - Bouygtel4K - Arcadyan Bouygtel4K
+
+si tu tapes catt cast "C:\Users\babak\Downloads\PSO17.mp4"
+ca diffuse sur le 1er appareil disponible a savoir=B UHD Android TV
+
+et si tu veux un appareil sa choisir par defaut tape par exemple:
+catt -d "Bouygtel4K" set_default
+
+Astuces:
+ Utiliser des alias
+Tu peux aussi créer un alias simple pour ton appareil :
+
+        catt -d "Bouygtel4K" set_alias salon
+Et ensuite caster en utilisant l’alias :
+
+        catt -d salon cast "C:\Users\babak\Downloads\PSO17.mp4"

@@ -8,7 +8,7 @@ ffmpeg -hwaccel dxva2 -i "C:/Users/mamou/Videos/1/SL/SL8.mp4"  -vf "ass=F.ass" -
 
 
 
-#A noter que j'utilise hwaccel pour AMD
+🔴A noter que j'utilise hwaccel pour AMD
 #si tu es dans ce repertoire
 ffmpeg -hwaccel dxva2 -i "SL8.mp4"  -vf "ass=F.ass" -c:v h264_amf -quality speed -rc cqp -qp_i 22 -qp_p 25 -qp_b 27 -c:a copy "SL8sub.mp4" 
 
@@ -19,3 +19,65 @@ ffmpeg -i "JP.mp4" -vf "ass=M.ass" -c:v h264_amf -quality speed -crf 22 -pix_fmt
 
 
 # Fin du script
+
+🔴Intel
+
+🟣Encoder en x264 (CPU) plus rapide
+    ffmpeg -i video.mp4 -vf subtitles=subtitles.srt -c:v libx264 -preset ultrafast -c:a copy output.mp4
+
+NB
+-preset ultrafast = encode très vite, mais fichier plus gros
+
+-preset veryfast est aussi rapide et meilleur en taille/qualité
+
+
+
+
+🟣Ajoute explicitement la conversion du format vidéo en logiciel après le décodage QSV et avant le filtre ass :
+ffmpeg -hwaccel qsv -c:v h264_qsv -i PSO17.mp4 -vf "hwdownload,format=nv12,ass=a.ass" -c:v h264_qsv -preset fast -c:a copy output.mp4
+    
+    
+    Le décodage et l’encodage se font en QSV (Intel GPU).
+
+    Le filtre ass est appliqué en logiciel après conversion (format=nv12) entre GPU et CPU.
+
+     Gain de vitesse au niveau décodage/encodage, mais le filtrage reste limité par le CPU.
+   
+    hwdownload : récupère la frame de la mémoire GPU vers la mémoire CPU.
+
+    format=nv12 : convertit au format vidéo supporté en logiciel.
+    Ensuite on applique le filtre ass.
+
+
+Sans hwdownload, ffmpeg essaie d’appliquer le filtre ass sur une frame GPU => erreur.
+
+Ensuite, avec -c:v h264_qsv on encode à nouveau en matériel (QSV).
+
+🟢Remarque sur nv=12
+    Quand on parle de format vidéo supporté en logiciel, on parle du format de pixel (la manière dont les couleurs et images sont représentées en mémoire) que le CPU peut manipuler directement.
+
+    Explication simple
+        Quand on utilise l’accélération matérielle (par exemple QSV avec Intel), la vidéo est décodée et stockée dans la mémoire GPU dans un certain format spécial, optimisé pour la carte graphique.
+
+        Ce format n’est pas directement accessible ou modifiable par les filtres classiques qui tournent sur le CPU.
+
+        Pour appliquer un filtre comme ass (qui ajoute les sous-titres en dur), il faut récupérer cette image depuis la mémoire GPU et la convertir dans un format que le CPU comprend et peut manipuler.
+
+        Ce format, typiquement, est un format de pixel comme nv12, yuv420p, etc., qui sont des formats standards « logiciels ».
+
+        Donc :
+            hwdownload : copie les données vidéo du GPU vers le CPU.
+
+            format=nv12 : convertit l’image dans un format que ffmpeg (sur CPU) peut utiliser pour appliquer des filtres.
+
+
+
+🟢Remarque
+Cette opération oblige à faire un aller-retour CPU-GPU, donc ça peut être plus lent que du full logiciel. Mais c’est nécessaire pour faire du hardsub avec filtre sur GPU Intel.
+
+
+2. Encoder avec GPU Nvidia (NVENC) si dispo
+    ffmpeg -i video.mp4 -vf subtitles=subtitles.srt -c:v h264_nvenc -preset fast -c:a copy output.mp4
+
+
+
