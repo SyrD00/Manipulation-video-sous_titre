@@ -8,7 +8,7 @@ J'ai defini par defaut:
 --task → par défaut "transcribe"
 
 Donc,pour juste lancer une transcription automatique avec le modèle medium
-    python generate_srt_cpu_faster.py mon_fichier.mp3
+    python generate_srt_cpu.py mon_fichier.mp3
 
 
     Remarque:
@@ -23,8 +23,8 @@ Donc,pour juste lancer une transcription automatique avec le modèle medium
     1) Si vous voulez un autre modèle, une autre langue ou une traduction,
     il suffit de préciser les arguments correspondants, par exemple: 
         a/modèle petit et rapide mais moins précis/plus lent et plus precis :
-            python generate_srt_cpu_faster.py mon_fichier.mp3 --model_size small
-            python generate_srt_cpu_faster.py mon_fichier.mp3 --model_size large 
+            python generate_srt_cpu.py mon_fichier.mp3 --model_size small
+            python generate_srt_cpu.py mon_fichier.mp3 --model_size large 
 
         A retenir:
         tiny < base < small < medium < large
@@ -35,13 +35,13 @@ Donc,pour juste lancer une transcription automatique avec le modèle medium
 
 
         b/transcription en français si l'audio est en français :
-            python generate_srt_cpu_faster.py mon_fichier.mp3 --language fr
+            python generate_srt_cpu.py mon_fichier.mp3 --language fr
 
         NB : si vous êtes sûr de la langue, il est préférable de la spécifier pour améliorer la précision et la vitesse.
         Si vous ne spécifiez pas la langue, le modèle tentera de la détecter automatiquement. 
 
         c/traduction(exemple audio japonais vers sous-titres français):
-            python generate_srt_cpu_faster.py mon_fichier.mp3 --language ja --task translate
+            python generate_srt_cpu.py mon_fichier.mp3 --language ja --task translate
    
 """
 
