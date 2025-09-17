@@ -1,1 +1,35 @@
 j'ai oublié qui est meillr entre v1 et v2 mais il me semble que c'est v1 a reverifier
+
+
+Faut toujours verifier que le pyhton ligne de commande et interpreteurevia vscode est le meme sinon tu changes
+
+PS C:\Users\babak\Documents\GitHub\Manipulation-video-sous_titre> py --list
+>>
+ -V:3.13 *        Python 3.13 (64-bit)
+ -V:3.11          Python 3.11 (64-bit)
+PS C:\Users\babak\Documents\GitHub\Manipulation-video-sous_titre> python --version
+>>
+Python 3.11.0
+
+
+Si interpreteurr c'est
+PS C:\Users\babak\Documents\GitHub\Manipulation-video-sous_titre\traduction_sub> python --version
+>> 
+Python 3.11.0
+
+Pour le changer fais:
+Dans Path (pour ton utilisateur ou global), mets le chemin vers Python 3.13 avant celui de Python 3.11.
+Exemple :
+
+C:\Users\babak\AppData\Local\Programs\Python\Python313\
+C:\Users\babak\AppData\Local\Programs\Python\Python313\Scripts\
+
+
+Redémarre le terminal et vérifie :
+
+python --version
+
+
+Ça devrait maintenant afficher Python 3.13.
+
+python.exe -m pip install --upgrade pip

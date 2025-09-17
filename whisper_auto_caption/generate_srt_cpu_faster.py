@@ -11,7 +11,7 @@ def format_timestamp(seconds: float) -> str:
     milliseconds = int((seconds - int(seconds)) * 1000)
     return f"{hours:02}:{minutes:02}:{int(seconds):02},{milliseconds:03}"
 
-def transcribe_with_progress(audio_path: str, model_size="medium", language="ja", task="transcribe"):
+def transcribe_with_progress(audio_path: str, model_size="medium", language=None, task="transcribe"):
     print(f"🚀 Chargement du modèle '{model_size}' optimisé AVX2...")
     model = WhisperModel(model_size, device="cpu", compute_type="int8")
     print("✅ Modèle chargé.")
@@ -26,6 +26,8 @@ def transcribe_with_progress(audio_path: str, model_size="medium", language="ja"
         task=task,
         beam_size=5,
     )
+    if language is None:
+        print(f"🌍 Langue détectée automatiquement : {info.language} (confiance {info.language_probability:.2f})")
 
     segments = list(segments_generator)
     total = len(segments)
@@ -50,7 +52,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Transcrire un fichier audio en SRT avec Faster-Whisper (AVX2 optimisé).")
     parser.add_argument("input_file", help="Chemin du fichier audio à transcrire")
     parser.add_argument("--model_size", default="medium", help="Taille du modèle : tiny, base, small, medium, large")
-    parser.add_argument("--language", default="ja", help="Langue de l'audio, ex: 'ja', 'fr', 'en', ou 'auto'")
+    parser.add_argument("--language", default=None, help="Langue de l'audio, ex: ('auto', 'fr', 'en', ou 'ja'). Laisse vide pour auto-détection")
     parser.add_argument("--task", default="transcribe", choices=["transcribe", "translate"], help="Tâche : transcrire ou traduire")
     args = parser.parse_args()
 
