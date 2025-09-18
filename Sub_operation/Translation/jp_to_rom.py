@@ -7,7 +7,7 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 # Fichiers
 input_file = "C:/Users/babak/Videos/PSO/PSO22.srt"
-output_file = "C:/Users/babak/Videos/PSO/PSO22_rom.srt"
+output_file = "C:/Users/babak/Videos/PSO/PSO22_align.srt"
 
 # Lire le SRT
 with open(input_file, "r", encoding="utf-8") as f:

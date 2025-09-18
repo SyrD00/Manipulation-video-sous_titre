@@ -1,3 +1,15 @@
+"""
+selctionne l'interpréteur python sur vscode(shift+ctrl+P)
+ensuite sur le terminal vscode tape:pip install openai pysrt ass
+*
+pip install openai==0.28
+
+pip install --upgrade openai
+
+
+code marche pas car j'ai pas un API payant chatgpt
+"""
+
 import os
 import time
 import openai

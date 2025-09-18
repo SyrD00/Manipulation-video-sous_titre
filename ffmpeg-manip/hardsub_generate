@@ -1,6 +1,6 @@
 #  va encoder une vidéo avec FFmpeg en utilisant le GPU AMD (h264_amf)
 
-#ouvre powershell->place toi dans le C:/Users/mamou/Videos/1/SL/ ensuite met le code
+#ouvre powershell->place toi dans le C:/Users/babak/Videos/1/SL/ ensuite met le code
 # Commande FFmpeg pour l'encodage avec des sous-titres ASS
 
 #si tu n'est pas dans le repertoire C:/Users/mamou/Videos/1/SL/SL8
