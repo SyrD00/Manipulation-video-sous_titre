@@ -1,0 +1,81 @@
+     https://montreal-forced-aligner.readthedocs.io/en/latest/installation.html
+     
+        Intaller Conda
+1. Download and install Miniconda from https://www.anaconda.com/download/success
+Je te conseille d'installer 
+    Anaconda Distribution
+        -Très gros package (3–4 Go).
+        -Installe Python + des centaines de librairies scientifiques (numpy, pandas, etc.) d’un coup.
+        -Idéal si tu veux un environnement prêt à l’emploi, mais lourd.
+
+    Miniconda
+
+        -Version légère (quelques centaines de Mo).
+        -Installe seulement Python + conda.
+        -Ensuite, tu ajoutes seulement les librairies dont tu as besoin.
+    Plus flexible et recommandé si tu n’as pas besoin de tout Anaconda.
+
+2. Ouvrir un terminal (Anaconda Prompt sous Windows)
+NB: Ne pas ajouter Anaconda/Miniconda au PATH lors de l’installation. 
+    Utiliser Anaconda Prompt pour éviter les conflits de version de Python.
+
+
+3.Utiler mamba plutotôt que conda (optionnel mais recommandé)
+    -Mamba est un remplaçant rapide de conda.
+    -Compatible avec tous les environnements Conda.
+    -Beaucoup + rapide pour créer, installer et mettre à jour des packages que conda classique.
+
+    Tu l’installes dans l’environnement base de Conda.
+       -conda activate base
+       -conda install -c conda-forge mamba
+      
+
+
+4..Installer MFA Aligner
+   -mamba create -n aligner -c conda-forge montreal-forced-aligner
+
+5.Mettre à jour Montreal Forced Aligner(MFA)
+    mamba update -c conda-forge montreal-forced-aligner kalpy "kaldi=*=cpu*"
+
+6.Installer SpeechBrain
+    CPU: conda install pytorch torchvision torchaudio cpuonly -c pytorch
+    GPU: conda install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvidia
+  
+        C'est quoi CPU et GPU?
+            CPU: Central Processing Unit (Processeur central)
+            GPU: Graphics Processing Unit (Processeur graphique)
+            -Le CPU est le cerveau principal de l’ordinateur, gérant les tâches 
+            générales.
+            -Le GPU est spécialisé dans le traitement parallèle, idéal pour les calculs
+            graphiques et les tâches intensives comme l’apprentissage automatique.
+                Pour les tâches d’apprentissage automatique, un GPU puissant peut accélérer
+                considérablement les calculs par rapport à un CPU seul.
+
+        Quand savoir si ton ordi peut utiliser ?
+            -Si tu as une carte graphique NVIDIA récente, tu peux utiliser le GPU.
+            -Sinon, tu peux toujours utiliser le CPU, mais ce sera plus lent pour les tâches lourdes.
+
+7.Dans le dossier dans lequel tu veux travailler:
+     a/ Créer un environnement local dans ton projet (passe par Anaconda Prompt)
+       mamba create -p ./env -c conda-forge montreal-forced-aligner
+
+        -p ./env → crée un dossier env dans MFA_aligner.
+    b/ Activer l’environnement local
+         conda activate ./env
+
+    A quoi ça sert?
+        -Tu peux avoir plusieurs environnements Conda sur ton ordi.
+        -Chaque environnement peut avoir des versions différentes de Python et des librairies.
+        -L’environnement local dans ton projet garantit que tu utilises les bonnes versions spécifiques
+         à ce projet.
+        -Tu évites les conflits entre projets.
+        
+
+
+
+LAngues dans MFA:
+    -french
+    -english
+    -spanish
+    -japanese
+    ...

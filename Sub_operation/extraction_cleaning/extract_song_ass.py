@@ -11,8 +11,8 @@ def extract_songs(input_path: str, output_path: str):
         subs = pysubs2.load(input_path, encoding="utf-8")
         
         # Définir les styles de chansons que nous voulons conserver
-        song_styles = {"Rom-Fight Might Me", "Eng Fight Might Me", "Eng Callisto", "Rom Callisto", "English Multi", "Romanji Multi"}
-        
+        song_styles = {"Rom Fight Might Me", "Eng Fight Might Me", "Eng Callisto", "Rom Callisto", "English Multi", "Romanji Multi"}
+       
         # Liste temporaire pour stocker les lignes de chansons filtrées
         filtered_lines = []
         
@@ -20,6 +20,7 @@ def extract_songs(input_path: str, output_path: str):
         used_style_names = set()
 
         # Filtrer les lignes et collecter les styles
+        
         for line in subs:
             # Critère unique et précis:
             if "♬" in line.text or line.style in song_styles:
@@ -53,7 +54,7 @@ def extract_songs(input_path: str, output_path: str):
 if __name__ == "__main__":
     # Définissez vos chemins de fichiers ici
     file_path = "C:/Users/babak/Videos/PSO/PSO22_rom.ass"  # Remplacez par le chemin de votre fichier ASS
-    output_file_path = "C:/Users/babak/Videos/PSO/PSO22_songs.ass"
+    output_file_path = "C:/Users/babak/Videos/PSO/PSO22_dial.ass"
     
     # Exécutez la fonction
     extract_songs(file_path, output_file_path)

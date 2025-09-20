@@ -1,0 +1,265 @@
+mfa align <OPTIONS> <CORPUS> <DICTIONARY_PATH> <ACOUSTIC_MODEL> <OUTPUT_DIRECTORY> [OPTIONS]
+
+| Argument             | Description                                                               |
+| -------------------- | ------------------------------------------------------------------------- |
+| `<CORPUS>`           | Dossier contenant les fichiers audio à aligner (WAV mono 16 kHz).         |
+| `<DICTIONARY_PATH>`  | Dictionnaire phonétique (ou dossier contenant des dictionnaires).         |
+| `<ACOUSTIC_MODEL>`   | Modèle acoustique pour la langue (english, french, japanese, etc.). |
+| `<OUTPUT_DIRECTORY>` | Dossier où MFA enregistrera les fichiers alignés (textgrid ).       |
+| `[OPTIONS]`          | Options facultatives : `--output_format srt` pour générer un SRT, etc.    |
+
+
+I/OPTIONS
+    A/Options de Configuration et de Fichier
+        --config_path : 
+            Utilisez un fichier YAML pour configurer des paramètres complexes.
+            fichier YAML? : Un fichier YAML est un format de fichier lisible par l'homme utilisé pour 
+            configurer des paramètres.
+            
+                mfa align -c my_config.yaml /chemin/vers/mon_corpus/ mon_dico_fr mon_modele_acoustique_fr /chemin/vers/mon_output/
+
+        --speaker_characters : 
+            Si vos fichiers sont nommés locuteur1_fichier.wav, locuteur2_fichier.wav,
+            vous pouvez dire à MFA d'utiliser les 9 premiers caractères pour identifier le locuteur.
+            Il utilise les noms de fichiers pour identifier les locuteurs afin de pouvoir adapter le
+             modèle acoustique à la voix de chaque personne.
+            L'adaptation du locuteur (speaker adaptation) est une technique où MFA ajuste légèrement le
+            modèle acoustique pour qu'il soit + précis pour la voix d'un locuteur particulier. 
+            Cela améliore considérablement la qualité de l'alignement.
+
+                Exemple 1:
+                    Si vos fichiers sont nommés comme ça : speaker01_sentence1.wav, speaker02_sentence2.wav
+                    Vous pouvez utiliser --speaker_characters 9 pour que MFA reconnaisse "speaker01" et "speaker02"
+                    comme des locuteurs distincts.
+
+                Exemple 2: avec --speaker_characters 9 :
+
+                    locuteur1_discoursA.wav,locuteur1_discoursB.wav,locuteur2_discoursC.wav,locuteur2_discoursD.wav
+                    MFA va identifier 2 groupes :
+                    Le groupe "locuteur1" (basé sur les 9 premiers caractères locuteur1_).
+                    Le groupe "locuteur2" (basé sur les 9 premiers caractères locuteur2_).
+
+                    Il va alors entraîner un modèle adapté pour "locuteur1" en utilisant tous ses fichiers
+                    d'entraînement (discoursA et discoursB), et un autre modèle adapté pour "locuteur2"
+                    en utilisant ses fichiers (discoursC et discoursD).
+
+                        mfa align --speaker_characters 9 /chemin/vers/mon_corpus/ ...
+
+        --audio_directory : 
+            Si vos fichiers audio sont dans un dossier séparé de vos transcriptions.
+            Par exemple, si vos fichiers audio sont dans /chemin/vers/audio/ et  vos transcriptions sont dans
+            /chemin/vers/transcriptions/, vous pouvez utiliser cette option pour spécifier le dossier
+            mfa align --audio_directory /chemin/vers/audio/ /chemin/vers/transcriptions/ mon_dico_fr ...
+
+        --output_format : Pour obtenir les résultats en format JSON plutôt que le .TextGrid par défaut.
+            Options
+                long_textgrid | short_textgrid | json | csv
+            mfa align --output_format json /chemin/vers/mon_corpus/ mon_dico_fr mon_modele_acoustique_fr /chemin/vers/mon_output/
+
+        --g2p_model_path : Si vous avez un modèle G2P personnalisé pour gérer les mots inconnus.
+         G2P? : G2P signifie "Grapheme-to-Phoneme". 
+                C'est un processus qui convertit les lettres (graphemes) d'un mot en sons (phonemes). 
+                Par exemple:
+                 -Le mot anglais "cat" est converti en phonemes /k/ /æ/ /t/.
+            Cela est particulièrement utile pour les mots qui ne sont pas dans le dictionnaire phonétique.
+
+                mfa align --g2p_model_path /chemin/vers/mon_modele_g2p.zip /chemin/vers/mon_corpus/ ...
+
+        --temporary_directory :
+         Pour changer l'emplacement des fichiers temporaires (utile pour des raisons d'espace disque).
+            mfa align -t /chemin/vers/dossier_temporaire/ /chemin/vers/mon_corpus/ ...
+
+        --num_jobs : Pour accélérer le processus en utilisant plus de cœurs de votre processeur.
+            mfa align -j 8 /chemin/vers/mon_corpus/ ...
+            Par défaut, MFA utilise 3 cœurs 
+
+            Informations système :
+                -Appuyez sur la touche Windows + R, puis tapez msinfo32 et appuyez sur Entrée.
+                -Dans la fenêtre Résumé système, cherchez Processeur. Le nombre de cœurs y est indiqué.
+                Par exemple, "Intel(R) Core(TM) i7-9700 CPU @ 3.00GHz, 8 Cœurs".
+                         	  Intel(R) Core(TM) i5-6300U CPU @ 2.40GHz, 2501 MHz, 2 cœur(s), 4 processeur(s) logique(s)
+                                -2 cœurs : Ce sont les cœurs physiques, les unités de traitement 
+                                réelles du processeur.
+
+                                -4 processeurs logiques : C'est le nombre de threads. Votre processeur 
+                                utilise la technologie Hyper-Threading, ce qui permet à chaque cœur 
+                                physique de gérer 2 threads. 
+                                Pour les applications gourmandes en ressources comme MFA, c'est le nombre de processeurs logiques qui importe.
+
+                                Pour tirer le meilleur parti de votre processeur avec MFA, vous devez définir l'option --num_jobs (ou -j) sur 4 dans votre ligne de commande.
+
+
+
+    B/Options de Nettoyage et de Sortie
+        --clean :
+            Pour s'assurer que le dossier de sortie est vidé avant de commencer l'alignement.
+                mfa align --clean /chemin/vers/mon_corpus/ mon_dico_fr mon_modele_acoustique_fr /chemin/vers/mon_output/
+
+        --final_clean :
+            Pour ne pas laisser de fichiers temporaires une fois le processus terminé.
+                mfa align --final_clean /chemin/vers/mon_corpus/ ...
+
+        --verbose : 
+            Pour afficher plus d'informations détaillées sur le déroulement de l'alignement.
+            Il est très utile pour diagnostiquer les problèmes si l'alignement échoue ou pour surveiller
+            la progression sur de grands corpus. 
+            Pour une utilisation de base, le mode par défaut est suffisant, mais si vous rencontrez des 
+            difficultés, --verbose est la première option à essayer.
+
+                mfa align -v /chemin/vers/mon_corpus/ ...
+            Par exemple:
+                1/Détails sur l'environnement et la configuration
+                    -Le chemin vers le corpus, le dictionnaire, et le modèle acoustique que MFA est en train 
+                    d'utiliser.
+
+                    -Les paramètres tels que le nombre de cœurs de processeur (num_jobs) utilisés.
+
+                    -Les chemins des dossiers temporaires et de sortie.
+
+                2/Statut du corpus :
+                    -Le nombre de fichiers audio et de transcriptions trouvés dans le corpus.
+                    -Les noms des locuteurs identifiés par MFA.
+                    -Un résumé des transcriptions : 
+                        le nombre de mots, le nombre de mots inconnus (Out-of-Vocabulary ou OOV) pour lesquels MFA a besoin d'une prédiction.
+
+                3/Progression de chaque étape :
+                    -Nettoyage : 
+                    Si vous utilisez --clean, MFA vous dira quels fichiers il est en train de supprimer.
+
+                    -Génération du dictionnaire : 
+                        MFA affichera la progression de la prédiction des prononciations pour les mots 
+                        inconnus. Vous verrez quels mots sont traités et combien de temps cela prend.
+
+                    -Acoustic Modeling (Modélisation acoustique) :
+                        Cette étape est la plus longue. MFA vous montrera la progression de chaque itération
+                        (l'étape d'entraînement).
+                        Vous verrez des informations comme la log-likelihood (une mesure de la qualité du modèle), ce qui est utile pour les experts.
+
+                    -Alignment (Alignement) : 
+                        La progression de l'alignement pour chaque fichier. Vous verrez les noms des fichiers
+                        audio au fur et à mesure qu'ils sont alignés.
+
+                4/Messages d'avertissement et d'erreur (plus précis) :
+                    -Si un fichier audio ne peut pas être lu, le mode verbose donnera plus de détails sur
+                     la raison de l'échec.
+
+                    -Si un mot n'est pas dans le dictionnaire et ne peut pas être prédit, MFA le signalera.
+ 
+        --quiet : Pour ne pas afficher d'informations du tout.
+            mfa align -q /chemin/vers/mon_corpus/ ...
+
+        --overwrite : Pour écraser les fichiers existants sans que MFA ne s'arrête.
+            mfa align --overwrite /chemin/vers/mon_corpus/ ...
+
+    C/Options de Performance
+        --fine_tune :
+         Pour une meilleure précision sur un corpus difficile.
+            -mfa align --fine_tune /chemin/vers/mon_corpus/ ...
+
+        --single_speaker : 
+            Si tout votre corpus provient du même locuteur.
+                mfa align --single_speaker /chemin/vers/mon_corpus/ ...
+
+    D/Options de Débogage et Post-traitement
+        --debug : Pour la résolution de problèmes.
+            mfa align -d /chemin/vers/mon_corpus/ ...
+
+        --textgrid_cleanup : 
+            Pour améliorer la lisibilité des .TextGrid en regroupant des mots ou en gérant les silences.
+            mfa align --textgrid_cleanup /chemin/vers/mon_corpus/ ...
+
+
+
+
+II/Corpus:
+    MFA fonctionne avec de nombreux types de fichiers audio et vidéo. 
+    Il utilise FFmpeg en arrière-plan pour gérer ces formats.
+
+        A/Fichiers audio
+            MFA est très robuste et peut gérer une grande variété de formats audio, incluant :
+
+               .wav (le format le plus recommandé),.mp3,.flac,.m4a,.aiff,.ogg
+
+        MFA convertira automatiquement ces fichiers en .wav (mono, 16 kHz) avant de les traiter.
+        Cette conversion se fait en mémoire, vous n'avez pas besoin de le faire manuellement,
+
+        B/Fichiers vidéo
+           MFA peut également traiter les fichiers vidéo si FFmpeg est correctement installé et accessible
+           sur votre système. MFA ne traite que la piste audio de la vidéo.
+
+              Formats vidéo supportés : .mp4,.mkv,.avi,.mov,.wmv
+
+III/Dictionnaire phonétique:
+    Le dictionnaire phonétique est crucial pour l'alignement. Il mappe les mots aux séquences de phonèmes.
+    Vous pouvez utiliser des dictionnaires préexistants ou en créer un personnalisé.
+
+        A/Dictionnaires préexistants
+            MFA fournit des dictionnaires(pré-entrainé) pour plusieurs langues courantes, incluant :
+                -Anglais : english (english.mfa)
+                -Français : french (french.mfa)
+                -Japonais : japanese (japanese.mfa)
+                -Espagnol : spanish (spanish.mfa)
+                       ...
+
+        B/Créer un dictionnaire personnalisé
+            Si votre corpus contient des mots non présents dans les dictionnaires fournis,
+            vous devrez créer un dictionnaire personnalisé.
+            Le format du dictionnaire est simple : chaque ligne contient un mot suivi de ses phonèmes,
+            séparés par des espaces.
+
+            Exemple :
+                hello HH AH0 L OW1
+                world W ER1 L D
+
+        C/Utiliser des outils pour générer des dictionnaires
+            Pour les langues comme l'anglais, vous pouvez utiliser des outils comme le CMU Pronouncing Dictionary.
+            Pour d'autres langues, vous pouvez utiliser des outils de text-to-phoneme (T2P) ou des services en ligne.
+
+IV/Modèles acoustiques:
+    MFA utilise des modèles acoustiques pour aligner les phonèmes aux segments audio.
+    phonèmes? : Les phonèmes sont les unités de son distinctes dans une langue.
+    Par exemple simple :
+        -Le mot "cat" en anglais est composé de trois phonèmes : /k/, /æ/, /t/.
+        -Le mot "chat" en français est composé de trois phonèmes : /ʃ/, /a/, /t/.
+        -Le mot "犬" (inu) en japonais est composé de trois phonèmes : /i/, /n/, /u/.
+        -Le mot "gato" en espagnol est composé de quatre phonèmes : /g/, /a/, /t/, /o/.
+
+    Vous devez spécifier le modèle acoustique correspondant à la langue de votre corpus.
+
+        A/Modèles préexistants
+            MFA fournit des modèles acoustiques pour plusieurs langues courantes, incluant :
+                -Anglais : english (english.mfa)
+                -Français : french (french.mfa)
+                -Japonais : japanese (japanese.mfa)
+                -Espagnol : spanish (spanish.mfa)
+                       ...
+
+        B/Créer un modèle acoustique personnalisé
+            Si vous travaillez avec une langue ou un dialecte non couvert par les modèles fournis,
+            vous pouvez entraîner votre propre modèle acoustique en utilisant vos données annotées.
+            Cela nécessite une quantité significative de données et une expertise en apprentissage automatique.
+
+
+Difference entre Dictionnaire et Modèle acoustique:
+    -Le dictionnaire phonétique mappe les mots aux phonèmes.
+        Par exemple : "cat" → /k æ t/
+    -Le modèle acoustique mappe les phonèmes aux caractéristiques audio.
+        Par exemple 1: /k/ → caractéristiques audio spécifiques du son "k"
+
+    -Les deux sont essentiels pour un alignement précis.
+
+V/ Répertoire de sortie:
+    Créez un dossier vide pour les résultats, par exemple C:/Users/babak/Videos/PSO/Episode/output_align/
+    MFA enregistrera les fichiers alignés dans ce dossier.
+        Attention:
+            -Le dossier de sortie doit être vide avant d'exécuter MFA.
+            Si le répertoire de sortie n'est pas vide, la commande mfa align affichera une erreur et
+            s'arrêtera. Cette exigence est une mesure de sécurité pour éviter que MFA n'écrase 
+            accidentellement des données existantes.
+
+                Si vous voulez réutiliser un répertoire qui contient des résultats d'une exécution précédente, vous avez 
+                2 options :
+
+                    1.Vider manuellement le répertoire avant de lancer la commande.
+
+                    2.Utiliser le drapeau --clean avec votre commande mfa align.

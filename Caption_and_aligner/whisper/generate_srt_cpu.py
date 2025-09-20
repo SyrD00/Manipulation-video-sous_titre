@@ -1,3 +1,38 @@
+"""
+
+UserWarning: FP16 is not supported on CPU; using FP32 instead
+
+
+vient de la librairie openai-whisper officielle
+
+whisper.load_model("large") essaye par défaut de charger le modèle en FP16 (16-bit flottant), ce qui n’est
+pas supporté sur CPU.
+
+Donc il bascule en FP32 (32-bit flottant) et te met juste un warning.
+
+Ça ne bloque rien → ta transcription se fait bien, mais c’est plus lent qu’en GPU.
+
+Ignorer l’avertissement (OK si tu restes en CPU)
+Tu n’as rien à changer, ça marchera toujours.
+C’est juste plus lent.
+
+    Solutions:
+Forcer directement le FP32 pour ne plus voir ce warning :
+
+model = whisper.load_model("large", device="cpu")
+
+
+ou bien
+
+model = whisper.load_model("large", device="cpu", fp16=False)
+
+
+→ Ça dit explicitement à Whisper : “je tourne en CPU, pas en FP16”.
+
+"""
+
+
+
 import whisper
 import os
 import sys

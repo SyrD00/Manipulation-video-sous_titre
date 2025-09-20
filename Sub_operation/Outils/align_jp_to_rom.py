@@ -14,8 +14,8 @@ import pysubs2
 # ========== Réglages ==========
 # Assurez-vous que ces chemins d'accès sont corrects
 JP_PATH = "C:/Users/babak/Videos/PSO/PSO22.srt"
-ROMANJI_PATH = "C:/Users/babak/Videos/PSO/PSO22_rom_sans_song.ass"
-OUT_PATH = "C:/Users/babak/Videos/PSO/PSO22_corrige.ass"
+ROMANJI_PATH = "C:/Users/babak/Videos/PSO/PSO22_dial.ass"
+OUT_PATH = "C:/Users/babak/Videos/PSO/PSO22_dial_jp.ass"
 
 INSERT_SPACES_BETWEEN_KATAKANA_WORDS = False
 VERBOSE = True
