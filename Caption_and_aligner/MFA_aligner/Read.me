@@ -1,4 +1,6 @@
      https://montreal-forced-aligner.readthedocs.io/en/latest/installation.html
+
+     https://github.com/MontrealCorpusTools/Montreal-Forced-Aligner/releases/tag/v3.3.4
      
         Intaller Conda
 1. Download and install Miniconda from https://www.anaconda.com/download/success
@@ -32,7 +34,8 @@ NB: Ne pas ajouter Anaconda/Miniconda au PATH lors de l’installation.
 
 
 4..Installer MFA Aligner
-   -mamba create -n aligner -c conda-forge montreal-forced-aligner
+   -mamba create -n aligner -c conda-forge montreal-forced-aligner # cree un environnement "aligner" avec MFA
+   -conda activate aligner # active l’environnement "aligner" où MFA est installé
 
 5.Mettre à jour Montreal Forced Aligner(MFA)
     mamba update -c conda-forge montreal-forced-aligner kalpy "kaldi=*=cpu*"
@@ -60,6 +63,16 @@ NB: Ne pas ajouter Anaconda/Miniconda au PATH lors de l’installation.
        mamba create -p ./env -c conda-forge montreal-forced-aligner
 
         -p ./env → crée un dossier env dans MFA_aligner.
+
+        conda env export > environment.yml # sauvegarde les dépendances dans environment.yml 
+             -Tu peux partager environment.yml avec d’autres personnes pour qu’elles puissent recréer le
+                même environnement.
+
+
+        Un fichier environment.yml est un fichier texte qui contient une liste de toutes les dépendances 
+        de votre projet, y compris les versions spécifiques des bibliothèques Python et du programme mfa.
+         Il sert de "recette" pour recréer l'environnement.
+
     b/ Activer l’environnement local
          conda activate ./env
 
@@ -79,3 +92,35 @@ LAngues dans MFA:
     -spanish
     -japanese
     ...
+
+8/Télécharger les modèles japonais(ou peut importe celui que tu veux)
+
+    Toujours depuis ton environnement activé ((env) devant ton prompt) :
+
+        mfa model download acoustic japanese_mfa
+        mfa model download dictionary japanese_mfa
+        mfa model download g2p japanese_mfa
+
+            ⚠️ Ces deux modèles sont nécessaires :
+
+            acoustic model = reconnaissance des sons de la langue
+
+            dictionary model = prononciations pour mapper texte → phonèmes
+
+
+            
+    Mais en plus, pour le japonais, MFA a besoin de segmenter correctement le texte avant l’alignement.
+    C’est là qu’intervient le tokenizer.
+        -Pour les langues comme l’anglais ou le français, tout est souvent inclus dans le modèle et le 
+        dictionnaire.
+
+        Pour le japonais, MFA ne peut pas segmenter le texte correctement sans les paquets Spacy + Sudachi.
+
+        Donc même si tu as téléchargé le dictionnaire et le modèle acoustique, tu dois installer :
+
+            conda install -c conda-forge spacy sudachipy sudachidict-core
+
+        Sinon, MFA ne peut pas lire le texte japonais et va lever cette erreur.
+    
+
+
