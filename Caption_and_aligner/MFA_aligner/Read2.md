@@ -344,20 +344,23 @@ Si tout se passe bien,un fichier .Textgrid sera créé dans le dossier output_al
     Cette fonction permet à MFA de deviner la prononciation des mots qui ne sont pas dans son dictionnaire.
 
     Étapes pour corriger l'alignement avec G2P
+
+
         🟢Générer un dictionnaire temporaire
+
+
             Vous allez demander à MFA de créer un nouveau fichier de dictionnaire qui inclura la
             prononciation des mots inconnus dans votre texte.
             Le MFA va analyser votre fichier texte (chibi_12half.txt) et, pour tous les mots qui ne
             figurent pas dans son dictionnaire par défaut (japanese_mfa), il va prédire leur prononciation en phonèmes et les ajouter à un nouveau fichier.
 
-    Ex:     mfa g2p C:/Users/babak/Videos/PSO/Episode/Txt/chibi_12half_cleaned.txt ^
+    Ex: **mfa g2p C:/Users/babak/Videos/PSO/Episode/Txt/chibi_12half_cleaned.txt ^
                     C:/Users/babak/Documents/MFA/pretrained_models/g2p/japanese_mfa.zip ^
-                    C:/Users/babak/Videos/PSO/Episode/custom_g2p_lexicon.txt
+                    C:/Users/babak/Videos/PSO/Episode/custom_g2p_lexicon.txt**
 
     🔴Comment fonctionne mfa g2p?
 
-
-                🔵Cas d'utilisation principaux
+    🔵Cas d'utilisation principaux
                     -Compléter un dictionnaire existant :
                         Vous pouvez lancer l'utilitaire de validation sur votre corpus pour identifier
                         tous les mots "hors-vocabulaire" (OOVs). Le MFA générera alors un fichier
@@ -392,8 +395,7 @@ Si tout se passe bien,un fichier .Textgrid sera créé dans le dossier output_al
                             Pourquoi l'utiliser :
                             Si vous manquez d'espace sur votre disque C ou si vous voulez utiliser un SSD pour accélérer le
                             processus.
-                                Exemple : mfa g2p -t D:\temp
-                    2. Pour optimiser la performance
+                                Exemple : mfa g2p -t D:\temp **2. Pour optimiser la performance**
                         -J, --num_jobs:
                             Définit le nombre de cœurs de processeur que le MFA utilisera.Par défaut= 3.
                             Pourquoi l'utiliser : Pour accélérer le processus. L'augmentation du nombre de cœurs permet de diviser le travail et d'obtenir des résultats plus rapidement.
@@ -418,7 +420,7 @@ Si tout se passe bien,un fichier .Textgrid sera créé dans le dossier output_al
 
     Ex: mfa g2p --single_speaker ...
 
-    3. Pour gérer les fichiers et les erreurs
+    **3. Pour gérer les fichiers et les erreurs**
                         --clean: Supprime les fichiers temporaires des exécutions précédentes.
                             Pourquoi l'utiliser :
                             Pour éviter les erreurs de type FileExistsError
@@ -441,7 +443,7 @@ Si tout se passe bien,un fichier .Textgrid sera créé dans le dossier output_al
                             personnalisé à chaque fois que vous relancez la génération.
                                 Exemple : mfa g2p --overwrite
 
-    4. Pour la précision et les mots inconnus
+    **4. Pour la précision et les mots inconnus**
                         -n, --num_pronunciations:
                             Permet de générer plusieurs prononciations alternatives pour un seul mot.
                             Pourquoi l'utiliser :
@@ -466,7 +468,7 @@ Si tout se passe bien,un fichier .Textgrid sera créé dans le dossier output_al
                         que vous voulez aligner, et non des bruits de fond.
                             Exemple : mfa g2p --include_bracketed
 
-    5. Options pour le débogage et le diagnostic
+ **5. Options pour le débogage et le diagnostic**
 
     -v, --verbose :
                             Active les messages de débogage pour avoir plus d'informations sur ce que le
@@ -488,16 +490,16 @@ Si tout se passe bien,un fichier .Textgrid sera créé dans le dossier output_al
                 -G2P_MODEL_PATH : Le chemin vers le modèle G2P que vous avez téléchargé (voir 8.)
                 -OUTPUT_PATH : Le chemin où le dictionnaire de prononciation sera sauvegardé
 
-    🟢Lancer l'alignement avec le nouveau dictionnaire
+    🟢**Lancer l'alignement avec le nouveau dictionnaire**
             Une fois que le dictionnaire est généré, vous pouvez relancer votre commande d'alignement.
             Cette fois, vous y ajoutez l'option --custom_dictionary pour que MFA utilise le fichier que
             vous venez de créer(custom_g2p_lexicon)
 
-    mfa align C:/Users/babak/Videos/PSO/Episode/temp/ ^
+    **mfa align C:/Users/babak/Videos/PSO/Episode/temp/ ^
                 C:/Users/babak/Videos/PSO/Episode/custom_g2p_lexicon.txt ^
                 japanese_mfa ^
                 C:/Users/babak/Videos/PSO/Episode/output_align/ ^
-                --beam 40 --clean
+                --beam 40 --clean**
 
     Si tu as l'erreur:(Prochaine fois ajoute -clean)
                         FileExistsError: [WinError 183] Impossible de créer un fichier déjà existant:

@@ -1,5 +1,3 @@
-
-
 https://github.com/m-bain/whisperX
 
 J'ai sur mon ordi 3.13 et 3.11 et comme je pexu pas utilsier le 3.11,je prends  3.11*py --list
@@ -12,7 +10,7 @@ py -3.11 -m venv whisperx_env: Cette commande indique au Lanceur Python (`py`) d
 
 **Activez l'environnement** : .\whisperx\Scripts\activate ou  source whisperx/bin/activate (Linux)
 
-**Desactiver l'environnement** : .\whisperx\Scripts\deactivate
+**Desactiver l'environnement** : deactivate
 
 NB:
 
