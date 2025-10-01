@@ -515,6 +515,8 @@ lance mon script clean_txt.py pour nettoyer le txt,ca evitera les unk
 
 **NB/**
 
+Astuce:Toujours supprimer instrumental et laisser voix =>plus pprecision
+
 Si l'audio est long(genre 24 min) faut diviser le travail si tu fais comme la commande precedente,la commande ne finira jamais l'alignement
 
 Pour resoudre cela,rentre dans capcut,génére le sub ensuite effectue manuellement la division video
