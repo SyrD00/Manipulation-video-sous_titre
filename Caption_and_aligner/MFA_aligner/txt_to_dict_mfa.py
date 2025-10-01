@@ -15,6 +15,8 @@ Ensuite activer l'environnement mfa_dict_jp (Anaconda Prompt)
     mamba activate mfa_dict_jp
         Ce script convertit une transcription brute en un dictionnaire au format MFA pour le japonais.
 
+            si tu veux supprimer : mamba env remove -n mfa_dict_jp
+
         
 """
 import fugashi

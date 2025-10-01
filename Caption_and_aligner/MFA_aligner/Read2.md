@@ -1,5 +1,9 @@
     https://montreal-forced-aligner.readthedocs.io/en/v3.1.3/user_guide/workflows/alignment.html#pretrained-alignment
 
+https://lingmethodshub.github.io/content/tools/mfa/mfa-tutorial/
+
+https://github.com/MontrealCorpusTools/Montreal-Forced-Aligner
+
 On active l'environment :
     conda activate aligner
 Important pour pouvoir utiliser mfa dans le terminal sinon faut toujours mettre le chemin complet
@@ -89,7 +93,7 @@ I/OPTIONS
 
     --num_jobs : Pour accélérer le processus en utilisant plus de cœurs de votre processeur.
             mfa align -j 8 /chemin/vers/mon_corpus/ ...
-            Par défaut, MFA utilise 3 cœurs
+            Par défaut, MFA utilise 3 cœurs mais si 1 audio il utilise 1 coeur
 
     Informations système :
                 -Appuyez sur la touche Windows + R, puis tapez msinfo32 et appuyez sur Entrée.
@@ -345,18 +349,22 @@ Si tout se passe bien,un fichier .Textgrid sera créé dans le dossier output_al
 
     Étapes pour corriger l'alignement avec G2P
 
+    🟢Générer un dictionnaire temporaire
 
-        🟢Générer un dictionnaire temporaire
-
-
-            Vous allez demander à MFA de créer un nouveau fichier de dictionnaire qui inclura la
+    Vous allez demander à MFA de créer un nouveau fichier de dictionnaire qui inclura la
             prononciation des mots inconnus dans votre texte.
             Le MFA va analyser votre fichier texte (chibi_12half.txt) et, pour tous les mots qui ne
             figurent pas dans son dictionnaire par défaut (japanese_mfa), il va prédire leur prononciation en phonèmes et les ajouter à un nouveau fichier.
 
-    Ex: **mfa g2p C:/Users/babak/Videos/PSO/Episode/Txt/chibi_12half_cleaned.txt ^
+tu prend txt de capcut=>tu execute le script clean_txt_capcut pou avoir un txt propre
+
+    Ex:
+
+**mfa g2p -j 4 --single_speaker C:/Users/babak/Videos/PSO/Episode/Txt/chibi_12half_cleaned.txt ^
                     C:/Users/babak/Documents/MFA/pretrained_models/g2p/japanese_mfa.zip ^
                     C:/Users/babak/Videos/PSO/Episode/custom_g2p_lexicon.txt**
+
+copie colle sur bloc note puis copie colle vers anaconda prompt
 
     🔴Comment fonctionne mfa g2p?
 
@@ -395,7 +403,7 @@ Si tout se passe bien,un fichier .Textgrid sera créé dans le dossier output_al
                             Pourquoi l'utiliser :
                             Si vous manquez d'espace sur votre disque C ou si vous voulez utiliser un SSD pour accélérer le
                             processus.
-                                Exemple : mfa g2p -t D:\temp **2. Pour optimiser la performance**
+                                Exemple : mfa g2p -t D:\temp**2. Pour optimiser la performance**
                         -J, --num_jobs:
                             Définit le nombre de cœurs de processeur que le MFA utilisera.Par défaut= 3.
                             Pourquoi l'utiliser : Pour accélérer le processus. L'augmentation du nombre de cœurs permet de diviser le travail et d'obtenir des résultats plus rapidement.
@@ -495,11 +503,125 @@ Si tout se passe bien,un fichier .Textgrid sera créé dans le dossier output_al
             Cette fois, vous y ajoutez l'option --custom_dictionary pour que MFA utilise le fichier que
             vous venez de créer(custom_g2p_lexicon)
 
+temp doit contenir le txt nettoyé et l'audio(doivent avoir meme nom)
+
+lance mon script clean_txt.py pour nettoyer le txt,ca evitera les unk
+
     **mfa align C:/Users/babak/Videos/PSO/Episode/temp/ ^
                 C:/Users/babak/Videos/PSO/Episode/custom_g2p_lexicon.txt ^
                 japanese_mfa ^
                 C:/Users/babak/Videos/PSO/Episode/output_align/ ^
                 --beam 40 --clean**
+
+**NB/**
+
+Si l'audio est long(genre 24 min) faut diviser le travail si tu fais comme la commande precedente,la commande ne finira jamais l'alignement
+
+Pour resoudre cela,rentre dans capcut,génére le sub ensuite effectue manuellement la division video
+
+Ensuite,exécute mon code **extract_segments_sub.py qui** se trouve dans **C:\Users\babak\Documents\GitHub\Manipulation-video-sous_titre\Caption_and_aligner\Capcut**
+
+Supposons que le dossier de sortie des txt soit **C:\Users\babak\Videos\PSO\Episode\Split_txt_aud\PSO23**
+
+Utilise le fichier **cut_info_to_llc.py** pour te donner le fichier llc (marquer division que t'avais fait dans capcut) et utilise le pour diviser ta video
+
+Ensuite pour **eviter d'avoir des unk apres l'alignement,lance le script **clean_txt.py** dnas le repertoire **C:\Users\babak\Documents\GitHub\Manipulation-video-sous_titre\Caption_and_aligner\MFA_aligner**
+
+Converti les videos en mp3 et met tuout dans le dossier **C:\Users\babak\Videos\PSO\Episode\Split_txt_aud\PSO23**
+
+Ensuite lance l'alignement:
+
+**mfa align -j 4 C:/Users/babak/Videos/PSO/Episode/Split_txt_aud/PSO23/ ^
+                C:/Users/babak/Videos/PSO/Episode/custom_g3p_lexicon.txt ^
+                japanese_mfa ^
+                C:/Users/babak/Videos/PSO/Episode/output_align/ ^
+                --beam 150 --single_speaker**
+
+copie colle sur bloc note puis sur anaconda prompt
+
+## Pourquoi `--single_speaker` augmente la vitesse
+
+Le flag `--single_speaker` ne fait qu'une chose cruciale : il dit à MFA : **"Ignore le fait qu'il y a un seul locuteur, et divise les fichiers entre les cœurs de toute façon."**
+
+| Sans `--single_speaker`                                                                                                   | Avec `--single_speaker`                                                   |
+| --------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| MFA détecte :1 locuteur pour 13 fichiers.                                                                                  | MFA détecte :1 locuteur, 13 fichiers.                                      |
+| **Log :** `WARNING Number of jobs was specified as 4, but due to only having 1 speakers, MFA will only use 1 jobs.` | Log :Le `WARNING `disparaît.                                             |
+| **Résultat :**MFA n'utilise qu'**1 cœur** .                                                                         | **Résultat :**MFA utilise les**4 cœurs**demandés (`-j 4`). |
+
+C'est pour cela que le temps a chuté : vous êtes passé d'une exécution séquentielle (1 cœur) à une exécution parallèle (4 cœurs).
+
+| Étape                   | Sans --single_speaker (1 cœur) | Avec --single_speaker (4 cœurs) | Gain de temps    |
+| ------------------------ | ------------------------------- | -------------------------------- | ---------------- |
+| Total (Temps réel)      | 674,8 secondes (11 min 15 s)    | 434,9 secondes (7 min 15 s)      | ~35% plus rapide |
+| Génération MFCC        | 21 secondes                     | 12 secondes                      | ~43% plus rapide |
+| Génération Alignements | 631 secondes (10 min 31 s)      | 378 secondes (6 min 18 s)        | ~40% plus rapide |
+
+(aligner) C:\Users\babak\Documents\GitHub\Manipulation-video-sous_titre\Caption_and_aligner\MFA_aligner>mfa align -j 4 C:/Users/babak/Videos/PSO/Episode/Split_txt_aud/PSO23/ ^
+Plus ?                 C:/Users/babak/Videos/PSO/Episode/custom_g3p_lexicon.txt ^
+Plus ?                 japanese_mfa ^
+Plus ?                 C:/Users/babak/Videos/PSO/Episode/output_align/ ^
+Plus ?                 --beam 150
+ INFO     Setting up corpus information...
+ INFO     Loading corpus from source files...
+  13% --------- ---------------------------------------------------------------- 13/100  [ 0:00:02 < -:--:-- , ? it/s ]
+ INFO     Found 1 speaker across 13 files, average number of utterances per speaker: 13.0
+ INFO     Initializing multiprocessing jobs...
+ **WARNING  Number of jobs was specified as 4, but due to only having 1 speakers, MFA will only use 1 jobs. Use the
+          --single_speaker flag if you would like to split utterances across jobs regardless of their speaker.**
+ INFO     Normalizing text...
+ 100% --------------------------------------------------------------------------- 13/13  [ 0:00:01 < 0:00:00 , ? it/s ]
+ INFO     Generating MFCCs...
+ 100% --------------------------------------------------------------------------- 13/13  [ 0:00:21 < 0:00:00 , 1 it/s ]
+ INFO     Calculating CMVN...
+ INFO     Generating final features...
+ 100% --------------------------------------------------------------------------- 13/13  [ 0:00:01 < 0:00:00 , ? it/s ]
+ INFO     Creating corpus split...
+ 100% --------------------------------------------------------------------------- 13/13  [ 0:00:01 < 0:00:00 , ? it/s ]
+ INFO     Compiling training graphs...
+ INFO     Performing first-pass alignment...
+ INFO     Generating alignments...
+ 100% --------------------------------------------------------------------------- 13/13  [ 0:10:31 < 0:00:00 , ? it/s ]
+ INFO     Collecting phone and word alignments from alignment lattices...
+ 100% --------------------------------------------------------------------------- 13/13  [ 0:00:01 < 0:00:00 , ? it/s ]
+ INFO     Analyzing alignment quality...
+ 100% --------------------------------------------------------------------------- 13/13  [ 0:00:04 < 0:00:00 , ? it/s ]
+ INFO     Exporting alignment TextGrids to C:\Users\babak\Videos\PSO\Episode\output_align...
+ 100% ------------------------------------------------------------------------- 13/13  [ 0:00:00 < 0:00:00 , 143 it/s ]
+ INFO     Finished exporting TextGrids to C:\Users\babak\Videos\PSO\Episode\output_align!
+ **INFO     Done! Everything took 674.808 seconds**
+
+(aligner) C:\Users\babak\Documents\GitHub\Manipulation-video-sous_titre\Caption_and_aligner\MFA_aligner>mfa align -j 4 C:/Users/babak/Videos/PSO/Episode/Split_txt_aud/PSO23/ ^
+Plus ?                 C:/Users/babak/Videos/PSO/Episode/custom_g3p_lexicon.txt ^
+Plus ?                 japanese_mfa ^
+Plus ?                 C:/Users/babak/Videos/PSO/Episode/output_align/ ^
+Plus ?                 --beam 150 --single_speaker
+ INFO     Setting up corpus information...
+ INFO     Loading corpus from source files...
+  13% --------- ---------------------------------------------------------------- 13/100  [ 0:00:02 < -:--:-- , ? it/s ]
+ INFO     Found 1 speaker across 13 files, average number of utterances per speaker: 13.0
+ INFO     Initializing multiprocessing jobs...
+ INFO     Normalizing text...
+ 100% --------------------------------------------------------------------------- 13/13  [ 0:00:01 < 0:00:00 , ? it/s ]
+ INFO     Generating MFCCs...
+ 100% --------------------------------------------------------------------------- 13/13  [ 0:00:12 < 0:00:00 , 2 it/s ]
+ INFO     Calculating CMVN...
+ INFO     Generating final features...
+ 100% --------------------------------------------------------------------------- 13/13  [ 0:00:01 < 0:00:00 , ? it/s ]
+ INFO     Creating corpus split...
+ 100% --------------------------------------------------------------------------- 13/13  [ 0:00:01 < 0:00:00 , ? it/s ]
+ INFO     Compiling training graphs...
+ INFO     Performing first-pass alignment...
+ INFO     Generating alignments...
+ 100% --------------------------------------------------------------------------- 13/13  [ 0:06:18 < 0:00:00 , 0 it/s ]
+ INFO     Collecting phone and word alignments from alignment lattices...
+ 100% --------------------------------------------------------------------------- 13/13  [ 0:00:01 < 0:00:00 , ? it/s ]
+ INFO     Analyzing alignment quality...
+ 100% --------------------------------------------------------------------------- 13/13  [ 0:00:02 < 0:00:00 , ? it/s ]
+ INFO     Exporting alignment TextGrids to C:\Users\babak\Videos\PSO\Episode\output_align...
+ 100% --------------------------------------------------------------------------- 13/13  [ 0:00:26 < 0:00:00 , 4 it/s ]
+ INFO     Finished exporting TextGrids to C:\Users\babak\Videos\PSO\Episode\output_align!
+ **INFO     Done! Everything took 434.960 seconds**
 
     Si tu as l'erreur:(Prochaine fois ajoute -clean)
                         FileExistsError: [WinError 183] Impossible de créer un fichier déjà existant:
