@@ -1,0 +1,414 @@
+{
+	Tools = ordered() {
+		MacroTool12 = MacroOperator {
+			Inputs = ordered() {
+				Input1 = InstanceInput {
+					SourceOp = "MacroTool11",
+					Source = "Input1",
+				},
+				Input2 = InstanceInput {
+					SourceOp = "MacroTool11",
+					Source = "Input2",
+					ControlGroup = 2,
+				},
+				Input3 = InstanceInput {
+					SourceOp = "MacroTool11",
+					Source = "Input3",
+					ControlGroup = 2,
+				},
+				Input4 = InstanceInput {
+					SourceOp = "MacroTool11",
+					Source = "Input4",
+					ControlGroup = 3,
+					Default = 1,
+				},
+				Input5 = InstanceInput {
+					SourceOp = "MacroTool11",
+					Source = "Input5",
+					Default = 0.04,
+				},
+				Input6 = InstanceInput {
+					SourceOp = "MacroTool11",
+					Source = "Input6",
+					Default = -25.5,
+				},
+				Input7 = InstanceInput {
+					SourceOp = "MacroTool11",
+					Source = "Input7",
+					Default = -0.03,
+				},
+				Input8 = InstanceInput {
+					SourceOp = "MacroTool11",
+					Source = "Input8",
+					Default = 0,
+				},
+				Input9 = InstanceInput {
+					SourceOp = "MacroTool11",
+					Source = "Input9",
+					Default = 1,
+				},
+				Input10 = InstanceInput {
+					SourceOp = "MacroTool11",
+					Source = "Input10",
+					Default = 0.1,
+				},
+				Input11 = InstanceInput {
+					SourceOp = "MacroTool11",
+					Source = "Input11",
+					Default = 1,
+				},
+				Input12 = InstanceInput {
+					SourceOp = "MacroTool11",
+					Source = "Input12",
+					Default = 0,
+				},
+				Input13 = InstanceInput {
+					SourceOp = "MacroTool11",
+					Source = "Input13",
+					Default = 0,
+				},
+				Input14 = InstanceInput {
+					SourceOp = "MacroTool11",
+					Source = "Input14",
+					ControlGroup = 13,
+					Default = 1,
+				},
+				Input15 = InstanceInput {
+					SourceOp = "MacroTool11",
+					Source = "Input15",
+					ControlGroup = 13,
+					Default = 0.1176470588235,
+				},
+				Input16 = InstanceInput {
+					SourceOp = "MacroTool11",
+					Source = "Input16",
+					ControlGroup = 13,
+					Default = 0.0549019607843,
+				},
+				Input17 = InstanceInput {
+					SourceOp = "MacroTool11",
+					Source = "Input17",
+					ControlGroup = 13,
+					Default = 1,
+				}
+			},
+			Outputs = {
+				MainOutput1 = InstanceOutput {
+					SourceOp = "MacroTool11",
+					Source = "MainOutput1",
+				}
+			},
+			ViewInfo = GroupInfo { Pos = { 0, 0 } },
+			Tools = ordered() {
+				MacroTool11 = MacroOperator {
+					CtrlWZoom = false,
+					CustomData = {
+						Path = {
+							Map = {
+								["Setting:"] = "Templates:\\Edit\\Titles\\Dégradé\\"
+							}
+						},
+					},
+					Inputs = ordered() {
+						Input1 = InstanceInput {
+							SourceOp = "MacroTool1",
+							Source = "Input1",
+						},
+						Input2 = InstanceInput {
+							SourceOp = "MacroTool1",
+							Source = "Input2",
+							ControlGroup = 2,
+						},
+						Input3 = InstanceInput {
+							SourceOp = "MacroTool1",
+							Source = "Input3",
+							ControlGroup = 2,
+						},
+						Input4 = InstanceInput {
+							SourceOp = "MacroTool1",
+							Source = "Input4",
+							ControlGroup = 3,
+							Default = 1,
+						},
+						Input5 = InstanceInput {
+							SourceOp = "MacroTool1",
+							Source = "Input5",
+							Default = 0.04,
+						},
+						Input6 = InstanceInput {
+							SourceOp = "MacroTool1",
+							Source = "Input6",
+							Default = 26,
+						},
+						Input7 = InstanceInput {
+							SourceOp = "MacroTool1",
+							Source = "Input7",
+							Default = 2.67,
+						},
+						Input8 = InstanceInput {
+							SourceOp = "MacroTool1",
+							Source = "Input8",
+							Default = 0,
+						},
+						Input9 = InstanceInput {
+							SourceOp = "MacroTool1",
+							Source = "Input9",
+							Default = 1,
+						},
+						Input10 = InstanceInput {
+							SourceOp = "MacroTool1",
+							Source = "Input10",
+							Default = 0.1,
+						},
+						Input11 = InstanceInput {
+							SourceOp = "MacroTool1",
+							Source = "Input11",
+							Default = 1,
+						},
+						Input12 = InstanceInput {
+							SourceOp = "MacroTool1",
+							Source = "Input12",
+							Default = 0,
+						},
+						Input13 = InstanceInput {
+							SourceOp = "MacroTool1",
+							Source = "Input13",
+							Default = 0,
+						},
+						Input14 = InstanceInput {
+							SourceOp = "MacroTool1",
+							Source = "Input14",
+							ControlGroup = 13,
+							Default = 1,
+						},
+						Input15 = InstanceInput {
+							SourceOp = "MacroTool1",
+							Source = "Input15",
+							ControlGroup = 13,
+							Default = 0.1176470588235,
+						},
+						Input16 = InstanceInput {
+							SourceOp = "MacroTool1",
+							Source = "Input16",
+							ControlGroup = 13,
+							Default = 0.0549019607843,
+						},
+						Input17 = InstanceInput {
+							SourceOp = "MacroTool1",
+							Source = "Input17",
+							ControlGroup = 13,
+							Default = 1,
+						}
+					},
+					Outputs = {
+						MainOutput1 = InstanceOutput {
+							SourceOp = "MacroTool1",
+							Source = "MainOutput1",
+						}
+					},
+					ViewInfo = GroupInfo { Pos = { 220, 49.5 } },
+					Tools = ordered() {
+						MacroTool1 = MacroOperator {
+							CtrlWZoom = false,
+							CtrlWShown = false,
+							CustomData = {
+								Path = {
+									Map = {
+										["Setting:"] = "Templates:\\Edit\\Titles\\Dégradé\\"
+									}
+								},
+							},
+							Inputs = ordered() {
+								Input1 = InstanceInput {
+									SourceOp = "Template",
+									Source = "StyledText",
+								},
+								Input2 = InstanceInput {
+									SourceOp = "Template",
+									Source = "Font",
+									ControlGroup = 2,
+								},
+								Input3 = InstanceInput {
+									SourceOp = "Template",
+									Source = "Style",
+									ControlGroup = 2,
+								},
+								Input4 = InstanceInput {
+									SourceOp = "Template",
+									Source = "Red1Clone",
+									Name = "Couleur",
+									ControlGroup = 3,
+									Default = 1,
+								},
+								Input5 = InstanceInput {
+									SourceOp = "Template",
+									Source = "Size",
+									Default = 0.04,
+								},
+								Input6 = InstanceInput {
+									SourceOp = "Template",
+									Source = "VerticalTopCenterBottom",
+									Default = -25.5,
+								},
+								Input7 = InstanceInput {
+									SourceOp = "Template",
+									Source = "HorizontalLeftCenterRight",
+									Default = -0.03,
+								},
+								Input8 = InstanceInput {
+									SourceOp = "Template",
+									Source = "Overlap2",
+									Name = "Fusion",
+									Default = 0,
+								},
+								Input9 = InstanceInput {
+									SourceOp = "Template",
+									Source = "ElementShape2",
+									Name = "Aspect",
+									Default = 1,
+								},
+								Input10 = InstanceInput {
+									SourceOp = "Template",
+									Source = "Thickness2",
+									Name = "Épaisseur",
+									Default = 0.1,
+								},
+								Input11 = InstanceInput {
+									SourceOp = "Template",
+									Source = "JoinStyle2",
+									Name = "Style join",
+									Default = 1,
+								},
+								Input12 = InstanceInput {
+									SourceOp = "Template",
+									Source = "LineStyle2",
+									Name = "Style Ligne",
+									Default = 0,
+								},
+								Input13 = InstanceInput {
+									SourceOp = "Template",
+									Source = "Type2",
+									Name = "Type",
+									Default = 2,
+								},
+								Input14 = InstanceInput {
+									SourceOp = "Template",
+									Source = "Red2",
+									Name = "Couleur",
+									ControlGroup = 13,
+									Default = 0,
+								},
+								Input15 = InstanceInput {
+									SourceOp = "Template",
+									Source = "Green2",
+									ControlGroup = 13,
+									Default = 0,
+								},
+								Input16 = InstanceInput {
+									SourceOp = "Template",
+									Source = "Blue2",
+									ControlGroup = 13,
+									Default = 0,
+								},
+								Input17 = InstanceInput {
+									SourceOp = "Template",
+									Source = "Alpha2",
+									ControlGroup = 13,
+									Default = 1,
+								},
+								Input18 = InstanceInput {
+									SourceOp = "Template",
+									Source = "ImageSource2",
+									Name = "Image source",
+									Default = 0,
+								},
+								Input19 = InstanceInput {
+									SourceOp = "Template",
+									Source = "ColorImage2",
+									Name = "Image Couleur",
+								},
+								Input20 = InstanceInput {
+									SourceOp = "Template",
+									Source = "ColorFile2",
+									Name = "Fichier Couleur",
+									DefaultText = "",
+								},
+								Input21 = InstanceInput {
+									SourceOp = "Template",
+									Source = "ColorBrush2",
+									Name = "Pinceau Couleur",
+									Default = 0,
+								},
+								Input22 = InstanceInput {
+									SourceOp = "Template",
+									Source = "ShadingGradient2",
+									Name = "Ombre dégradée ",
+								},
+								Input23 = InstanceInput {
+									SourceOp = "Template",
+									Source = "ImageShadingSampling2",
+									Name = "Échantillonnage de l’image",
+									Default = 1,
+								},
+								Input24 = InstanceInput {
+									SourceOp = "Template",
+									Source = "ImageShadingEdges2",
+									Name = "Bords Image",
+									Default = 1,
+								}
+							},
+							Outputs = {
+								MainOutput1 = InstanceOutput {
+									SourceOp = "Template",
+									Source = "Output",
+								}
+							},
+							ViewInfo = GroupInfo { Pos = { 0, 8.75758 } },
+							Tools = ordered() {
+								Template = TextPlus {
+									CtrlWZoom = false,
+									CtrlWShown = false,
+									Inputs = {
+										Width = Input { Value = 1920, },
+										Height = Input { Value = 1080, },
+										UseFrameFormatSettings = Input { Value = 1, },
+										SelectElement = Input { Value = 1, },
+										Select = Input { Value = 1, },
+										Enabled2 = Input { Value = 1, },
+										Overlap1 = Input { Value = 0, },
+										Position1 = Input { Value = 0, },
+										StyledText = Input { Value = "♬ Kanpeki na senritsu de ♬  ", },
+										Font = Input { Value = "Meiryo UI", },
+										Style = Input { Value = "Bold", },
+										Size = Input { Value = 0.04, },
+										VerticalTopCenterBottom = Input { Value = -25.5, },
+										VerticalJustificationNew = Input { Value = 3, },
+										HorizontalLeftCenterRight = Input { Value = -0.03, },
+										HorizontalJustificationNew = Input { Value = 3, },
+										Overlap2 = Input { Value = 0, },
+										Thickness2 = Input { Value = 0.1, },
+										Green2 = Input { Value = 0.1176470588235, },
+										Blue2 = Input { Value = 0.0549019607843, },
+										ShadingGradient2 = Input {
+											Value = Gradient {
+												Colors = {
+													[0.164179104477612] = { 0.666666666666667, 0.333333333333333, 1, 1 },
+													[0.3233830845771] = { 0, 1, 0.4980392156863, 1 },
+													[0.512437810945274] = { 0, 0.826086956521739, 0.58533674339303, 1 },
+													[0.771144278606965] = { 0, 0, 1, 1 }
+												}
+											},
+										},
+										Position2 = Input { Value = 0, }
+									},
+									ViewInfo = OperatorInfo { Pos = { 0, 8.75758 } },
+								}
+							},
+						}
+					},
+				}
+			},
+		}
+	},
+	ActiveTool = "MacroTool12"
+}

@@ -42,10 +42,11 @@ def extract_multiple_styles(input_path: str, output_path: str, target_styles: li
         print(f"Une erreur est survenue : {e}")
 
 if __name__ == "__main__":
-    file_path = "C:/Users/babak/Videos/PSO/PSO22_rom.ass"
-    output_file_path = "C:/Users/babak/Videos/PSO/PSO22_dial.ass"
+    file_path = "C:/Users/babak/Videos/PSO/Episode/Video/Eng/seg10.ass"
+    output_file_path = "C:/Users/babak/Videos/PSO/Episode/Video/Eng/seg10_multicolor.ass"
+    
     
     # Définissez une liste de styles à extraire
-    styles_to_extract = ["dialog during song"]
+    styles_to_extract = ["Rom Multi","Eng Multi","Rom Super Higher","Eng Super Higher"] 
     
     extract_multiple_styles(file_path, output_file_path, styles_to_extract)
