@@ -1,12 +1,18 @@
 import re
 import os
 
+
+
+'''
+Ouvre le fichier _HHMMSSFF.srt avec bloc note tu verras bien le format HH:MM:SS:FF
+Si tu l'ouvres avec un logiciel de sous-titre, il mettra automatiquement HH:MM:SS,ms
+'''
 # ==============================
 # ⚙️ CONFIGURATION UTILISATEUR
 # ==============================
 
 # ➜ Indique ici le chemin complet de ton fichier .srt ou .ass :
-input_path = "C:/Users/babak/Videos/PSO/Episode/Video/Eng/seg10_multicolor.ass"
+input_path = "C:/Users/babak/Videos/PSO/Episode/1002.srt"
 
 # ➜ Indique ici le nombre d'images par seconde :
 fps = 30

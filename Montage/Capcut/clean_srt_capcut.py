@@ -165,10 +165,10 @@ if __name__ == "__main__":
     # --- Modifiez ces chemins ---
     
     # Le chemin vers le fichier SRT d'origine (celui de CapCut)
-    INPUT_SRT_FILE = "C:/Users/babak/Videos/PSO/Episode/1002.srt"
+    INPUT_SRT_FILE = "C:/Users/babak/Videos/PSO/Episode/Video/pso25jp.srt"
     
     # Le chemin vers le nouveau fichier SRT nettoyé
-    OUTPUT_SRT_FILE = "C:/Users/babak/Videos/PSO/Episode/PSO24_cleaned.srt"
+    OUTPUT_SRT_FILE = "C:/Users/babak/Videos/PSO/Episode/Video/PSO25JP_cleaned.srt"
     
     # --- Seuil de Pause ---
     # Si le silence entre deux lignes SRT est inférieur à ce seuil (en secondes), 
