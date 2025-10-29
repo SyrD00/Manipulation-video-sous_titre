@@ -55,12 +55,12 @@ def remove_specific_lines_and_styles_guaranteed(input_path: str, output_path: st
         print(f"❌ Une erreur est survenue : {e}")
 
 if __name__ == "__main__":
-    file_path = "C:/Users/babak/Videos/PSO/Episode/Video/PSO23eng_clean.ass"
-    output_file_path = "C:/Users/babak/Videos/PSO/Episode/Video/PSO23english.ass"
+    file_path = "C:/Users/babak/Videos/PSO/Song/Fight_Might_Me2.ass"
+    output_file_path = "C:/Users/babak/Videos/PSO/Song/Fight.ass"
 
     # Liste des styles dont les lignes et la définition doivent être supprimées
     # Y compris "Rom Triad Force" et "Eng Triad Force", même s'ils sont inutilisés.
-    styles_to_remove = ["Rom Multi", "Eng Multi", "Rom Triad Force", "Eng Triad Force","Rom Super Higher","Eng Super Higher"]
+    styles_to_remove = ["Eng Fight_Might_Me"]
 
     # Exécution de la nouvelle fonction
     remove_specific_lines_and_styles_guaranteed(file_path, output_file_path, styles_to_remove)

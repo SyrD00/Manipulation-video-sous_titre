@@ -1,8 +1,8 @@
 import os
 
 # === CONFIGURATION ===
-input_path = r'C:/Users/babak/Videos/PSO/Episode/Video/nacchi_song.ass'
-output_path = r'C:/Users/babak/Videos/PSO/Episode/Video/nacchi_song.ass'
+input_path = "C:/Users/babak/Videos/PSO/Song/Fight_Might_Me.ass"
+output_path = "C:/Users/babak/Videos/PSO/Song/Fight_Might_Me2.ass"
 """
 Le système de fichiers NTFS (utilisé par Windows) est par défaut insensible à la casse (case-insensitive).
 
@@ -35,9 +35,10 @@ with open(input_path, encoding='utf-8') as f:
                 if len(parts) < 10:
                     continue
                 style = parts[3]
-                if style.startswith('Rom '):
+                #A personnaliser selon le style que t'as dans le ass
+                if style.startswith('Rom Fight_Might_Me'):
                     rom_lines.append(line.strip())
-                elif style.startswith('Eng '):
+                elif style.startswith('Eng Fight_Might_Me'):
                     eng_lines.append(line.strip())
 
 print(f"Nombre de lignes Rom trouvées : {len(rom_lines)}")

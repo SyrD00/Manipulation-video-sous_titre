@@ -1,0 +1,372 @@
+{
+	Tools = ordered() {
+		MacroTool11 = MacroOperator {
+			Inputs = ordered() {
+				Input1 = InstanceInput {
+					SourceOp = "MacroTool1",
+					Source = "Input25",
+				}
+			},
+			Outputs = {
+				MainOutput1 = InstanceOutput {
+					SourceOp = "MacroTool1",
+					Source = "MainOutput1",
+				}
+			},
+			ViewInfo = GroupInfo { Pos = { 0, 0 } },
+			Tools = ordered() {
+				MacroTool1 = MacroOperator {
+					CtrlWZoom = false,
+					CustomData = { Path = { Map = { ["Setting:"] = "Templates:\\Edit\\Titles\\Dégradé\\Contour\\" } }, },
+					Inputs = ordered() {
+						Input1 = InstanceInput {
+							SourceOp = "Template",
+							Source = "StyledText",
+						},
+						Input2 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Font",
+							ControlGroup = 2,
+						},
+						Input3 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Style",
+							ControlGroup = 2,
+						},
+						Input4 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Red1Clone",
+							Name = "Couleur",
+							ControlGroup = 3,
+							Default = 1,
+						},
+						Input5 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Green1Clone",
+							ControlGroup = 3,
+							Default = 1,
+						},
+						Input6 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Blue1Clone",
+							ControlGroup = 3,
+							Default = 1,
+						},
+						Input7 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Alpha1Clone",
+							ControlGroup = 3,
+							Default = 1,
+						},
+						Input8 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Size",
+							Default = 0.04,
+						},
+						Input9 = InstanceInput {
+							SourceOp = "Template",
+							Source = "VerticalTopCenterBottom",
+							Default = -25.5,
+						},
+						Input10 = InstanceInput {
+							SourceOp = "Template",
+							Source = "HorizontalLeftCenterRight",
+							Default = -0.03,
+						},
+						Input11 = InstanceInput {
+							SourceOp = "Template",
+							Source = "ShadingElements",
+							Default = 1,
+						},
+						Input12 = InstanceInput {
+							SourceOp = "Template",
+							Source = "SelectElement",
+							Default = 1,
+						},
+						Input13 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Select",
+							Default = 1,
+						},
+						Input14 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Name1",
+							Name = "Nom ",
+							DefaultText = "White Solid Fill",
+						},
+						Input15 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Enabled1",
+							Name = "Activé",
+							Default = 1,
+						},
+						Input16 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Name2",
+							Name = "Nom ",
+							DefaultText = "Red Outline",
+						},
+						Input17 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Enabled2",
+							Name = "Activé",
+							Default = 1,
+						},
+						Input18 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Opacity1",
+							Name = "Opacité",
+							Default = 1,
+						},
+						Input19 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Overlap1",
+							Name = "Fusion",
+							Default = 2,
+						},
+						Input20 = InstanceInput {
+							SourceOp = "Template",
+							Source = "ElementShape1",
+							Name = "Aspect",
+							Default = 0,
+						},
+						Input21 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Thickness1",
+							Name = "Épaisseur",
+							Default = 0.02,
+						},
+						Input22 = InstanceInput {
+							SourceOp = "Template",
+							Source = "JoinStyle1",
+							Name = "Style join",
+							Default = 1,
+						},
+						Input23 = InstanceInput {
+							SourceOp = "Template",
+							Source = "LineStyle1",
+							Name = "Style Ligne",
+							Default = 0,
+						},
+						Input24 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Type1",
+							Name = "Type",
+							Default = 0,
+						},
+						Input25 = InstanceInput {
+							SourceOp = "Template",
+							Source = "ShadingGradient2",
+							Name = "Ombre dégradée",
+						},
+						Input26 = InstanceInput {
+							SourceOp = "Template",
+							Source = "ShadingMapping2",
+							Name = "Mappage Ombre",
+							Default = 1,
+						},
+						Input27 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Red1",
+							Name = "Couleur",
+							ControlGroup = 21,
+							Default = 1,
+						},
+						Input28 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Green1",
+							ControlGroup = 21,
+							Default = 1,
+						},
+						Input29 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Blue1",
+							ControlGroup = 21,
+							Default = 1,
+						},
+						Input30 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Alpha1",
+							ControlGroup = 21,
+							Default = 1,
+						},
+						Input31 = InstanceInput {
+							SourceOp = "Template",
+							Source = "ShadingMapping1",
+							Name = "Mappage Ombre",
+							Default = 1,
+						},
+						Input32 = InstanceInput {
+							SourceOp = "Template",
+							Source = "ShadingMappingAngle1",
+							Name = "Maintenir Angle",
+							Default = 0,
+						},
+						Input33 = InstanceInput {
+							SourceOp = "Template",
+							Source = "ShadingMappingSize1",
+							Name = "Maintenir Taille",
+							Default = 1,
+						},
+						Input34 = InstanceInput {
+							SourceOp = "Template",
+							Source = "ShadingMappingAspect1",
+							Name = "Mapping Ratio",
+							Default = 1,
+						},
+						Input35 = InstanceInput {
+							SourceOp = "Template",
+							Source = "ShadingMappingLevel1",
+							Name = "Mapping Niveau",
+							Default = 4,
+						},
+						Input36 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Opacity2",
+							Name = "Opacité",
+							Default = 1,
+						},
+						Input37 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Overlap2",
+							Name = "Fusion",
+							Default = 2,
+						},
+						Input38 = InstanceInput {
+							SourceOp = "Template",
+							Source = "ElementShape2",
+							Name = "Aspect",
+							Default = 1,
+						},
+						Input39 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Thickness2",
+							Name = "Épaisseur",
+							Default = 0.1,
+						},
+						Input40 = InstanceInput {
+							SourceOp = "Template",
+							Source = "JoinStyle2",
+							Name = "Style join",
+							Default = 1,
+						},
+						Input41 = InstanceInput {
+							SourceOp = "Template",
+							Source = "LineStyle2",
+							Name = "Style Ligne",
+							Default = 0,
+						},
+						Input42 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Type2",
+							Name = "Type",
+							Default = 2,
+						},
+						Input43 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Red2",
+							Name = "Couleur",
+							ControlGroup = 34,
+							Default = 1,
+						},
+						Input44 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Green2",
+							ControlGroup = 34,
+							Default = 1,
+						},
+						Input45 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Blue2",
+							ControlGroup = 34,
+							Default = 1,
+						},
+						Input46 = InstanceInput {
+							SourceOp = "Template",
+							Source = "Alpha2",
+							ControlGroup = 34,
+							Default = 1,
+						},
+						Input47 = InstanceInput {
+							SourceOp = "Template",
+							Source = "ShadingMapping2",
+							Name = "Mappage Ombre",
+							Default = 1,
+						},
+						Input48 = InstanceInput {
+							SourceOp = "Template",
+							Source = "ShadingMappingAngle2",
+							Name = "Maintenir Angle",
+							Default = 0,
+						},
+						Input49 = InstanceInput {
+							SourceOp = "Template",
+							Source = "ShadingMappingSize2",
+							Name = "Maintenir Taille",
+							Default = 1,
+						},
+						Input50 = InstanceInput {
+							SourceOp = "Template",
+							Source = "ShadingMappingAspect2",
+							Name = "Mapping Ratio",
+							Default = 1,
+						},
+						Input51 = InstanceInput {
+							SourceOp = "Template",
+							Source = "ShadingMappingLevel2",
+							Name = "Mapping Niveau",
+							Default = 4,
+						}
+					},
+					Outputs = {
+						MainOutput1 = InstanceOutput {
+							SourceOp = "Template",
+							Source = "Output",
+						}
+					},
+					ViewInfo = GroupInfo { Pos = { 220, 49.5 } },
+					Tools = ordered() {
+						Template = TextPlus {
+							CtrlWZoom = false,
+							CtrlWShown = false,
+							Inputs = {
+								Width = Input { Value = 1920, },
+								Height = Input { Value = 1080, },
+								UseFrameFormatSettings = Input { Value = 1, },
+								Background = Input { Value = 0, },
+								SelectElement = Input { Value = 2, },
+								Select = Input { Value = 2, },
+								Enabled2 = Input { Value = 1, },
+								StyledText = Input { Value = " ♬ Custom Title ♬", },
+								Font = Input { Value = "Meiryo UI", },
+								Style = Input { Value = "Bold", },
+								Size = Input { Value = 0.2008, },
+								VerticalTopCenterBottom = Input { Value = 0.06, },
+								VerticalJustificationNew = Input { Value = 3, },
+								HorizontalLeftCenterRight = Input { Value = -0.11, },
+								HorizontalJustificationNew = Input { Value = 3, },
+								Thickness2 = Input { Value = 0.1, },
+								Type2 = Input { Value = 2, },
+								Green2 = Input { Value = 1, },
+								Blue2 = Input { Value = 1, },
+								ShadingGradient2 = Input {
+									Value = Gradient {
+										Colors = {
+											[0.238805970149254] = { 0.8, 0.980392156862745, 0.0745098039215686, 1 },
+											[0.36318407960199] = { 0.0470588235294118, 0.776470588235294, 1, 1 },
+											[0.512437810945274] = { 0.0453159041394335, 0.725780682643428, 1, 1 },
+											[0.606965174129353] = { 0.972549019607843, 0.152941176470588, 0.345098039215686, 1 }
+										}
+									},
+								},
+								Position2 = Input { Value = 0, }
+							},
+							ViewInfo = OperatorInfo { Pos = { 0, 8.75758 } },
+						}
+					},
+				}
+			},
+		}
+	},
+	ActiveTool = "MacroTool11"
+}

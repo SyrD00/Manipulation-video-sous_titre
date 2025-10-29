@@ -1,0 +1,39 @@
+{
+	Tools = ordered() {
+		MacroTool1 = MacroOperator {
+			Inputs = ordered() {
+				Input1 = InstanceInput {
+					SourceOp = "Template",
+					Source = "CharacterSpacingClone",
+					Name = "Tracking",
+					Default = 1,
+				}
+			},
+			Outputs = {
+				MainOutput1 = InstanceOutput {
+					SourceOp = "Template",
+					Source = "Output",
+				}
+			},
+			ViewInfo = GroupInfo { Pos = { 0, 0 } },
+			Tools = ordered() {
+				Template = TextPlus {
+					CtrlWZoom = false,
+					Inputs = {
+						Width = Input { Value = 1920, },
+						Height = Input { Value = 1080, },
+						UseFrameFormatSettings = Input { Value = 1, },
+						StyledText = Input { Value = "Custom Title", },
+						Font = Input { Value = "Open Sans", },
+						Style = Input { Value = "Semibold", },
+						Size = Input { Value = 0.09, },
+						VerticalJustificationNew = Input { Value = 3, },
+						HorizontalJustificationNew = Input { Value = 3, }
+					},
+					ViewInfo = OperatorInfo { Pos = { 220, 49.5 } },
+				}
+			},
+		}
+	},
+	ActiveTool = "MacroTool1"
+}

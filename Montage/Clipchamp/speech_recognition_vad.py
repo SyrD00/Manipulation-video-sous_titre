@@ -1,0 +1,68 @@
+import torch
+import torchaudio
+from datetime import timedelta
+import ffmpeg
+import os
+
+# --- Configuration ---
+MEDIA_FILE = "C:/Users/babak/Videos/PSO/Video/PSO26.mp4"  # ou .mp3 / .wav
+OUTPUT_SRT = "C:/Users/babak/Videos/PSO/Video/PSO26_sd.srt"
+
+# --- Convertir automatiquement en WAV 16 kHz mono ---
+def convert_to_wav16k(infile):
+    tmp_wav = "tmp_audio.wav"
+    if not infile.lower().endswith(".wav"):
+        print("🎞️ Conversion audio en WAV 16 kHz...")
+        (
+            ffmpeg
+            .input(infile)
+            .output(tmp_wav, ac=1, ar=16000, format="wav", loglevel="quiet")
+            .overwrite_output()
+            .run()
+        )
+        return tmp_wav
+    else:
+        return infile
+
+wav_file = convert_to_wav16k(MEDIA_FILE)
+
+# --- Charger modèle Silero VAD ---
+print("🔄 Chargement du modèle Silero-VAD...")
+model, utils = torch.hub.load(repo_or_dir="snakers4/silero-vad", model="silero_vad")
+(get_speech_timestamps, save_audio, read_audio, VADIterator, collect_chunks) = utils
+
+# --- Lire audio ---
+wav, sr = torchaudio.load(wav_file)
+if sr != 16000:
+    wav = torchaudio.transforms.Resample(sr, 16000)(wav)
+    sr = 16000
+
+# --- Détection de voix ---
+print("🎧 Analyse du signal vocal...")
+speech_timestamps = get_speech_timestamps(wav, model, sampling_rate=sr)
+print(f"🧠 Segments de voix détectés : {len(speech_timestamps)}")
+
+# --- Fonction pour format SRT ---
+def to_srt_time(seconds):
+    td = timedelta(seconds=seconds)
+    total_seconds = int(td.total_seconds())
+    ms = int((td.total_seconds() - total_seconds) * 1000)
+    h = total_seconds // 3600
+    m = (total_seconds % 3600) // 60
+    s = total_seconds % 60
+    return f"{h:02}:{m:02}:{s:02},{ms:03}"
+
+# --- Créer SRT ---
+print("📝 Création du fichier SRT...")
+with open(OUTPUT_SRT, "w", encoding="utf-8") as f:
+    for i, seg in enumerate(speech_timestamps):
+        start = seg["start"] / sr
+        end = seg["end"] / sr
+        f.write(f"{i+1}\n{to_srt_time(start)} --> {to_srt_time(end)}\n[Speech detected]\n\n")
+
+print(f"✅ Fichier SRT généré : {OUTPUT_SRT}")
+print("💡 Ouvre-le dans VLC ou Subtitle Edit pour visualiser les moments de voix réelle.")
+
+# --- Nettoyer le fichier temporaire ---
+if wav_file == "tmp_audio.wav" and os.path.exists(wav_file):
+    os.remove(wav_file)

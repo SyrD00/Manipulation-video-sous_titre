@@ -626,5 +626,5 @@ Script Bash (Linux)
   done
 
 
-chmod +x convert.sh
+chmod +x convert.sh 
 ./convert_mkv_to_mp4.sh

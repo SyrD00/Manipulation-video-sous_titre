@@ -1,0 +1,201 @@
+{
+	Tools = ordered() {
+		MacroTool1 = MacroOperator {
+			Inputs = ordered() {
+				Input1 = InstanceInput {
+					SourceOp = "Template",
+					Source = "Name4",
+					Name = "Nom ",
+					DefaultText = "Blue Border",
+				},
+				Input2 = InstanceInput {
+					SourceOp = "Template",
+					Source = "Enabled4",
+					Name = "Activé",
+					Default = 1,
+				},
+				Input3 = InstanceInput {
+					SourceOp = "Template",
+					Source = "Opacity4",
+					Name = "Opacité",
+					Default = 1,
+				},
+				Input4 = InstanceInput {
+					SourceOp = "Template",
+					Source = "Overlap4",
+					Name = "Fusion",
+					Default = 2,
+				},
+				Input5 = InstanceInput {
+					SourceOp = "Template",
+					Source = "ElementShape4",
+					Name = "Aspect",
+					Default = 1,
+				},
+				Input6 = InstanceInput {
+					SourceOp = "Template",
+					Source = "Thickness4",
+					Name = "Épaisseur",
+					Default = 0.0976,
+				},
+				Input7 = InstanceInput {
+					SourceOp = "Template",
+					Source = "JoinStyle4",
+					Name = "Style join",
+					Default = 1,
+				},
+				Input8 = InstanceInput {
+					SourceOp = "Template",
+					Source = "LineStyle4",
+					Name = "Style Ligne",
+					Default = 0,
+				},
+				Input9 = InstanceInput {
+					SourceOp = "Template",
+					Source = "Type4",
+					Name = "Type",
+					Default = 0,
+				},
+				Input10 = InstanceInput {
+					SourceOp = "Template",
+					Source = "Red4",
+					Name = "Couleur",
+					ControlGroup = 10,
+					Default = 0,
+				},
+				Input11 = InstanceInput {
+					SourceOp = "Template",
+					Source = "Green4",
+					ControlGroup = 10,
+					Default = 0,
+				},
+				Input12 = InstanceInput {
+					SourceOp = "Template",
+					Source = "Blue4",
+					ControlGroup = 10,
+					Default = 1,
+				},
+				Input13 = InstanceInput {
+					SourceOp = "Template",
+					Source = "Alpha4",
+					ControlGroup = 10,
+					Default = 1,
+				},
+				Input14 = InstanceInput {
+					SourceOp = "Template",
+					Source = "ImageSource4",
+					Name = "Image source",
+					Default = 0,
+				},
+				Input15 = InstanceInput {
+					SourceOp = "Template",
+					Source = "ColorImage4",
+					Name = "Image Couleur",
+				},
+				Input16 = InstanceInput {
+					SourceOp = "Template",
+					Source = "ColorFile4",
+					Name = "Fichier Couleur",
+					DefaultText = "",
+				},
+				Input17 = InstanceInput {
+					SourceOp = "Template",
+					Source = "ColorBrush4",
+					Name = "Pinceau Couleur",
+					Default = 0,
+				},
+				Input18 = InstanceInput {
+					SourceOp = "Template",
+					Source = "ShadingGradient4",
+					Name = "Ombre dégradée ",
+				},
+				Input19 = InstanceInput {
+					SourceOp = "Template",
+					Source = "ImageShadingSampling4",
+					Name = "Échantillonnage de l’image",
+					Default = 1,
+				},
+				Input20 = InstanceInput {
+					SourceOp = "Template",
+					Source = "ImageShadingEdges4",
+					Name = "Bords Image",
+					Default = 1,
+				},
+				Input21 = InstanceInput {
+					SourceOp = "Template",
+					Source = "ShadingMapping4",
+					Name = "Mappage Ombre",
+					Default = 1,
+				},
+				Input22 = InstanceInput {
+					SourceOp = "Template",
+					Source = "ShadingMappingAngle4",
+					Name = "Maintenir Angle",
+					Default = 0,
+				},
+				Input23 = InstanceInput {
+					SourceOp = "Template",
+					Source = "ShadingMappingSize4",
+					Name = "Maintenir Taille",
+					Default = 1,
+				},
+				Input24 = InstanceInput {
+					SourceOp = "Template",
+					Source = "ShadingMappingAspect4",
+					Name = "Mapping Ratio",
+					Default = 1,
+				},
+				Input25 = InstanceInput {
+					SourceOp = "Template",
+					Source = "ShadingMappingLevel4",
+					Name = "Mapping Niveau",
+					Default = 4,
+				}
+			},
+			Outputs = {
+				MainOutput1 = InstanceOutput {
+					SourceOp = "Template",
+					Source = "Output",
+				}
+			},
+			ViewInfo = GroupInfo { Pos = { 0, 0 } },
+			Tools = ordered() {
+				Template = TextPlus {
+					CtrlWZoom = false,
+					Inputs = {
+						Width = Input { Value = 1920, },
+						Height = Input { Value = 1080, },
+						UseFrameFormatSettings = Input { Value = 1, },
+						SelectElement = Input { Value = 3, },
+						Select = Input { Value = 3, },
+						Enabled2 = Input { Value = 1, },
+						Enabled4 = Input { Value = 1, },
+						StyledText = Input { Value = "Custom Title", },
+						Font = Input { Value = "Open Sans", },
+						Style = Input { Value = "Semibold", },
+						Size = Input { Value = 0.2598, },
+						VerticalJustificationNew = Input { Value = 3, },
+						HorizontalJustificationNew = Input { Value = 3, },
+						Thickness2 = Input { Value = 0.1, },
+						Type2 = Input { Value = 2, },
+						Red2 = Input { Value = 0, },
+						ShadingGradient2 = Input {
+							Value = Gradient {
+								Colors = {
+									[0] = { 1, 0, 0, 1 },
+									[1] = { 1, 1, 1, 1 }
+								}
+							},
+						},
+						Softness2 = Input { Value = 1, },
+						ElementShape4 = Input { Value = 1, },
+						Thickness4 = Input { Value = 0.0976, },
+						Position4 = Input { Value = 0, }
+					},
+					ViewInfo = OperatorInfo { Pos = { 220, 49.5 } },
+				}
+			},
+		}
+	},
+	ActiveTool = "MacroTool1"
+}
