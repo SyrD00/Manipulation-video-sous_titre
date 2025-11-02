@@ -1,2 +1,27 @@
 env/
 whisperx/
+Caption_and_aligner/vad+whisper_vosk/vosk/model-ja
+Caption_and_aligner/vad+whisper_vosk/vosk/model-small-ja
+
+
+# Ignore les fichiers lourds et temporaires
+*.mp4
+*.mov
+*.avi
+*.wav
+*.flac
+*.mkv
+*.zip
+*.rar
+*.7z
+*.iso
+*.exe
+
+# Ignore fichiers temporaires
+__pycache__/
+*.pyc
+*.pyo
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db

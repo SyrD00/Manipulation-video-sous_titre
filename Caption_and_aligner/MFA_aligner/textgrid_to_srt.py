@@ -175,7 +175,7 @@ if __name__ == "__main__":
                     pause_threshold=0.3,
                     min_silence_for_cut=0.05) #max_chars=40,
     
-
+#nb unite de temps en secondes
 
 
 """
