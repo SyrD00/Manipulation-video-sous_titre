@@ -1,7 +1,7 @@
 env/
 whisperx/
-Caption_and_aligner/vad+whisper_vosk/vosk/model-ja
-Caption_and_aligner/vad+whisper_vosk/vosk/model-small-ja
+Caption_and_aligner/ASR/VAD+Whisper_VOSK/vosk/model-ja
+Caption_and_aligner/ASR/VAD+Whisper_VOSK/vosk/model-small-ja
 
 
 # Ignore les fichiers lourds et temporaires
