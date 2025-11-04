@@ -21,7 +21,55 @@ pip install -U pyannote-audio datasets numba transformers --upgrade --upgrade-st
 
 
 '''
+'''
+code marxhera poas si tu met cetet version peut eter les commentaires perturbe process
+segments = get_speech_timestamps(
+    audio_tensor,                # 🟩 (torch.Tensor) — Signal audio mono, normalisé dans [-1, 1].
+    model_vad,                   # 🟩 (torch.nn.Module) — Modèle Silero VAD chargé via torch.hub.
+    sampling_rate=16000,         # 🎵 Taux d’échantillonnage de ton audio. Doit être 8000 ou 16000 Hz.
 
+    threshold=0.35,              # 🎚️ [Optionnel, défaut=0.5]
+                                 # Niveau de probabilité minimale pour considérer qu’il y a parole.
+                                 # ↓ Plus petit → plus sensible → capte voix faibles / chuchotements.
+                                 # ↑ Plus grand → plus strict → ignore bruits et voix éloignées.
+
+    #min_speech_duration_ms=150,  # ⏳ [Optionnel, défaut=250 ms]
+                                 # Durée minimale d’un segment de parole. 
+                                 # En dessous → ignoré (utile pour éviter “ah”, “hm”, clics audio).
+
+    min_silence_duration_ms=100, # 🤫 [Optionnel, défaut=100 ms]
+                                 # Durée minimale de silence séparant deux segments.
+                                 # ↓ petit → fusionne des phrases rapprochées.
+                                 # ↑ grand → coupe davantage.
+                                 #⚙️ Cas 1 → Silence plus long que la valeur → nouveau segment.
+                                    #ex1:  si min_silence_duration_ms=100 et silence=180 (min..<silence)
+                                    # [voix 1] ——(180 ms de silence)—— [voix 2] → sépare en [voix 1 ][ voix 2]
+                                 
+                                 #⚙️ Cas 2 → Silence plus court que la valeur → fusionne avec segment précédent.
+                                    #ex2: si min_silence_duration_ms=200 et silence=180 (min..> silence)
+                                    # [voix 1] ——(180 ms de silence)—— [voix 2] → garde comme [voix 1 + voix 2]
+                                                                      
+
+
+    speech_pad_ms=50,           # 🪶 [Optionnel, défaut=30 ms]
+                                 # Marge de sécurité ajoutée avant et après un segment pour ne pas
+                                 # couper des mots au début ou à la fin.
+                                 # (utile contre coupures brusques de voix ou OST).
+
+    #window_size_samples=512,     # 🔍 [Optionnel, interne]
+                                 # Taille de la fenêtre d’analyse en échantillons (normalement 512 pour 16 kHz).
+                                 # Plus grande fenêtre = plus stable mais plus lente.
+
+    #visualize_probs=True,       # 📈 [Optionnel, défaut=False]
+                                 # Si True, affiche une courbe matplotlib de la probabilité de voix
+                                 # pour t’aider à régler le threshold.
+
+    #return_seconds=True          # ⏱️ [Optionnel, défaut=False]
+                                 # Si True → les timestamps de sortie sont en secondes (float).
+                                 # Si False → renvoyés en échantillons (int).
+)
+
+'''
 
 import numpy as np
 import re
@@ -45,8 +93,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 
-AUDIO_PATH= r"C:\Users\babak\Videos\PSO\Video\PSO29.mp4"
-OUTPUT_SRT= r"C:\Users\babak\Videos\PSO\Video\PSO29.srt"
+AUDIO_PATH= r"C:\Users\babak\Videos\PSO\Video\29T2.mp4"
+OUTPUT_SRT= r"C:\Users\babak\Videos\PSO\Video\29T2_rom.srt"
 
 #AUDIO_PATH = r"C:\Users\babak\Videos\Precure\Dancing star precure\Dancing star precure1.mp4"
 #OUTPUT_SRT = r"C:\Users\babak\Videos\Precure\Dancing star precure\Dancing star precure1.srt"
@@ -85,40 +133,13 @@ model_vad, utils = torch.hub.load("snakers4/silero-vad", "silero_vad", onnx=Fals
 (get_speech_timestamps, save_audio, read_audio, VADIterator, collect_chunks) = utils
 
 segments = get_speech_timestamps(
-    audio_tensor,                # 🟩 (torch.Tensor) — Signal audio mono, normalisé dans [-1, 1].
-    model_vad,                   # 🟩 (torch.nn.Module) — Modèle Silero VAD chargé via torch.hub.
-    sampling_rate=16000,         # 🎵 Taux d’échantillonnage de ton audio. Doit être 8000 ou 16000 Hz.
-
-    threshold=0.35,              # 🎚️ [Optionnel, défaut=0.5]
-                                 # Niveau de probabilité minimale pour considérer qu’il y a parole.
-                                 # ↓ Plus petit → plus sensible → capte voix faibles / chuchotements.
-                                 # ↑ Plus grand → plus strict → ignore bruits et voix éloignées.
-
-    #min_speech_duration_ms=150,  # ⏳ [Optionnel, défaut=250 ms]
-                                 # Durée minimale d’un segment de parole. 
-                                 # En dessous → ignoré (utile pour éviter “ah”, “hm”, clics audio).
-
-    min_silence_duration_ms=100, # 🤫 [Optionnel, défaut=100 ms]
-                                 # Durée minimale de silence séparant deux segments.
-                                 # ↓ petit → fusionne des phrases rapprochées.
-                                 # ↑ grand → coupe davantage.
-
-    speech_pad_ms=50,           # 🪶 [Optionnel, défaut=30 ms]
-                                 # Marge de sécurité ajoutée avant et après un segment pour ne pas
-                                 # couper des mots au début ou à la fin.
-                                 # (utile contre coupures brusques de voix ou OST).
-
-    #window_size_samples=512,     # 🔍 [Optionnel, interne]
-                                 # Taille de la fenêtre d’analyse en échantillons (normalement 512 pour 16 kHz).
-                                 # Plus grande fenêtre = plus stable mais plus lente.
-
-    visualize_probs=True,       # 📈 [Optionnel, défaut=False]
-                                 # Si True, affiche une courbe matplotlib de la probabilité de voix
-                                 # pour t’aider à régler le threshold.
-
-    #return_seconds=True          # ⏱️ [Optionnel, défaut=False]
-                                 # Si True → les timestamps de sortie sont en secondes (float).
-                                 # Si False → renvoyés en échantillons (int).
+    audio_tensor,
+    model_vad,
+    sampling_rate=16000,
+    return_seconds=True,
+    threshold=0.25,              # Sensibilité accrue : capte voix faibles
+    min_silence_duration_ms=100, # 👈 Coupe dès 0.15 seconde de silence
+    speech_pad_ms=300            # Petit tampon avant/après chaque segment
 )
 
 print(f"✅ {len(segments)} segments détectés.\n")

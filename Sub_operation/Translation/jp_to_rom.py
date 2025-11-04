@@ -6,8 +6,8 @@ from pykakasi import kakasi
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 # Fichiers
-input_file = "C:/Users/babak/Downloads/PSO26_split.srt"
-output_file = "C:/Users/babak/Downloads/PSO26_split_rom.srt"
+input_file = "C:/Users/babak/Downloads/29T2.srt"
+output_file = "C:/Users/babak/Downloads/29T2R.srt"
 
 # Lire le SRT
 with open(input_file, "r", encoding="utf-8") as f:
