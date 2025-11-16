@@ -8,7 +8,7 @@ python3.11 -m venv whisperx_env=>cette comamnde marchera pas car le python actue
 
 py -3.11 -m venv whisperx_env: Cette commande indique au Lanceur Python (`py`) d'utiliser la version 3.11 (`-3.11`) pour exécuter le module `venv`, ce qui créera un nouvel environnement virtuel dans un dossier nommé `whisperx`
 
-**Activez l'environnement** : .\whisperx\Scripts\activate ou  source whisperx/bin/activate (Linux)
+**Activez l'environnement** : .\whisperx_env\Scripts\activate ou  source whisperx/bin/activate (Linux)
 
 **Desactiver l'environnement** : deactivate
 

@@ -29,7 +29,40 @@ NB:
 | `--index-url https://download.pytorch.org/whl/cu121` | Installe la version GPU CUDA 12.1  | Si ton GPU supporte CUDA 12.1 |
 
 
+
+
+Bizarement quand j'ai teste medium etait plus lent que large-v3-turbo sur cpu:
+large-v3-turbo est optimisé pour cpu/gpu leger donc plus rapide que medium sur cpu pur
+| Nom du modèle                   | Taille | Multilingue | Remarques                 |
+| ------------------------------- | ------ | ----------- | ------------------------- |
+| `openai/whisper-tiny`           | 148 Mo   | ✅           | Très rapide, moins précis |
+| `openai/whisper-base`           | 281 Mo   | ✅           | Bon équilibre             |
+| `openai/whisper-small`          | 926 M  | ✅           | Recommandé CPU            |
+| `openai/whisper-medium`         | 2.84 M  | ✅           | Plus précis mais lent     |
+| `openai/whisper-large-v3`       | 3.06 G | ✅           | Très précis mais lourd    |
+| `openai/whisper-large-v3-turbo` | 1.51 M  | ✅           | Version optimisée CPU/GPU |
+
+en general small est bon compromis vitesse/qualite pour cpu mia sparfois fais erreur contrairement a medium donc a tester selon usage
+
+
+
+| Critère                                   | 🟪 **Whisper Large-v3**                                          | ⚡ **Whisper Large-v3-Turbo**                                |
+| ----------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------- |
+| 🧠 **Taille du modèle**                   | ≈ 2.9 Go (1.55 milliard paramètres)                              | ≈ 1.6 Go (809 millions paramètres)                          |
+| 🧩 **Architecture**                       | 32 couches d’encodeur + 32 couches de décodeur                   | 32 couches d’encodeur + **4 couches** de décodeur           |
+| 🗣️ **Langues supportées**                | Multilingue (99 langues)                                         | Multilingue (99 langues)                                    |
+| 🕓 **Vitesse (CPU)**                      | Lente : ~0.3× temps réel (≈ 1 min d’audio = 3 min de traitement) | ⚡ 2–3 × plus rapide (≈ 1 min d’audio = 1 min de traitement) |
+| 🎯 **Précision (WER)**                    | Excellente ≈ 1 % erreur sur audio propre                         | Très bonne ≈ 1.5–2 % erreur (presque identique)             |
+| 🧮 **RAM requise (CPU)**                  | 5–6 Go                                                           | 3–3.5 Go                                                    |
+| 💻 **GPU recommandé**                     | 8 Go VRAM minimum                                                | 4 Go VRAM minimum                                           |
+| 💬 **Hallucinations (phrases inventées)** | Très rares                                                       | Légèrement plus fréquentes                                  |
+| 🔁 **Utilisation typique**                | Qualité maximale (films, archives)                               | Production rapide, CPU/GPU légers                           |
+| 🔊 **Version trad. (vers anglais)**       | Oui (task=translate)                                             | Oui (identique)                                             |
+
+
 '''
+
+
 import os
 import io
 import time
@@ -47,8 +80,8 @@ from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 # ------------------------------
 # ⚙️ CONFIGURATION
 # ------------------------------
-AUDIO_PATH = r"C:\Users\babak\Videos\PSO\PSO24\14.mp4"   # vidéo ou audio
-OUTPUT_SRT = r"C:\Users\babak\Videos\PSO\PSO24\14_result.srt"
+AUDIO_PATH = r"C:\Users\babak\Videos\Precure\Dancing star precure\d.mp4"   # vidéo ou audio
+OUTPUT_SRT = r"C:\Users\babak\Videos\Precure\Dancing star precure\d.srt"
 LANGUAGE = "japanese"
 
 # ------------------------------
@@ -106,37 +139,7 @@ print("🎧 Chargement du modèle Whisper Turbo...")
 device, dtype = "cpu", torch.float32
 model_id = "openai/whisper-large-v3-turbo"
 
-'''
-Bizarement quand j'ai teste medium etait plus lent que large-v3-turbo sur cpu:
-large-v3-turbo est optimisé pour cpu/gpu leger donc plus rapide que medium sur cpu pur
-| Nom du modèle                   | Taille | Multilingue | Remarques                 |
-| ------------------------------- | ------ | ----------- | ------------------------- |
-| `openai/whisper-tiny`           | 148 Mo   | ✅           | Très rapide, moins précis |
-| `openai/whisper-base`           | 281 Mo   | ✅           | Bon équilibre             |
-| `openai/whisper-small`          | 926 M  | ✅           | Recommandé CPU            |
-| `openai/whisper-medium`         | 2.84 M  | ✅           | Plus précis mais lent     |
-| `openai/whisper-large-v3`       | 3.06 G | ✅           | Très précis mais lourd    |
-| `openai/whisper-large-v3-turbo` | 1.51 M  | ✅           | Version optimisée CPU/GPU |
 
-en general small est bon compromis vitesse/qualite pour cpu mia sparfois fais erreur contrairement a medium donc a tester selon usage
-
-
-
-| Critère                                   | 🟪 **Whisper Large-v3**                                          | ⚡ **Whisper Large-v3-Turbo**                                |
-| ----------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------- |
-| 🧠 **Taille du modèle**                   | ≈ 2.9 Go (1.55 milliard paramètres)                              | ≈ 1.6 Go (809 millions paramètres)                          |
-| 🧩 **Architecture**                       | 32 couches d’encodeur + 32 couches de décodeur                   | 32 couches d’encodeur + **4 couches** de décodeur           |
-| 🗣️ **Langues supportées**                | Multilingue (99 langues)                                         | Multilingue (99 langues)                                    |
-| 🕓 **Vitesse (CPU)**                      | Lente : ~0.3× temps réel (≈ 1 min d’audio = 3 min de traitement) | ⚡ 2–3 × plus rapide (≈ 1 min d’audio = 1 min de traitement) |
-| 🎯 **Précision (WER)**                    | Excellente ≈ 1 % erreur sur audio propre                         | Très bonne ≈ 1.5–2 % erreur (presque identique)             |
-| 🧮 **RAM requise (CPU)**                  | 5–6 Go                                                           | 3–3.5 Go                                                    |
-| 💻 **GPU recommandé**                     | 8 Go VRAM minimum                                                | 4 Go VRAM minimum                                           |
-| 💬 **Hallucinations (phrases inventées)** | Très rares                                                       | Légèrement plus fréquentes                                  |
-| 🔁 **Utilisation typique**                | Qualité maximale (films, archives)                               | Production rapide, CPU/GPU légers                           |
-| 🔊 **Version trad. (vers anglais)**       | Oui (task=translate)                                             | Oui (identique)                                             |
-
-
-'''
 
 model = AutoModelForSpeechSeq2Seq.from_pretrained(
     model_id, dtype=dtype, low_cpu_mem_usage=True

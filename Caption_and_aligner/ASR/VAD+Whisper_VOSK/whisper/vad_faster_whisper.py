@@ -42,8 +42,8 @@ import torch
 # ------------------------------
 # ⚙️ CONFIGURATION
 # ------------------------------
-AUDIO_PATH = r"C:\Users\babak\Videos\PSO\PSO24\14.mp4"   # vidéo ou audio
-OUTPUT_SRT = r"C:\Users\babak\Videos\PSO\PSO24\14_result.srt"
+AUDIO_PATH = r"C:\Users\babak\Videos\Precure\Dancing star precure\d.mp4"   # vidéo ou audio
+OUTPUT_SRT = r"C:\Users\babak\Videos\Precure\Dancing star precure\d.srt"
 LANGUAGE = "ja"  # code ISO pour japonais
 
 # ------------------------------
