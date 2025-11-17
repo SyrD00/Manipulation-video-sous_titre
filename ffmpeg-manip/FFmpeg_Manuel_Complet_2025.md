@@ -6,7 +6,6 @@
 
 # ⭐ SOMMAIRE EXTRÊME (ULTRA DÉTAILLÉ)
 
-
 ## [1.🎯 Introduction générale](#1-introduction-générale-)
 
 - [✨ 1.1 Pourquoi j’ai créé ce guide](#11-pourquoi-jai-créé-ce-guide-️)
@@ -15,7 +14,6 @@
 - [📦 1.4 Codec vs Conteneur](#14-codec-vs-conteneur-)
 - [❓ 1.5 Pourquoi réencoder ?](#15-pourquoi-réencoder--️)
 - [⚡ 1.6 CPU vs GPU](#16-cpu-vs-gpu-)
-
 
 ## [2.🛠️ Installation &amp; Configuration de FFmpeg](#️2-installation-&-configuration-de-ffmpeg-)
 
@@ -135,8 +133,7 @@
 - [📖 14.5 Glossaire](#145-glossaire)
 
 
-
-## 1.🎯 Introduction générale
+## ✨ 1.1 Pourquoi j’ai créé ce guide
 
 Ce document est mon **guide personnel ultime** pour FFmpeg.Il regroupe :
 
