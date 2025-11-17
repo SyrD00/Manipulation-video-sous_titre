@@ -235,6 +235,8 @@ Je réencode une vidéo quand :
 
 ## 2.1 ⬇️ Téléchargement
 
+## [⬇️ 2.1 Téléchargement](#21-téléchargement-)
+
 1. Télécharge FFmpeg (build statique Windows).
 2. Extrait le dossier, ex :
    C:\ffmpeg\
