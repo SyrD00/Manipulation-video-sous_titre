@@ -134,7 +134,6 @@
 
 Ce document est mon **guide personnel ultime** pour FFmpeg.Il regroupe :
 
-
 ## 1.1 Pourquoi j’ai créé ce guide ✍️
 
 - toutes mes commandes importantes,
@@ -232,8 +231,6 @@ Je réencode une vidéo quand :
 ---
 
 # 2. 🛠️ Installation & Configuration de FFmpeg
-
-## 2.1 ⬇️ Téléchargement
 
 ## [⬇️ 2.1 Téléchargement](#21-téléchargement-)
 
