@@ -4,14 +4,11 @@
 
 ---
 
-
 # ⭐ SOMMAIRE
-
 
 # 🌟 Table des Matières (Sommaire Cliquable)
 
 ## 1. 🎯 Introduction générale
-
 
 - [✨ 1.1 Pourquoi j’ai créé ce guide](#11-pourquoi-jai-créé-ce-guide-)
 - [🧰 1.2 FFmpeg : ce que ça permet vraiment](#12-ffmpeg--ce-que-ca-permet-vraiment)
@@ -136,7 +133,6 @@
 - [⚡ 14.3 Raccourcis FFmpeg](#143-raccourcis-ffmpeg)
 - [📝 14.4 Notes personnelles](#144-notes-personnelles)
 - [📖 14.5 Glossaire](#145-glossaire)
-
 
 Ce document est mon **guide personnel ultime** pour FFmpeg.Il regroupe :
 
