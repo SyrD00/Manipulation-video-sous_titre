@@ -6,7 +6,7 @@
 
 # ⭐ SOMMAIRE EXTRÊME (ULTRA DÉTAILLÉ)
 
-## 1. [🎯 Introduction générale](#1-introduction-generale)
+## 1. [🎯 Introduction générale](#1-introduction-generale-)
 
 - [✨ 1.1 Pourquoi j’ai créé ce guide](#11-pourquoi-jai-créé-ce-guide-️)
 - [🎬 1.2 FFmpeg : ce que ça permet vraiment](#12-ffmpeg--ce-que-ça-permet-vraiment-)
