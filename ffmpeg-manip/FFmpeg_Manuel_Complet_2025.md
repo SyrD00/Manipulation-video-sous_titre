@@ -21,7 +21,7 @@
 
 ## 2. 🛠️ Installation & Configuration de FFmpeg
 
-- [⬇️ 2.1 Téléchargement](#21-telechargement)
+- [⬇️ 2.1 Téléchargement](#21-telechargement-)
 - [🧩 2.2 Ajouter FFmpeg au PATH (Windows)](#22-ajouter-ffmpeg-au-path-windows)
   - [👤 2.2.1 Variables d’environnement utilisateur](#221-variables-denvironnement-utilisateur)
   - [🖥️ 2.2.2 Variables système](#222-variables-systeme)
