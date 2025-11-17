@@ -8,12 +8,12 @@
 
 ## 1. [🎯 Introduction générale](#1-introduction-generale)
 
-- [✨ 1.1 Pourquoi j’ai créé ce guide](#11-pourquoi-jai-cree-ce-guide)
-- [🎬 1.2 FFmpeg : ce que ça permet vraiment](#12-ffmpeg--ce-que-ca-permet-vraiment)
-- [🖥️ 1.3 Mon matériel principal](#13-mon-materiel-principal)
-- [📦 1.4 Codec vs Conteneur](#14-codec-vs-conteneur)
-- [❓ 1.5 Pourquoi réencoder ?](#15-pourquoi-reencoder)
-- [⚡ 1.6 CPU vs GPU](#16-cpu-vs-gpu)
+- [✨ 1.1 Pourquoi j’ai créé ce guide](#11-pourquoi-jai-créé-ce-guide-️)
+- [🎬 1.2 FFmpeg : ce que ça permet vraiment](#12-ffmpeg--ce-que-ça-permet-vraiment-)
+- [🖥️ 1.3 Mon matériel principal](#13-mon-matériel-principal-️)
+- [📦 1.4 Codec vs Conteneur](#14-codec-vs-conteneur-)
+- [❓ 1.5 Pourquoi réencoder ?](#15-pourquoi-réencoder--️)
+- [⚡ 1.6 CPU vs GPU](#16-cpu-vs-gpu-)
 
 ## 2. [🛠️ Installation &amp; Configuration de FFmpeg](#2-installation--configuration-de-ffmpeg)
 
