@@ -17,7 +17,7 @@
 - [🖥️ 1.3 Mon matériel principal](#13-mon-materiel-principal)
 - [📦 1.4 Codec vs Conteneur](#14-codec-vs-conteneur)
 - [🔄 1.5 Pourquoi réencoder ?](#15-pourquoi-reencoder-)
-- [⚡ 1.6 CPU vs GPU](#16-cpu-vs-gpu)
+- [⚡ 1.6 CPU vs GPU](#16-cpu-vs-gpu-)
 
 ## 2. 🛠️ Installation & Configuration de FFmpeg
 
