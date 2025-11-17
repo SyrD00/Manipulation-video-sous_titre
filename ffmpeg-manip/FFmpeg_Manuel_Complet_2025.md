@@ -12,7 +12,8 @@
 
 ## 1. 🎯 Introduction générale
 
-- [✨ 1.1 Pourquoi j’ai créé ce guide](#11-pourquoi-jai-cree-ce-guide)
+
+- [✨ 1.1 Pourquoi j’ai créé ce guide](#11-pourquoi-jai-créé-ce-guide-)
 - [🧰 1.2 FFmpeg : ce que ça permet vraiment](#12-ffmpeg--ce-que-ca-permet-vraiment)
 - [🖥️ 1.3 Mon matériel principal](#13-mon-materiel-principal)
 - [📦 1.4 Codec vs Conteneur](#14-codec-vs-conteneur)
@@ -141,7 +142,7 @@ Ce document est mon **guide personnel ultime** pour FFmpeg.Il regroupe :
 
 ## 1.🎯 Introduction générale
 
-## 1.1 Pourquoi j’ai créé ce guide ✍️
+## ✨ 1.1 Pourquoi j’ai créé ce guide
 
 - toutes mes commandes importantes,
 - toutes les explications que j’ai apprises,
