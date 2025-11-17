@@ -134,6 +134,10 @@
 - [📝 14.4 Notes personnelles](#144-notes-personnelles)
 - [📖 14.5 Glossaire](#145-glossaire)
 
+
+
+## 1.🎯 Introduction générale
+
 Ce document est mon **guide personnel ultime** pour FFmpeg.Il regroupe :
 
 - toutes mes commandes importantes,
