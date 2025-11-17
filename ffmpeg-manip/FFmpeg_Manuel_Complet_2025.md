@@ -132,10 +132,10 @@
 - [📝 14.4 Notes personnelles](#144-notes-personnelles)
 - [📖 14.5 Glossaire](#145-glossaire)
 
-
-## ✨ 1.1 Pourquoi j’ai créé ce guide
-
 Ce document est mon **guide personnel ultime** pour FFmpeg.Il regroupe :
+
+
+## 1.1 Pourquoi j’ai créé ce guide ✍️
 
 - toutes mes commandes importantes,
 - toutes les explications que j’ai apprises,
