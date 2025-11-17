@@ -15,7 +15,8 @@
 - [❓ 1.5 Pourquoi réencoder ?](#15-pourquoi-réencoder--️)
 - [⚡ 1.6 CPU vs GPU](#16-cpu-vs-gpu-)
 
-## 2. [🛠️ Installation &amp; Configuration de FFmpeg](#2-installation-&-configuration-de-ffmpeg)
+
+## [2.🛠️ Installation &amp; Configuration de FFmpeg](#️2-installation-&-configuration-de-ffmpeg-)
 
 - [⬇️ 2.1 Téléchargement](#21-téléchargement)
 - [🧩 2.2 Ajouter FFmpeg au PATH (Windows)](#22-ajouter-ffmpeg-au-path-(windows-windows)
