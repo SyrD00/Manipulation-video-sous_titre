@@ -7,131 +7,134 @@
 
 # ⭐ SOMMAIRE
 
+
+# 🌟 Table des Matières (SOMMAIRE CLIQUABLE)
+
 ## 1. 🎯 Introduction générale
 
-- [1.1 Pourquoi j’ai créé ce guide](#11-pourquoi-j’ai-créé-ce-guide-️)
-- [1.2 FFmpeg : ce que ça permet vraiment](#12-ffmpeg--ce-que-ça-permet-vraiment-🧰)
-- [1.3 Mon matériel principal](#13-mon-matériel-principal-🖥️)
-- [1.4 Codec vs Conteneur](#14-codec-vs-conteneur-📦)
-- [1.5 Pourquoi réencoder ?](#15-pourquoi-réencoder--🔄)
-- [1.6 CPU vs GPU](#16-cpu-vs-gpu-⚡)
+- [✨ 1.1 Pourquoi j’ai créé ce guide](#11-pourquoi-jai-créé-ce-guide-✍️)
+- [🧰 1.2 FFmpeg : ce que ça permet vraiment](#12-ffmpeg--ce-que-ça-permet-vraiment-🧰)
+- [🖥️ 1.3 Mon matériel principal](#13-mon-matériel-principal-🖥️)
+- [📦 1.4 Codec vs Conteneur](#14-codec-vs-conteneur-📦)
+- [🔄 1.5 Pourquoi réencoder ?](#15-pourquoi-réencoder--🔄)
+- [⚡ 1.6 CPU vs GPU](#16-cpu-vs-gpu-⚡)
 
 ## 2. 🛠️ Installation & Configuration de FFmpeg
 
-- [2.1 Téléchargement](#21-⬇️-téléchargement)
-- [2.2 Ajouter FFmpeg au PATH](#22-🧩-ajouter-ffmpeg-au-path-windows)
-  - [2.2.1 Variables utilisateur](#221-👤-variables-d’environnement-utilisateur)
-  - [2.2.2 Variables système](#222-🖥️-variables-système)
-  - [2.2.3 Vérifier FFmpeg](#223-🔍-vérification)
-- [2.3 Vérifier les encodeurs](#23-🧪-vérifier-les-encodeurs-cpugpu)
-- [2.4 Vérifier les accélérations matérielles](#24-🔧-vérifier-les-accélérations-matérielles)
-- [2.5 Comprendre -hwaccel](#25-⚙️-comprendre--hwaccel-accélération-matérielle)
+- [⬇️ 2.1 Téléchargement](#21-⬇️-téléchargement)
+- [🧩 2.2 Ajouter FFmpeg au PATH (Windows)](#22-🧩-ajouter-ffmpeg-au-path-windows)
+  - [👤 2.2.1 Variables d’environnement utilisateur](#221-👤-variables-denvironnement-utilisateur)
+  - [🖥️ 2.2.2 Variables système](#222-🖥️-variables-système)
+  - [🔍 2.2.3 Vérification](#223-🔍-vérification)
+- [🧪 2.3 Vérifier les encodeurs (CPU/GPU)](#23-🧪-vérifier-les-encodeurs-cpugpu)
+- [🔧 2.4 Vérifier les accélérations matérielles](#24-🔧-vérifier-les-accélérations-matérielles)
+- [⚙️ 2.5 Comprendre -hwaccel (accélération matérielle)](#25-⚙️-comprendre--hwaccel-accélération-matérielle)
 
 ## 3. 📘 Commandes FFmpeg essentielles
 
-- [3.1 Structure de base](#31-🧱-structure-de-base)
-- [3.2 Options fondamentales](#32-🎛️-options-fondamentales)
-- [3.3 Copier un flux sans réencodage](#33-📄-copier-un-flux-sans-réencodage)
-- [3.4 MKV → MP4 sans réencodage](#34-🔄-mkv--mp4-sans-réencodage)
-- [3.5 Limitations du copy](#35-🚫-quand-le-copy-échoue-dtseac3flac)
+- [🧱 3.1 Structure de base](#31-🧱-structure-de-base)
+- [🎛️ 3.2 Options fondamentales](#32-🎛️-options-fondamentales)
+- [📄 3.3 Copier un flux sans réencodage](#33-📄-copier-un-flux-sans-réencodage)
+- [🔄 3.4 MKV → MP4 sans réencodage](#34-🔄-mkv--mp4-sans-réencodage)
+- [🚫 3.5 Quand le copy échoue (DTS/EAC3/FLAC)](#35-🚫-quand-le-copy-échoue-dtseac3flac)
 
 ## 4. 🧠 Encodage CPU avec libx264
 
-- [4.1 Pourquoi CPU ?](#41-❗-pourquoi-choisir-le-cpu-)
-- [4.2 CRF](#42-🎚️-crf-qualité)
-- [4.3 Presets libx264](#43-📈-presets-libx264-vitesse--qualité)
-- [4.4 Commandes pratiques](#44-📦-commandes-utiles-libx264)
-- [4.5 Réencodage audio AAC](#45-🎵-réencodage-audio-aac)
+- [❗ 4.1 Pourquoi choisir le CPU ?](#41-❗-pourquoi-choisir-le-cpu-)
+- [🎚️ 4.2 CRF (qualité)](#42-🎚️-crf-qualité)
+- [📈 4.3 Presets libx264 (vitesse ↔ qualité)](#43-📈-presets-libx264-vitesse--qualité)
+- [📦 4.4 Commandes utiles libx264](#44-📦-commandes-utiles-libx264)
+- [🎵 4.5 Réencodage audio AAC](#45-🎵-réencodage-audio-aac)
 
-## 5. 💠 Encodage Intel Quick Sync (QSV)
+## 5. 💠 Encodage matériel Intel Quick Sync (QSV)
 
-- [5.1 Introduction](#51-💡-introduction-à-qsv)
-- [5.2 Décodage matériel vs logiciel](#52-🔍-décodage-matériel-vs-logiciel)
-- [5.3 Encodage h264_qsv](#53-📹-encodage-h264_qsv)
-- [5.4 Décodage hevc_qsv](#54-🎞️-décodage-hevc_qsv)
-- [5.5 Pipeline HEVC 10 bits → H.264](#55-🔗-pipeline-complet--hevc-10-bits--h264-8-bits)
-- [5.6 Importance du NV12](#56-🎨-importance-du-format-nv12)
-- [5.7 hwupload / hwdownload](#57-↕️-hwupload--hwdownload--quand-et-pourquoi)
-- [5.8 Commandes rapides](#58-⚡-commandes-qsv-rapides-a-b1-b2)
-- [5.9 look_ahead](#59-🧠-look_ahead--optimisation-ou-latence-)
-- [5.10 Erreurs QSV](#510-🛑-erreurs-courantes-qsv-et-corrections)
+- [💡 5.1 Introduction à QSV](#51-💡-introduction-à-qsv)
+- [🔍 5.2 Décodage matériel vs logiciel](#52-🔍-décodage-matériel-vs-logiciel)
+- [📹 5.3 Encodage `h264_qsv`](#53-📹-encodage-h264_qsv)
+- [🎞️ 5.4 Décodage `hevc_qsv`](#54-🎞️-décodage-hevc_qsv)
+- [🔗 5.5 Pipeline complet : HEVC 10 bits → H.264 8 bits](#55-🔗-pipeline-complet--hevc-10-bits--h264-8-bits)
+- [🎨 5.6 Importance du format NV12](#56-🎨-importance-du-format-nv12)
+- [↕️ 5.7 `hwupload` / `hwdownload` — Quand et pourquoi ?](#57-↕️-hwupload--hwdownload--quand-et-pourquoi-)
+- [⚡ 5.8 Commandes QSV rapides (A, B1, B2)](#58-⚡-commandes-qsv-rapides-a-b1-b2)
+- [🧠 5.9 `look_ahead` — optimisation ou latence ?](#59-🧠-look_ahead--optimisation-ou-latence-)
+- [🛑 5.10 Erreurs courantes QSV et corrections](#510-🛑-erreurs-courantes-qsv-et-corrections)
 
 ## 6. 🟩 Encodage NVIDIA NVENC
 
-- [6.1 Principes](#61-💡-principes)
-- [6.2 Contrôle CQ](#62-🎚️-contrôle-cq-vs-crf)
-- [6.3 Presets NVENC](#63-⚙️-presets-nvenc)
-- [6.4 Commandes rapides](#64-🚀-commandes-rapides)
+- [💡 6.1 Principes](#61-💡-principes)
+- [🎚️ 6.2 Contrôle CQ (vs CRF)](#62-🎚️-contrôle-cq-vs-crf)
+- [⚙️ 6.3 Presets NVENC](#63-⚙️-presets-nvenc)
+- [🚀 6.4 Commandes NVENC rapides](#64-🚀-commandes-nvenc-rapides)
 
-## 7. 🟥 Encodage AMD AMF/VCE
+## 7. 🟥 Encodage matériel AMD AMF/VCE
 
-- [7.1 Présentation](#71-💬-présentation)
-- [7.2 d3d11va vs dxva2](#72-⚡-d3d11va-vs-dxva2)
-- [7.3 Mode CQP](#73-🎛️-mode-cqp)
-- [7.4 QPI / QPP / QPB](#74-🎯-paramètres-qp_i--qp_p--qp_b)
-- [7.5 Compatibilité 8/10 bits](#75-🎚️-compatibilité-810-bits)
-- [7.6 Commandes AMD](#76-🛠️-commandes-amd-pratiques)
+- [💬 7.1 Présentation](#71-💬-présentation)
+- [⚡ 7.2 d3d11va vs dxva2](#72-⚡-d3d11va-vs-dxva2)
+- [🎛️ 7.3 Mode CQP](#73-🎛️-mode-cqp)
+- [🎯 7.4 Paramètres `qp_i` / `qp_p` / `qp_b`](#74-🎯-paramètres-qp_i--qp_p--qp_b)
+- [🎚️ 7.5 Compatibilité 8/10 bits](#75-🎚️-compatibilité-810-bits)
+- [🛠️ 7.6 Commandes AMD pratiques](#76-🛠️-commandes-amd-pratiques)
 
 ## 8. ✨ Hardsub — Sous-titres incrustés
 
-- [8.1 ASS vs SRT](#81-📜-ass-vs-srt)
-- [8.2 Lire pistes MKV](#82-📊-lire-les-pistes-d’un-mkv)
-- [8.3 Identifier la piste](#83-🎯-identifier-la-piste-si)
-- [8.4 Hardsub fichier ASS](#84-📝-hardsub-d’un-fichier-ass-externe)
-- [8.5 Hardsub depuis MKV](#85-🎞️-hardsub-à-partir-des-sous-titres-internes-mkv)
-- [8.6 Pipeline QSV Hardsub](#86-⚙️-pipeline-complet-hardsub-intel-qsv-hevc-10-bits--h264)
-- [8.7 Hardsub AMD](#87-🔥-hardsub-amd-amf)
-- [8.8 Hardsub NVENC](#88-💚-hardsub-nvidia-nvenc)
-- [8.9 Intel hwdownload obligatoire](#89-🔽-intel--cas-où-hwdownload--formatnv12-sont-obligatoires)
-- [8.10 Erreurs courantes](#810-🛑-erreurs-courantes--solutions)
+- [📜 8.1 ASS vs SRT](#81-📜-ass-vs-srt)
+- [📊 8.2 Lire les pistes d’un MKV](#82-📊-lire-les-pistes-dun-mkv)
+- [🎯 8.3 Identifier la piste (`si`)](#83-🎯-identifier-la-piste-si)
+- [📝 8.4 Hardsub d’un fichier ASS externe](#84-📝-hardsub-dun-fichier-ass-externe)
+- [🎞️ 8.5 Hardsub à partir des sous-titres internes MKV](#85-🎞️-hardsub-à-partir-des-sous-titres-internes-mkv)
+- [⚙️ 8.6 Pipeline complet Hardsub Intel QSV (HEVC 10 bits → H.264)](#86-⚙️-pipeline-complet-hardsub-intel-qsv-hevc-10-bits--h264)
+- [🔥 8.7 Hardsub AMD (AMF)](#87-🔥-hardsub-amd-amf)
+- [💚 8.8 Hardsub NVIDIA NVENC](#88-💚-hardsub-nvidia-nvenc)
+- [🔽 8.9 Intel — cas où `hwdownload` + `format=nv12` sont obligatoires](#89-🔽-intel--cas-où-hwdownload--formatnv12-sont-obligatoires)
+- [🛑 8.10 Erreurs courantes &amp; solutions](#810-🛑-erreurs-courantes--solutions)
 
 ## 9. 🎞️ Conversion vidéo complète
 
-- [9.1 HEVC → H.264](#91-🔄-conversion-hevc--h264)
-- [9.2 Conversion audio AAC](#92-🎧-conversion-audio-eac3dts--aac)
-- [9.3 Bitrate &amp; qualité](#93-📉-bitrate--qualité)
-- [9.4 Exemples selon GPU](#94-🎛️-exemples-selon-gpu)
+- [🔄 9.1 Conversion HEVC → H.264](#91-🔄-conversion-hevc--h264)
+- [🎧 9.2 Conversion audio EAC3/DTS → AAC](#92-🎧-conversion-audio-eac3dts--aac)
+- [📉 9.3 Bitrate &amp; qualité](#93-📉-bitrate--qualité)
+- [🎛️ 9.4 Exemples selon GPU](#94-🎛️-exemples-selon-gpu)
 
 ## 10. 🧾 Scripts utiles
 
-- [10.1 Script PS1 AMD](#101-powershell--hardsub-amd)
-- [10.2 Script PS1 QSV](#102-powershell--conversion-qsv-lot-de-mkv)
-- [10.3 Script Bash Linux](#103-bash-linux--conversion-massive)
-- [10.4 Mesurer temps FFmpeg](#104-⏱️-mesurer-le-temps-ffmpeg)
+- [📌 10.1 PowerShell — Hardsub AMD](#101-powershell--hardsub-amd)
+- [📁 10.2 PowerShell — Conversion QSV (lot de MKV)](#102-powershell--conversion-qsv-lot-de-mkv)
+- [🐧 10.3 Bash Linux — Conversion massive](#103-bash-linux--conversion-massive)
+- [⏱️ 10.4 Mesurer le temps FFmpeg](#104-⏱️-mesurer-le-temps-ffmpeg)
 
-## 11. 🎨 Formats de Pixel
+## 11. 🎨 Formats de Pixel (Pixel Format)
 
-- [11.1 yuv420p](#111-🎛️-yuv420p-8-bits)
-- [11.2 yuv420p10le](#112-🎛️-yuv420p10le-10-bits)
-- [11.3 NV12](#113-🎨-nv12-8-bits)
-- [11.4 Compatibilité encodeurs](#114-📦-compatibilité-des-encodeurs)
-- [11.5 Pourquoi convertir](#115-🤔-pourquoi-convertir-)
+- [🎛️ 11.1 yuv420p (8 bits)](#111-🎛️-yuv420p-8-bits)
+- [🎛️ 11.2 yuv420p10le (10 bits)](#112-🎛️-yuv420p10le-10-bits)
+- [🎨 11.3 NV12 (8 bits)](#113-🎨-nv12-8-bits)
+- [📦 11.4 Compatibilité des encodeurs](#114-📦-compatibilité-des-encodeurs)
+- [🤔 11.5 Pourquoi convertir ?](#115-🤔-pourquoi-convertir-)
 
-## 12. 📊 Rate Control
+## 12. 📊 Rate Control (Gestion du débit vidéo)
 
-- [12.1 CRF](#121-🎚️-crf-constant-rate-factor)
-- [12.2 CQP](#122-🎚️-cqp)
-- [12.3 QP I/P/B](#123-🎯-qp-i--p--b)
-- [12.4 Bitrate VBR/CBR](#124-📶-bitrate-cbrvbr)
-- [12.5 look_ahead](#125-🧠-look_ahead-en-détail)
+- [🎚️ 12.1 CRF (Constant Rate Factor)](#121-🎚️-crf-constant-rate-factor)
+- [🎚️ 12.2 CQP](#122-🎚️-cqp-constant-quantization-parameter)
+- [🎯 12.3 QP I / P / B](#123-🎯-qp-i--p--b)
+- [📶 12.4 Bitrate CBR/VBR](#124-📶-bitrate-cbrvbr)
+- [🧠 12.5 `look_ahead` en détail](#125-🧠-look_ahead-en-détail)
 
-## 13. 🛑 Troubleshooting général
+## 13. 🛑 Troubleshooting Général
 
-- [13.1 Pixel format unsupported](#131-🟥-current-pixel-format-is-unsupported)
-- [13.2 Error opening encoder](#132-🟥-error-opening-encoder)
-- [13.3 Décodage matériel non utilisé](#133-🟥-décodage-matériel-non-utilisé)
-- [13.4 Cas HEVC 10 bits QSV](#134-🟥-cas-hevc-10-bits--h264-qsv)
-- [13.5 Hardsub non appliqué](#135-🟥-hardsub-ne-s’applique-pas)
-- [13.6 Problèmes audio](#136-🟥-problèmes-audio-eac3--dts)
-- [13.7 Erreurs MP4](#137-🟥-mp4-non-compatible-erreur-lecteur)
+- [🟥 13.1 `Current pixel format is unsupported`](#131-🟥-current-pixel-format-is-unsupported)
+- [🟥 13.2 `Error opening encoder`](#132-🟥-error-opening-encoder)
+- [🟥 13.3 Décodage matériel non utilisé](#133-🟥-décodage-matériel-non-utilisé)
+- [🟥 13.4 Cas HEVC 10 bits → H.264 QSV](#134-🟥-cas-hevc-10-bits--h264-qsv)
+- [🟥 13.5 Hardsub ne s’applique pas](#135-🟥-hardsub-ne-sapplique-pas)
+- [🟥 13.6 Problèmes audio EAC3 / DTS](#136-🟥-problèmes-audio-eac3--dts)
+- [🟥 13.7 MP4 non compatible (erreur lecteur)](#137-🟥-mp4-non-compatible-erreur-lecteur)
 
-## 14. 📚 Annexes
+## 14. 📚 Annexes — Tableaux récapitulatifs
 
-- [14.1 Comparatif GPU](#141-📊-tableau-comparatif-gpu-intel--amd--nvidia)
-- [14.2 Codecs audio MP4](#142-🎧-codecs-audio-compatibles-mp4)
-- [14.3 Raccourcis FFmpeg](#143-⚡-raccourcis-ffmpeg)
-- [14.4 Notes personnelles](#144-📝-notes-personnelles)
-- [14.5 Glossaire](#145-📖-glossaire)
+- [📊 14.1 Tableau comparatif GPU (Intel / AMD / NVIDIA)](#141-📊-tableau-comparatif-gpu-intel--amd--nvidia)
+- [🎧 14.2 Codecs audio compatibles MP4](#142-🎧-codecs-audio-compatibles-mp4)
+- [⚡ 14.3 Raccourcis FFmpeg](#143-⚡-raccourcis-ffmpeg)
+- [📝 14.4 Notes personnelles](#144-📝-notes-personnelles)
+- [📖 14.5 Glossaire](#145-📖-glossaire)
 
 Ce document est mon **guide personnel ultime** pour FFmpeg.Il regroupe :
 
