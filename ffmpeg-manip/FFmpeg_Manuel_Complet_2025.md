@@ -877,13 +877,27 @@ Correspondances typiques :
 
 ---
 
-### 8.4 📝 Hardsub d’un fichier ASS externe
+### 8.4 📝 Hardsub d’un fichier SRT/ASS
+
+### 8.4.1 Hardsub d'un fichier ASS externe
+
+#### ✅ Intel
+
+| Méthode                     | Encodage | Filtre ASS          | Vitesse                                       |
+| ---------------------------- | -------- | ------------------- | --------------------------------------------- |
+| libx264 CPU                  | CPU      | CPU                 | lent à moyen                                 |
+| QSV avec hwdownload/hwupload | GPU      | CPU + transfert GPU | moyen, overhead du transfert                  |
+| QSV simple (ma commande)     | GPU      | CPU                 | rapide et simple, souvent plus rapide que CPU |
 
 #### CPU (libx264)
 
 ```
 ffmpeg -i video.mp4 -vf "ass=subs.ass" -c:v libx264 -preset fast -c:a copy out.mp4
 ```
+
+#### Intel QSV simple
+
+ffmpeg -hwaccel qsv -i input.mp4 -vf subtitles=subs.ass -c:v h264_qsv -preset veryfast -c:a copy out_intel.mp4
 
 #### Intel QSV (nécessite hwdownload)
 
@@ -893,7 +907,46 @@ ffmpeg -hwaccel qsv -i video.mp4 \
 -c:v h264_qsv -preset fast -c:a copy out.mp4
 ```
 
----
+#### ✅ **AMD (AMF)**
+
+ffmpeg -i input.mp4 -vf subtitles=subs.ass -c:v h264_amf -quality speed -c:a copy out_amd.mp4
+
+#### ✅ **3 — NVIDIA (NVENC)**
+
+ffmpeg -hwaccel cuda -i input.mp4 -vf subtitles=subs.ass -c:v h264_nvenc -preset fast -c:a copy out_nv.mp4
+
+Pour srt tu remplace juste .ass par .srt
+
+### 8.4.2 Hardsub sur une portion video
+
+## ⏱ Intel QSV — segment + hardsub
+
+```bash
+ffmpeg -hwaccel qsv -ss 00:13:40.560 -to 00:15:36.180 -i input.mp4 -vf subtitles=subs.ass -c:v h264_qsv -preset veryfast -c:a copy out_intel.mp4
+```
+
+- `-ss` = début
+- `-to` = fin
+- `subtitles=subs.ass` applique tes sous-titres
+- Encodage rapide Intel GPU
+
+## ⏱ AMD AMF — segment + hardsub
+
+```bash
+ffmpeg -ss 00:13:40.560 -to 00:15:36.180 -i input.mp4 -vf subtitles=subs.ass -c:v h264_amf -quality speed -c:a copy out_amd.mp4
+```
+
+## ⏱ NVIDIA NVENC — segment + hardsub
+
+```bash
+ffmpeg -hwaccel cuda -ss 00:13:40.560 -to 00:15:36.180 -i input.mp4 -vf subtitles=subs.ass -c:v h264_nvenc -preset fast -c:a copy out_nv.mp4
+```
+
+## ⚡ Astuces vitesse
+
+- Mettre `-ss` **avant `-i`** → décodage direct à la position de départ → gain énorme si la vidéo est longue.
+- `-to` est compatible, pas besoin de ré-encoder le reste de la vidéo.
+- Les filtres de sous-titres passent par le CPU, mais l’encodage GPU reste rapide.
 
 ### 8.5 🎞️ Hardsub à partir des sous-titres internes MKV
 
@@ -911,6 +964,45 @@ ffmpeg -i input.mkv -map 0:v -map 0:a \
 -vf "subtitles=input.mkv:si=0" \
 -c:v h264_qsv -preset veryfast -c:a aac hardsub_qsv.mp4
 ```
+
+OU plus simple
+
+ffmpeg -i IP39.mkv -vf "subtitles=IP39.mkv" -c:v h264_qsv -preset veryfast -c:a copy IP39.mp4
+
+### ✔︎ Avantages
+
+* **Ajout/gravure des sous-titres** → nécessaire si tu veux du hardsub.
+* Audio **copié** → pas de réencodage, donc rapide pour la partie audio.
+
+### ✘ Inconvénients
+
+* **Le filtre subtitles OBLIGE FFmpeg à décoder la vidéo image par image** , puis à réencoder →
+
+  **C’est BEAUCOUP plus lent** , même avec QSV.
+* La qualité dépend du QP réinterprété par le preset (pas toujours optimale).
+
+➡️ **Conclusion : cette commande est la plus lente** à cause du filtre vidéo.
+
+OU PLUS RAPIDE
+
+ffmpeg -i DSP.mkv -c:v h264_qsv -global_quality 23 -preset veryfast -c:a aac -b:a 192k DSP.mp4
+
+### ✔︎ Avantages
+
+* **Pas de filtre → encodage direct GPU** = **BEAUCOUP plus rapide**
+* Contrôle plus propre de la qualité via **-global_quality**
+* Le preset veryfast garde une bonne vitesse
+* Qualité audio propre (AAC 192k)
+
+### ✘ Inconvénients
+
+* **Pas de sous-titres hardsub**
+
+  (donc à utiliser seulement si tu ne veux pas graver les subs)
+
+➡️ **Conclusion : c’est cette commande qui est la plus rapide**
+
+Car elle n’utilise  **aucun filtre** , ce qui permet à QSV d’aller au maximum de sa vitesse.
 
 ---
 
