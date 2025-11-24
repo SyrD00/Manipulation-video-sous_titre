@@ -917,6 +917,8 @@ ffmpeg -hwaccel cuda -i input.mp4 -vf subtitles=subs.ass -c:v h264_nvenc -preset
 
 Pour srt tu remplace juste .ass par .srt
 
+
+
 ### 8.4.2 Hardsub sur une portion video
 
 ## ⏱ Intel QSV — segment + hardsub
