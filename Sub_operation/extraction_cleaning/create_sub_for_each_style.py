@@ -55,12 +55,12 @@ def extract_styles_separately(input_path: str, output_folder: str, target_styles
 
 if __name__ == "__main__":
     # Fichier d'entrée
-    input_file = "C:/Users/babak/Videos/PSO/Episode/Video/Eng/seg10_multicolor.ass"
+    input_file = "C:/Users/babak/Videos/PSO/Video/op.ass"
 
     # Dossier où enregistrer les fichiers créés
-    output_folder = "C:/Users/babak/Videos/PSO/Episode/Video/Eng"
+    output_folder = "C:/Users/babak/Videos/PSO/Video/"
 
     # Liste des styles à extraire
-    styles_to_extract = ["Rom Multi", "Eng Multi", "Rom Super Higher", "Eng Super Higher"]
+    styles_to_extract = ["color", "ripple", "zeal", "meteor"]
 
     extract_styles_separately(input_file, output_folder, styles_to_extract)

@@ -27,6 +27,12 @@ Espace de travail->Scripts_>RS->Subtitle2TextPlus
 Tu ne places jamais ton text+ sur  video1 ,ca marche que sur video2 et ..
 
 * Par exemple j'ai créé un projet vide et j'ai editer un text+(j'ai fait un dégradé) =>Si tu veux reutiliser le même text+ dans un autre projet suis ces etapes:
+
+  ## Méthode 1 (+ simple)
+
+  ![1764260412329](image/READme/1764260412329.png)
+* ## Méthode 2
+* 
 * ![1760230740685](image/READme/1760230740685.png)
 
   Ici 2 car j'ai selectionne le type 2 dans shading quand je faisais mon degradé(Red outline par defaut)
