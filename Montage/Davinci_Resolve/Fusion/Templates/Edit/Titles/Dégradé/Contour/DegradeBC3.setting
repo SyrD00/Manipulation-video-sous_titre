@@ -554,6 +554,10 @@
 					Name = "Mapping Niveau",
 					Default = 4,
 				}
+				Input95 = InstanceInput {
+				
+				
+				}
 			},
 			Outputs = {
 				MainOutput1 = InstanceOutput {

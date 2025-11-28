@@ -917,20 +917,32 @@ ffmpeg -hwaccel cuda -i input.mp4 -vf subtitles=subs.ass -c:v h264_nvenc -preset
 
 Pour srt tu remplace juste .ass par .srt
 
-
-
 ### 8.4.2 Hardsub sur une portion video
 
 ## ⏱ Intel QSV — segment + hardsub
 
 ```bash
-ffmpeg -hwaccel qsv -ss 00:13:40.560 -to 00:15:36.180 -i input.mp4 -vf subtitles=subs.ass -c:v h264_qsv -preset veryfast -c:a copy out_intel.mp4
+ffmpeg -i "PSO24.mp4" -ss 00:13:40.560 -to 00:15:37.120 -vf "subtitles='PSO24 eng.ass'" -c:v libx264 -preset veryfast -c:a copy "RQP2.mp4"
 ```
 
 - `-ss` = début
 - `-to` = fin
 - `subtitles=subs.ass` applique tes sous-titres
 - Encodage rapide Intel GPU
+
+**OU légérement plus rapide**
+
+```bash
+ffmpeg -init_hw_device qsv -i "PSO24.mp4" -ss 00:13:40.560 -to 00:15:37.120 -c:v h264_qsv -preset veryfast -vf "subtitles='PSO24 eng.ass'" -c:a copy "RQP2.mp4"
+```
+
+a peu prés **meme durée ou légérement + rapide**
+
+```bash
+ffmpeg -init_hw_device qsv -i "PSO24.mp4" -ss 00:13:40.560 -to 00:15:37.120 -c:v hevc_qsv -preset veryfast -vf "subtitles='PSO24 eng.ass'" -c:a copy "RQP2.mp4"
+```
+
+
 
 ## ⏱ AMD AMF — segment + hardsub
 
