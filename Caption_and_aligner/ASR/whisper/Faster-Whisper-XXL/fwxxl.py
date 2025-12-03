@@ -1,19 +1,21 @@
 import subprocess
 import os
+import shutil
 
 # ===============================
 # ⚙️ CONFIGURATION UTILISATEUR
 # ===============================
 
 # 🟢 1. Chemin du fichier vidéo ou audio à traiter
-input_file = r"C:\Users\babak\Videos\Precure\Dancing star precure\d.mp4"   # ← change ici ton chemin
+input_file = r"C:\Users\babak\Music\VideoProc Converter AI\cure connect.mp3"   # ← change ici ton chemin
 
 # 🟢 2. Dossier de sortie pour les sous-titres
-output_dir = r"C:\Users\babak\Videos\Precure\Dancing star precure"                   # ← change ici ton dossier
+output_dir = r"C:\Users\babak\Documents\Transcriptions"                # ← change ici ton dossier
 
-# 🟢 3. Chemin vers l’exécutable Faster-Whisper-XXL
-whisper_exe = r"C:\Program Files\Whisper\Faster-Whisper-XXL\faster-whisper-xxl.exe"  # ← adapte si besoin
+#🟢 3. Chemin vers l’exécutable Faster-Whisper-XXL si pas dans le Path
+#whisper_exe = r"C:\Program Files\Whisper\Faster-Whisper-XXL\faster-whisper-xxl.exe"  # ← adapte si besoin
 
+whisper_exe = "faster-whisper-xxl.exe"  # Si l’exécutable est dans le Path système
 # ===============================
 # 🚀 EXÉCUTION AUTOMATIQUE
 # ===============================
@@ -22,45 +24,52 @@ whisper_exe = r"C:\Program Files\Whisper\Faster-Whisper-XXL\faster-whisper-xxl.e
 if not os.path.exists(input_file):
     raise FileNotFoundError(f"❌ Fichier introuvable : {input_file}")
 
-if not os.path.exists(whisper_exe):
+# Vérifie dans le répertoire courant OU dans le PATH
+if not (os.path.exists(whisper_exe) or shutil.which(whisper_exe)):
     raise FileNotFoundError(f"❌ Exécutable introuvable : {whisper_exe}")
+
 
 os.makedirs(output_dir, exist_ok=True)
 
 # ===============================
 # 🧠 Commande complète
 # ===============================
+'''
+faster-whisper-xxl.exe `
+  --model large-v3-turbo `
+  --language ja `
+  --japanese blend `
+  --output_format srt `
+  --output_dir "C:/Users/babak/Documents/Transcriptions" `
+  --vad_filter True `
+  --vad_method silero_v4_fw `
+  --vad_min_silence_duration_ms 100 `
+  --vad_speech_pad_ms 200 `
+  --sentence `
+  --standard_asia `
+  --max_line_width 16 `
+  --max_line_count 2 `
+  --max_gap 0.5 `
+  --word_timestamps True `
+  --ignore_dupe_prompt 2 `
+  --hallucination_silence_threshold 4 `
+  --v3_offsets_off `
+  "C:/Users/babak/Music/VideoProc Converter AI/cure connect.mp3"
+
+'''
+
 
 cmd = [
     whisper_exe,
-    input_file,
-    "--task", "`transcribe",
+    "--model", "large-v3-turbo",
     "--language", "ja",
     "--output_format", "srt",
     "--output_dir", output_dir,
-    "--compute_type", "auto",
-    "--temperature", "0",
-    "--beam_size", "5",
-    "--no_repeat_ngram_size", "3",
-    "--condition_on_previous_text", "True",
-    "--sentence",
-    "--standard_asia",
-    "--word_timestamps", "True",
-    "--vad_filter", "True",
     "--vad_method", "silero_v5_fw",
-    "--vad_threshold", "0.35",
+    "--vad_threshold", "0.4",
     "--vad_min_silence_duration_ms", "100",
-    "--vad_speech_pad_ms", "300",
-    "--ff_rnndn_xiph",
-    "--ff_lowhighpass",
-    "--ff_speechnorm",
-    "--ff_silence_suppress", "-50", "0.1",
-    "--hallucination_silence_threshold", "4",
-    "--hallucination_silence_th_temp", "0.5",
-    "--print_progress",
-    "--beep_off",
+    input_file
 ]
-
 
 # ===============================
 # ▶️ Lancement
