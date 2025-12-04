@@ -51,27 +51,26 @@ puis redémarre l'ordu
 ## 💡 3. Commande parfaite pour ton usage
 
 ```bash
-Faster-Whisper-XXL.exe "episode.mkv" ^
---task translate ^
---language ja ^
---output_format srt ^
---output_dir "C:\Anime\Subs" ^
---compute_type float16 ^
---temperature 0 ^
---beam_size 5 ^
---no_repeat_ngram_size 3 ^
---condition_on_previous_text True ^
---standard_asia ^
---vad_filter True ^
---vad_method silero_v5_fw ^
---vad_threshold 0.35 ^
---vad_min_silence_duration_ms 100 ^
---vad_speech_pad_ms 300 ^
---ff_rnndn_xiph ^
---ff_lowhighpass ^
---ff_speechnorm ^
---ff_silence_suppress -50 0.1 ^
---beep_off
+faster-whisper-xxl.exe `
+  --model large-v3-turbo `
+  --language ja `
+  --japanese blend `
+  --output_format srt `
+  --output_dir "C:/Users/babak/Documents/Transcriptions" `
+  --vad_filter True `
+  --vad_method silero_v4_fw `
+  --vad_min_silence_duration_ms 100 `
+  --vad_speech_pad_ms 200 `
+  --sentence `
+  --standard_asia `
+  --max_line_width 16 `
+  --max_line_count 2 `
+  --max_gap 0.5 `
+  --word_timestamps True `
+  --ignore_dupe_prompt 2 `
+  --hallucination_silence_threshold 4 `
+  --v3_offsets_off `
+  "C:/Users/babak/Music/VideoProc Converter AI/cure connect.mp3"
 ```
 
 Cette commande est optimisée pour :
@@ -94,14 +93,49 @@ voir fwxxl.py
 
 ## 📖 5. Liste complète des arguments
 
-## 🟢Accélérer commande
+
+### 🛠️ 1. Configuration Générale & Fichiers
+
+Ces arguments définissent le modèle, le matériel, et la gestion des fichiers d'entrée/sortie.
+
+| Argument                                                           | Description Détaillée                                                                     | Défaut          |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- | ---------------- |
+| **`audio [audio ...]`**                                    | Fichier(s) audio/vidéo à transcrire. (Argument positionnel)                               | -                |
+| **`--model MODEL`**                                        | Nom du modèle Whisper à utiliser (ex:`medium`,`large-v3`).                            | `medium`       |
+| **`--model_dir MODEL_DIR`**                                | Chemin où enregistrer/charger les fichiers du modèle.                                     | `_models`      |
+| **`--device DEVICE`**                                      | Cible d'exécution pour le modèle :`cpu`,`cuda`, ou `cuda:1`pour un GPU spécifique. | `cpu`/`cuda` |
+| **`--compute_type {default,auto,int8,...}`**               | Type de quantification pour l'inférence (vitesse/précision).                              | `auto`         |
+| **`--output_dir OUTPUT_DIR`**                              | Répertoire pour enregistrer les fichiers de sortie.                                        | `default`      |
+| **`--output_format [{json,lrc,txt,vtt,srt,tsv,all} ...]`** | Format(s) du fichier de sous-titres (accepte multiples).                                    | `['srt']`      |
+| **`--verbose VERBOSE`**                                    | Afficher les messages de débogage et les journaux détaillés.                             | `False`        |
+| **`--check_files`**                                        | Vérifie les fichiers d'entrée pour les erreurs avant de commencer.                        | `False`        |
+| **`--beep_off`**                                           | Désactive le son "bip" à la fin de l'opération.                                          | `False`        |
+| **`--version`**                                            | Affiche le numéro de version de Faster-Whisper.                                            | -                |
+| **`--checkcuda`**                                          | Renvoie le nombre de périphériques CUDA (pour usage interne).                             | -                |
+
+Exporter vers Sheets
+
+### 🚀 2. Optimisation de la Vitesse & Traitement par Lot (Batching)
+
+Arguments pour accélérer la transcription et traiter plusieurs fichiers/segments.
+
+| Argument                                    | Description Détaillée                                                                                        | Défaut           |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ----------------- |
+| **`--threads THREADS`**             | **Nombre de threads pour l'inférence générale (coordination, VAD, écriture).**                       | `0`(auto/4 max) |
+| **`--batched`**                     | **Active le mode d'inférence par lot**(transcrit les segments VAD en parallèle).                       | `False`         |
+| **`--batch_size BATCH_SIZE`**       | Taille maximale des requêtes parallèles lors de l'utilisation de `--batched`.                              | `8`             |
+| **`--unmerged`**                    | (Expérimental) Utilise des segments non fusionnés en mode batch (très lent, possible meilleure précision). | `False`         |
+| **`--batch_recursive`**             | **Active le traitement par lot récursif**(inclut les sous-dossiers).                                    | `False`         |
+| **`--skip`**                        | Ignore le fichier si le sous-titre de sortie existe déjà.                                                    | `False`         |
+| **`--print_progress`**              | Affiche une barre de progression au lieu de la transcription détaillée.                                      | `False`         |
+| **`--model_preload MODEL_PRELOAD`** | Précharge le modèle avant l'itération.                                                                      | `None`          |
 
 
 Sur  **CPU Intel** , donc le batch size va dépendre de  **ta puissance CPU et du nombre de cœurs réels disponibles** . Voici comment raisonner :
 
 ---
 
-## **1. Vérifier tes cœurs**
+## **A. Vérifier tes cœurs**
 
 * Sur Windows, ouvre le  **Gestionnaire des tâches → Performance → CPU** .
 * Note le **nombre de cœurs physiques** (pas les threads logiques).
@@ -109,7 +143,7 @@ Sur  **CPU Intel** , donc le batch size va dépendre de  **ta puissance CPU et d
 
 ---
 
-## **2. Batch size recommandé sur CPU**
+## **B. Batch size recommandé sur CPU**
 
 * Le batch size correspond au  **nombre de segments VAD traités en parallèle** .
 * Sur CPU : **batch_size ≈ nombre de cœurs physiques** → c’est le maximum conseillé.
@@ -129,199 +163,151 @@ Exemple :
 
 ---
 
-## **3. Astuce pratique**
+## **C. Astuce pratique**
 
 * Commence par `--batch_size = cœurs physiques`.
 * Observe l’utilisation CPU dans le gestionnaire des tâches.
   * Si utilisation < 80% → tu peux augmenter légèrement.
   * Si 100% → réduire pour éviter que le système rame.
 
----
-
-## **4. Autres options pour CPU**
-
-* Active `--threads` pour limiter le nombre de threads par batch.
-  <pre class="overflow-visible!" data-start="1460" data-end="1502"><div class="contain-inline-size rounded-2xl corner-superellipse/1.1 relative bg-token-sidebar-surface-primary"><div class="sticky top-9"><div class="absolute end-0 bottom-0 flex h-9 items-center pe-2"><div class="bg-token-bg-elevated-secondary text-token-text-secondary flex items-center gap-4 rounded-sm px-2 font-sans text-xs"></div></div></div><div class="overflow-y-auto p-4" dir="ltr"><code class="whitespace-pre! language-bash"><span><span>--threads 4 --batch_size 4</span></span></code></div></div></pre>
 
 
+### 🧠 3. Tâches, Langues & Pré-prompting (Contexte du Modèle)
 
-### ⚙️ 1. Configuration générale
+Ces options contrôlent ce que l'IA fait et comment elle est amorcée (primée) pour la qualité.
 
-Si tu veux télécharger des models :[https://huggingface.co/openai/whisper-large-v3#model-details](https://huggingface.co/openai/whisper-large-v3#model-details)
-
-et ceux de faster whisper: [https://huggingface.co/collections/Systran/faster-whisper](https://huggingface.co/collections/Systran/faster-whisper)
-
-| Argument            | Description                                                                            | Défaut                     |
-| ------------------- | -------------------------------------------------------------------------------------- | --------------------------- |
-| `audio`           | **Le ou les fichiers audio/vidéo à transcrire (argument positionnel)**         | -                           |
-| `--model`         | Choisit le modèle Whisper (`tiny`,`base`,`small`,`medium`,`large-v3`, etc.) | `medium`                  |
-| `--model_dir`     | Dossier des modèles                                                                   | `_models`                 |
-| `--device`        | Cible d’exécution (`cpu`,`cuda`, etc.)                                           | auto                        |
-| `--output_dir`    | Dossier de sortie                                                                      | même dossier que le média |
-| `--output_format` | Format du sous-titre (`srt`,`vtt`,`txt`, etc.)                                   | `srt`                     |
-| `--compute_type`  | Quantization (`float16`,`int8`, etc.)                                              | auto                        |
-| `--threads`       | Nombre de threads CPU                                                                  | auto (4 max)                |
-| `--verbose`       | Affiche logs détaillés                                                               | `False`                   |
-| `--beep_off`      | Désactive le bip final                                                                | `False`                   |
+| Argument                                      | Description Détaillée                                                                     | Défaut        |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------- | -------------- |
+| **`--task {transcribe,translate}`**   | Opération à effectuer :**`transcribe`**(X→X) ou**`translate`**(X→Anglais).    | `transcribe` |
+| **`--language {af,am,ar,as,...}`**    | Langue parlée dans l'audio.`None`pour autodétection.                                    | `None`       |
+| **`--multilingual MULTILINGUAL`**     | Effectuer la détection de la langue sur chaque segment.                                    | `False`      |
+| **`--language_detection_threshold`**  | Seuil de probabilité minimum pour considérer une langue comme détectée.                 | `0.5`        |
+| **`--language_detection_segments`**   | Nombre de segments audio à considérer pour la détection de la langue.                    | `1`          |
+| **`--initial_prompt INITIAL_PROMPT`** | Texte facultatif pour fournir un contexte (noms propres, termes techniques).                | `auto`       |
+| **`--prefix PREFIX`**                 | Texte imposé comme préfixe pour le début de la première fenêtre.                       | `None`       |
+| **`--hotwords HOTWORDS`**             | Mots/phrases indices pour le modèle (mots-clés à privilégier).                          | `None`       |
+| **`--rehot`**                         | (Expérimental) Transfère le préréglage de prompt automatique aux routines `hotwords`. | `False`      |
+| **`--condition_on_previous_text`**    | Utiliser la sortie précédente comme prompt pour la fenêtre suivante (cohérence).        | `True`       |
 
 Exporter vers Sheets
 
----
+### 🔍 4. Qualité du Décodage & Anti-Hallucination
 
-### 🧠 2. Tâches & langues
+Paramètres fins de l'algorithme d'inférence (Beam Search) et mécanismes de correction d'erreurs.
 
-| Argument                           | Description                                     | Défaut        |
-| ---------------------------------- | ----------------------------------------------- | -------------- |
-| `--task`                         | `transcribe`(X→X) /`translate`(X→Anglais) | `transcribe` |
-| `--language`                     | Code ISO (`ja`,`en`,`fr`, etc.)           | auto           |
-| `--multilingual`                 | **Détecte la langue à chaque segment**  | `False`      |
-| `--language_detection_threshold` | Confiance min détection                        | `0.5`        |
-| `--initial_prompt`               | Prompt initial pour contexte                    | `auto`       |
-| `--condition_on_previous_text`   | Cohérence inter-segments                       | `True`       |
-
-Exporter vers Sheets
-
----
-
-### 🔍 3. Décodage & génération
-
-| Argument                   | Description            | Défaut  |
-| -------------------------- | ---------------------- | -------- |
-| `--temperature`          | Contrôle créativité | `0`    |
-| `--beam_size`            | Largeur recherche      | `5`    |
-| `--best_of`              | Nb candidats si temp>0 | `5`    |
-| `--patience`             | Tolérance beam search | `2.0`  |
-| `--length_penalty`       | Pénalise longueur     | `1.0`  |
-| `--repetition_penalty`   | Répétition max       | `1.0`  |
-| `--no_repeat_ngram_size` | Supprime répétitions | `0`    |
-| `--logprob_threshold`    | Score min confiance    | `-1.0` |
-| `--no_speech_threshold`  | Silence                | `0.6`  |
-
-Exporter vers Sheets
-
----
-
-### 🎧 4. VAD – Voice Activity Detection
-
-| Argument                          | Description                                              | Défaut          |
-| --------------------------------- | -------------------------------------------------------- | ---------------- |
-| `--vad_filter`                  | Active détection voix                                   | `True`         |
-| `--vad_method`                  | `silero_v4_fw`,`silero_v5_fw`,`webrtc`, etc.       | `silero_v4_fw` |
-| `--vad_threshold`               | Sensibilité (0–1)                                      | `0.45`         |
-| `--vad_min_speech_duration_ms`  | Ignorer segments trop courts                             | `250`          |
-| `--vad_max_speech_duration_s`   | **Durée maximale d’un segment (en secondes)**    | `None`         |
-| `--vad_min_silence_duration_ms` | Silence min avant coupure                                | `3000`         |
-| `--vad_speech_pad_ms`           | Marge autour voix                                        | `900`          |
-| `--vad_window_size_samples`     | Taille fenêtre audio                                    | `1536`         |
-| `--vad_device`                  | **Matériel utilisé pour VAD (`cpu`,`cuda`)** | `cpu`          |
+| Argument                                              | Description Détaillée                                                                              | Défaut   |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | --------- |
+| **`--temperature TEMPERATURE`**               | Contrôle l'échantillonnage (créativité vs. exactitude).                                          | `0`     |
+| **`--beam_size BEAM_SIZE`**                   | Nombre de faisceaux dans la recherche en faisceau (utilisé quand `temperature = 0`).              | `5`     |
+| **`--best_of BEST_OF`**                       | Nombre de candidats à considérer lors de l'échantillonnage avec `temperature > 0`.              | `5`     |
+| **`--patience PATIENCE`**                     | Valeur de tolérance pour la recherche en faisceau.                                                  | `2.0`   |
+| **`--length_penalty LENGTH_PENALTY`**         | Pénalité de longueur du jeton (générer plus ou moins de texte).                                  | `1.0`   |
+| **`--repetition_penalty REPETITION_PENALTY`** | Pénalité appliquée pour décourager la répétition des jetons.                                   | `1.0`   |
+| **`--no_repeat_ngram_size`**                  | Empêche la répétition de séquences de cette taille.                                              | `0`     |
+| **`--logprob_threshold LOGPROB_THRESHOLD`**   | Seuil de probabilité logarithmique moyenne. Si inférieur, le segment est considéré comme échec. | `-1.0`  |
+| **`--no_speech_threshold`**                   | Seuil de silence si le décodage échoue.                                                            | `0.6`   |
+| **`--compression_ratio_threshold`**           | Seuil de ratio de compression GZIP (si dépassé, souvent signe d'hallucination).                    | `2.4`   |
+| **`--hallucination_silence_threshold`**       | (Expérimental) Coupe le silence long s'il y a détection d'hallucination.                           | `None`  |
+| **`--hallucination_silence_th_temp`**         | Ajoute une heuristique à `--hallucination_silence_threshold`en fonction de la température.       | `1.0`   |
+| **`--hallucinations_list_off`**               | Désactive la liste interne des hallucinations connues.                                              | `False` |
+| **`--v3_offsets_off`**                        | Désactive les ajustements pour contrer les hallucinations du modèle `large-v3`.                  | `False` |
+| **`--reprompt REPROMPT`**                     | Assure que le prompt initial est présent pour tous les segments.                                    | `True`  |
+| **`--ignore_dupe_prompt IGNORE_DUPE_PROMPT`** | N'ajoute pas les répétitions au prompt.                                                            | `2`     |
+| **`--prompt_reset_on_temperature`**           | Réinitialise le prompt si la température dépasse ce seuil.                                        | `0.5`   |
+| **`--prompt_reset_on_no_end {0,1,2}`**        | Réinitialise le prompt si aucune fin de phrase n'est trouvée.                                      | `2`     |
+| **`--temperature_increment_on_fallback`**     | Augmentation de la température si le décodage échoue.                                             | `0.2`   |
+| **`--suppress_blank`**                        | Supprimer les sorties vides au début de l'échantillonnage.                                         | `True`  |
+| **`--suppress_tokens SUPPRESS_TOKENS`**       | Liste des IDs de jetons à supprimer.                                                                | `-1`    |
+| **`--max_new_tokens MAX_NEW_TOKENS`**         | Nombre maximal de nouveaux jetons à générer par segment.                                          | `None`  |
+| **`--chunk_length CHUNK_LENGTH`**             | Longueur des segments audio pour l'encodeur.                                                         | `None`  |
 
 Exporter vers Sheets
 
----
+### 🔇 5. Traitement Audio & VAD (Découpage des Segments)
 
-### 🧹 5. Filtres audio (pré-traitement)
+Options de nettoyage audio (`--ff_...`) et de détection des parties parlées (VAD).
 
-| Argument                  | Description                                          | Défaut     |
-| ------------------------- | ---------------------------------------------------- | ----------- |
-| `--ff_track`            | **Choisir la piste audio si plusieurs**        | `1`       |
-| `--ff_rnndn_xiph`       | **Denoise léger (Supprime bruit et musique)** | `False`   |
-| `--ff_rnndn_sh`         | Denoise fort                                         | `False`   |
-| `--ff_fftdn`            | **Denoise FFT (réduit bruit)**                | `None`    |
-| `--ff_lowhighpass`      | Passe-bande 50–7800 Hz                              | `False`   |
-| `--ff_speechnorm`       | Amplifie voix                                        | `False`   |
-| `--ff_loudnorm`         | Normalise volume                                     | `False`   |
-| `--ff_gate`             | Réduit bruit faible                                 | `False`   |
-| `--ff_silence_suppress` | Supprime silence (dB,durée)                         | `[0,3.0]` |
-| `--ff_vocal_extract`    | Sépare voix du fond                                 | `None`    |
-| `--ff_tempo`            | **Change vitesse audio**                       | `1.0`     |
-
-Exporter vers Sheets
-
----
-
-### ✂️ 6. Segmentation & affichage texte
-
-| Argument                    | Description                                                | Défaut    |
-| --------------------------- | ---------------------------------------------------------- | ---------- |
-| `--sentence`              | Coupe par phrase                                           | `False`  |
-| `--standard`              | Mode standard occidental                                   | `False`  |
-| `--standard_asia`         | Mode asiatique (JA/ZH)                                     | `False`  |
-| `--max_line_width`        | Nb max caractères                                         | `1000`   |
-| `--max_line_count`        | Nb lignes max                                              | `1`      |
-| `--max_comma`             | **Quand couper après une virgule**                  | `250`    |
-| `--max_gap`               | **Gap en secondes > ça devient un nouveau segment** | `3.0`    |
-| `--prepend_punctuations`  | **Fusionne ponctuation avec le mot suivant**         | `'“¿([{' |
-| `--append_punctuations`   | **Fusionne ponctuation avec le mot précédent**     | `.,!?)`  |
-| `--max_initial_timestamp` | **Décalage max du 1er timestamp (en secondes)**     | `None`   |
-| `--timestamps_format`     | **Format des timestamps**                            | `format` |
-| `--timestamps_threshold`  | **Sensibilité pour les timestamps**                 | `float`  |
-| `--highlight_words`       | Mode karaoké                                              | `False`  |
-| `--word_timestamps`       | Mots horodatés                                            | `True`   |
+| Argument                                           | Description Détaillée                                                                             | Défaut          |
+| -------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------------- |
+| **`--vad_filter VAD_FILTER`**              | Active la détection d'activité vocale (VAD) pour filtrer les parties sans parole.                 | `True`         |
+| **`--vad_method {silero_v4_fw, ...}`**     | Méthode de détection d'activité vocale à utiliser.                                              | `silero_v4_fw` |
+| **`--vad_device VAD_DEVICE`**              | Périphérique (`cpu`ou `cuda`) à utiliser pour l'exécution du VAD.                           | `cpu`          |
+| **`--vad_threshold VAD_THRESHOLD`**        | Probabilités considérées comme de la parole.                                                     | `0.45`         |
+| **`--vad_min_speech_duration_ms`**         | Durée minimale d'un segment de parole.                                                             | `250`          |
+| **`--vad_max_speech_duration_s`**          | Durée maximale des segments de parole.                                                             | `None`         |
+| **`--vad_min_silence_duration_ms`**        | Temps d'attente minimum de silence pour séparer un segment.                                        | `3000`         |
+| **`--vad_speech_pad_ms`**                  | Marge ajoutée au début et à la fin de chaque segment de parole.                                  | `900`          |
+| **`--vad_window_size_samples`**            | Taille des échantillons audio pour le modèle VAD.                                                 | `1536`         |
+| **`--vad_dump`**                           | Sauvegarde les timings VAD et divers fichiers audio intermédiaires.                                | `False`        |
+| **`--vad_dump_aud`**                       | Sauvegarde les segments audio collectés par le VAD.                                                | `False`        |
+| **`--clip_timestamps CLIP_TIMESTAMPS`**    | Liste d'horodatages `start,end,start,end,...`(en secondes) pour ne traiter que certaines parties. | `0`            |
+| **`--ff_track {1,2,3,4,5,6}`**             | Sélectionne la piste audio à traiter.                                                             | `1`            |
+| **`--ff_dump`**                            | Sauvegarde l'audio pré-traité par les filtres.                                                    | `False`        |
+| **`--ff_fftdn [0 - 97]`**                  | Filtre audio : Dénouage général par Transformée de Fourier Rapide.                              | `0`            |
+| **`--ff_rnndn_xiph`**                      | Filtre audio : Suppression du non-vocal par modèle RNN Xiph (moins agressif).                      | `False`        |
+| **`--ff_rnndn_sh`**                        | Filtre audio : Suppression du non-vocal par modèle RNN SH (agressif).                              | `False`        |
+| **`--ff_vocal_extract {mdx_kim2}`**        | Filtre audio : Extraction des voix (séparation des instruments/fond sonore).                       | `None`         |
+| **`--ff_loudnorm`**                        | Filtre audio : Normalisation de l'intensité sonore EBU R128.                                       | `False`        |
+| **`--ff_speechnorm`**                      | Filtre audio : Amplification de la parole.                                                          | `False`        |
+| **`--ff_tempo [0.5 - 2.0]`**               | Filtre audio : Ajuste le tempo de l'audio.                                                          | `1.0`          |
+| **`--ff_gate`**                            | Filtre audio : Réduit les parties inférieures d'un signal (noise gate).                           | `False`        |
+| **`--ff_lowhighpass`**                     | Filtre audio : Passe-bande 50Hz - 7800Hz.                                                           | `False`        |
+| **`--ff_silence_suppress noise duration`** | Filtre audio : Supprime les parties silencieuses.                                                   | `[0, 3.0]`     |
+| **`--ff_mp3`**                             | Filtre audio : Conversion vers MP3 et retour (peut corriger certains problèmes).                   | `False`        |
+| **`--ff_sync`**                            | Filtre audio : Étire/comprime les échantillons selon les horodatages.                             | `False`        |
+| **`--ff_fc`**                              | Sélectionne uniquement le canal avant-centre (FC).                                                 | `False`        |
+| **`--ff_lc`**                              | Sélectionne uniquement le canal gauche.                                                            | `False`        |
+| **`--ff_invert`**                          | Inverse la polarité du canal gauche et mixe en mono.                                               | `False`        |
+| **`--mdx_chunk MDX_CHUNK`**                | Taille des morceaux pour le filtre `mdx_kim2`.                                                    | `15`           |
+| **`--voc_device VOC_DEVICE`**              | Périphérique à utiliser pour le filtre d'extraction vocale.                                      | `cpu`          |
 
 Exporter vers Sheets
 
----
+### 👥 6. Diarization (Multi-Locuteurs)
 
-### 👥 7. Diarization (multi-locuteurs)
+Arguments pour la détection et l'identification des différents locuteurs.
 
-| Argument                | Description                              | Défaut     |
-| ----------------------- | ---------------------------------------- | ----------- |
-| `--diarize`           | Active détection locuteurs              | `None`    |
-| `--num_speakers`      | Nb fixe de locuteurs                     | `None`    |
-| `--min_speakers`      | **Nombre minimum de locuteurs**    | `None`    |
-| `--max_speakers`      | **Nombre maximum de locuteurs**    | `None`    |
-| `--speaker`           | Nom custom au lieu de "SPEAKER"          | `SPEAKER` |
-| `--diarize_dump`      | Sauve résultats diarization             | `False`   |
-| `--diarize_only`      | **Sort uniquement la diarisation** | `False`   |
-| `--return_embeddings` | Sauve vecteurs vocaux                    | `False`   |
-
-Exporter vers Sheets
-
----
-
-### 🧪 8. Fonctions avancées
-
-| Argument                              | Description                                                   | Défaut   |
-| ------------------------------------- | ------------------------------------------------------------- | --------- |
-| `--batch_recursive`                 | Analyse dossier complet                                       | `False` |
-| `--skip`                            | Ignore fichiers déjà traités                               | `False` |
-| `--hotwords`                        | Mots-clés prioritaires                                       | `None`  |
-| `--prefix`                          | **Préfixe imposé pour le début de la transcription** | `None`  |
-| `--postfix`                         | **Postfix imposé pour la fin de la transcription**     | `None`  |
-| `--ignore_dupe_prompt`              | **Ignore les prompts répétés**                       | `None`  |
-| `--reprompt`                        | **Répète prompt si bloc incohérent**                 | `False` |
-| `--one_word`                        | **Force la sortie en un seul mot (pour japonais)**      | `0`     |
-| `--japanese`                        | Style de sortie japonais (`blend`,`kanji`, etc.)          | `blend` |
-| `--hallucination_silence_threshold` | **Anti-hallucination (seuil de silence en secondes)**   | `None`  |
-| `--v3_offsets_off`                  | **Désactive certaines corrections pour large-v3**      | `False` |
+| Argument                                        | Description Détaillée                                                 | Défaut     |
+| ----------------------------------------------- | ----------------------------------------------------------------------- | ----------- |
+| **`--diarize {pyannote_v3.0, ...}`**    | Active la diarisation (identification des locuteurs).                   | `None`    |
+| **`--diarize_device DIARIZE_DEVICE`**   | Périphérique (`cpu`ou `cuda`) à utiliser pour la diarisation.    | `cpu`     |
+| **`--diarize_threads DIARIZE_THREADS`** | Nombre de threads pour la diarisation.                                  | `0`(auto) |
+| **`--diarize_dump`**                    | Sauvegarde la sortie de la diarisation dans un fichier.                 | `False`   |
+| **`--diarize_only`**                    | Effectue uniquement la diarisation sans transcription.                  | `False`   |
+| **`--diarize_ff DIARIZE_FF`**           | Active la diarisation après les filtres audio (`--ff_...`).          | `None`    |
+| **`--speaker SPEAKER`**                 | Chaîne de caractères à utiliser au lieu de "SPEAKER" dans la sortie. | `SPEAKER` |
+| **`--num_speakers NUM_SPEAKERS`**       | Nombre fixe de locuteurs.                                               | `None`    |
+| **`--min_speakers MIN_SPEAKERS`**       | Nombre minimum de locuteurs à rechercher.                              | `None`    |
+| **`--max_speakers MAX_SPEAKERS`**       | Nombre maximum de locuteurs à rechercher.                              | `None`    |
+| **`--return_embeddings`**               | Sauvegarde les vecteurs vocaux du modèle de diarisation.               | `False`   |
 
 Exporter vers Sheets
 
----
+### ✂️ 7. Formatage du Texte & Segmentation des Sous-Titres
 
-### 🗂️ 9. Formats & sortie
+Règles pour le découpage des lignes, la gestion de la ponctuation et l'horodatage.
 
-| Argument                 | Description                                                   | Défaut   |
-| ------------------------ | ------------------------------------------------------------- | --------- |
-| `--output_format`      | `srt`,`vtt`,`txt`,`json`,`all`                      | `srt`   |
-| `--postfix`            | **Ajouter la langue en suffixe dans le nom du fichier** | `False` |
-| `--without_timestamps` | Supprime timecodes                                            | `False` |
-| `--print_progress`     | Affiche progression                                           | `False` |
-| `--check_files`        | Vérifie erreurs entrée                                      | `False` |
-
-Exporter vers Sheets
-
----
-
-### 10. Ordre d’exécution recommandé
-
-Voici l'ordre recommandé pour appliquer les options (tiré de `README2`):
-
-1. **Prétraitement audio** → options `--ff_*`
-2. **Segmentation audio (VAD)** → options `--vad_*`
-3. **Transcription / traduction** → options `--model`, `--task`, `--language`
-4. **Post-traitement texte** → options `--word_timestamps`, `--sentence`, `--max_line_width`
-5. **Sortie / sous-titres** → options `--output_format`, `--output_dir`
+| Argument                                        | Description Détaillée                                                                              | Défaut                      |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------- |
+| **`--sentence`**                        | Active la coupure des lignes par phrase (chaque phrase commence un nouveau segment).                 | `False`                    |
+| **`--standard`**                        | Préréglage rapide pour le format standard occidental.                                              | `False`                    |
+| **`--standard_asia`**                   | Préréglage rapide pour le format standard asiatique.                                               | `False`                    |
+| **`--max_line_width MAX_LINE_WIDTH`**   | Nombre maximal de caractères dans une ligne avant de la couper.                                     | `1000`                     |
+| **`--max_line_count MAX_LINE_COUNT`**   | Nombre maximal de lignes dans un segment de sous-titre.                                              | `1`                        |
+| **`--max_comma MAX_COMMA`**             | (Nécessite `--sentence`) Après cette longueur, une virgule est traitée comme une fin de phrase. | `250`                      |
+| **`--max_comma_cent {20,30,...100}`**   | Pourcentage de `--max_line_width`où la ligne est coupée après une virgule.                      | `100`                      |
+| **`--max_gap MAX_GAP`**                 | Seuil pour une longueur d'écart (en secondes) traitée comme une fin de segment.                    | `3.0`                      |
+| **`--min_dist_to_end {0,4,5,...}`**     | Distance minimale à la fin de ligne pour les mots de liaison.                                       | `0`                        |
+| **`--prepend_punctuations`**            | Symboles de ponctuation à fusionner avec le mot**suivant** .                                  | `'“¿([{-`                |
+| **`--append_punctuations`**             | Symboles de ponctuation à fusionner avec le mot**précédent** .                              | `".。,，!！?？:：”)]}、"` |
+| **`--word_timestamps WORD_TIMESTAMPS`** | Extrait les horodatages au niveau du mot.                                                            | `True`                     |
+| **`--highlight_words HIGHLIGHT_WORDS`** | Souligne chaque mot au fur et à mesure (mode karaoké).                                             | `False`                    |
+| **`--without_timestamps`**              | Génère du texte sans horodatage.                                                                   | `None`                     |
+| **`--max_initial_timestamp`**           | L'horodatage initial ne peut pas être postérieur à cette valeur (en secondes).                    | `1.0`                      |
+| **`--japanese {blend,kanji,...}`**      | Permet d'orienter le style d'écriture du japonais.                                                  | `blend`                    |
+| **`--one_word {0,1,2}`**                | Sortie de sous-titres avec un mot par ligne.                                                         | `0`                        |
+| **`--postfix`**                         | Ajoute le code de la langue en suffixe au nom du fichier de sous-titres.                             | `False`                    |
+| **`--alt_writer_off`**                  | (Expérimental) Désactive le writer alternatif des sous-titres.                                     | `False`                    |
 
 ---
 
@@ -374,7 +360,7 @@ Exporter vers Sheets
 | `--beam_size`    | nombre                        | Augmente précision mais ralentit       |
 | `--best_of`      | nombre                        | Teste plusieurs propositions de phrases |
 
-Exporter vers Sheets
+
 
 ---
 

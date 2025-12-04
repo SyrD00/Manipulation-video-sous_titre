@@ -34,29 +34,6 @@ os.makedirs(output_dir, exist_ok=True)
 # ===============================
 # 🧠 Commande complète
 # ===============================
-'''
-faster-whisper-xxl.exe `
-  --model large-v3-turbo `
-  --language ja `
-  --japanese blend `
-  --output_format srt `
-  --output_dir "C:/Users/babak/Documents/Transcriptions" `
-  --vad_filter True `
-  --vad_method silero_v4_fw `
-  --vad_min_silence_duration_ms 100 `
-  --vad_speech_pad_ms 200 `
-  --sentence `
-  --standard_asia `
-  --max_line_width 16 `
-  --max_line_count 2 `
-  --max_gap 0.5 `
-  --word_timestamps True `
-  --ignore_dupe_prompt 2 `
-  --hallucination_silence_threshold 4 `
-  --v3_offsets_off `
-  "C:/Users/babak/Music/VideoProc Converter AI/cure connect.mp3"
-
-'''
 
 
 cmd = [
