@@ -7,10 +7,10 @@ import shutil
 # ===============================
 
 # 🟢 1. Chemin du fichier vidéo ou audio à traiter
-input_file = r"C:\Users\babak\Music\VideoProc Converter AI\cure connect.mp3"   # ← change ici ton chemin
+input_file = r"C:\Users\babak\Videos\PSO\Video\PSO33.mp4"   # ← change ici ton chemin
 
 # 🟢 2. Dossier de sortie pour les sous-titres
-output_dir = r"C:\Users\babak\Documents\Transcriptions"                # ← change ici ton dossier
+output_dir = r"C:\Users\babak\Videos\PSO\Sub"                # ← change ici ton dossier
 
 #🟢 3. Chemin vers l’exécutable Faster-Whisper-XXL si pas dans le Path
 #whisper_exe = r"C:\Program Files\Whisper\Faster-Whisper-XXL\faster-whisper-xxl.exe"  # ← adapte si besoin
@@ -35,18 +35,32 @@ os.makedirs(output_dir, exist_ok=True)
 # 🧠 Commande complète
 # ===============================
 
-
+#"--vad_threshold", "0.4",
 cmd = [
     whisper_exe,
+    input_file,
     "--model", "large-v3-turbo",
     "--language", "ja",
+    "--japanese", "blend",
     "--output_format", "srt",
     "--output_dir", output_dir,
+    "--vad_filter", "True", 
     "--vad_method", "silero_v5_fw",
-    "--vad_threshold", "0.4",
-    "--vad_min_silence_duration_ms", "100",
-    input_file
+    "--max_gap", "0.1",
+    "--vad_speech_pad_ms", "200",
+    "--sentence",
+    "--standard_asia",
+    "--word_timestamps", "True",
+    "--ignore_dupe_prompt", "2",
+    "--hallucination_silence_threshold", "4",
+    "--v3_offsets_off",
+    "--threads", "4",
+    "--print_progress",
+    "--batched",
+    
 ]
+
+
 
 # ===============================
 # ▶️ Lancement

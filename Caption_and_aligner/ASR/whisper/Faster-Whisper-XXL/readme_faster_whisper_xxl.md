@@ -51,26 +51,25 @@ puis redémarre l'ordu
 ## 💡 3. Commande parfaite pour ton usage
 
 ```bash
-faster-whisper-xxl.exe `
-  --model large-v3-turbo `
-  --language ja `
-  --japanese blend `
-  --output_format srt `
-  --output_dir "C:/Users/babak/Documents/Transcriptions" `
-  --vad_filter True `
-  --vad_method silero_v4_fw `
-  --vad_min_silence_duration_ms 100 `
-  --vad_speech_pad_ms 200 `
-  --sentence `
-  --standard_asia `
-  --max_line_width 16 `
-  --max_line_count 2 `
-  --max_gap 0.5 `
-  --word_timestamps True `
-  --ignore_dupe_prompt 2 `
-  --hallucination_silence_threshold 4 `
-  --v3_offsets_off `
-  "C:/Users/babak/Music/VideoProc Converter AI/cure connect.mp3"
+faster-whisper-xxl.exe "C:/Users/babak/Music/VideoProc Converter AI/29V2.mp4" `
+--model large-v3-turbo `
+--language ja `
+--japanese blend `
+--output_format srt `
+--output_dir "C:/Users/babak/Documents/Transcriptions" `
+--vad_filter True `
+--vad_method silero_v5_fw `
+--max_gap 0.1 `
+--vad_speech_pad_ms 200 `
+--sentence `
+--standard_asia `
+--word_timestamps True `
+--ignore_dupe_prompt 2 `
+--hallucination_silence_threshold 4 `
+--v3_offsets_off `
+--threads 4 `
+--print_progress `
+--batched `
 ```
 
 Cette commande est optimisée pour :
@@ -80,6 +79,32 @@ Cette commande est optimisée pour :
 - 🧹 **nettoyage & amplification audio**
 - 💬 **sortie claire (.srt)**
 - 💫 **meilleure précision et synchronisation**
+
+| **Argument**                              | **Catégorie** | **Valeur**    | **Rôle Condensé et Explication**                                                                                                        |
+| ----------------------------------------------- | -------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Chemin du Fichier**                     | Positionnel          | `C:/.../29V2.mp4` | Le fichier audio/vidéo à transcrire.**Argument requis.**                                                                                |
+| **`--model`**                           | Modèle              | `large-v3-turbo`  | Utilise le**modèle le plus grand et le plus précis**(V3 optimisé) pour la transcription.                                               |
+| **`--language`**                        | Langue               | `ja`              | **Langue source Japonaise**pour guider le modèle.                                                                                        |
+| **`--output_format`**                   | Sortie               | `srt`             | Format de sous-titres le plus courant.                                                                                                          |
+| **`--output_dir`**                      | Sortie               | Dossier             | Dossier de destination pour le fichier `.srt`.                                                                                                |
+| ---                                             | ---                  | ---                 | ---                                                                                                                                             |
+| **`--vad_filter`**                      | VAD                  | `True`            | **Active la détection de voix**(VAD) pour ignorer les silences et améliorer la vitesse/précision.                                      |
+| **`--vad_method`**                      | VAD                  | `silero_v5_fw`    | Utilise la**méthode Silero V5**(la plus récente/performante) pour la détection de parole.                                              |
+| **`--vad_speech_pad_ms`**               | VAD                  | `200`             | Ajoute**200 ms**de protection autour des paroles détectées pour ne pas couper les mots.                                                 |
+| ---                                             | ---                  | ---                 | ---                                                                                                                                             |
+| **`--threads`**                         | Performance          | `4`               | Utilise 4 cœurs CPU pour les tâches non-GPU.                                                                                                  |
+| **`--batched`**                         | Performance          | **Flag**      | **Active le traitement par lots**des segments pour une accélération significative (souvent x2 à x8).                                   |
+| **`--print_progress`**                  | Affichage            | **Flag**      | Affiche une**barre de progression**claire au lieu du texte segment par segment.                                                           |
+| ---                                             | ---                  | ---                 | ---                                                                                                                                             |
+| **`--sentence`**                        | Formatage            | **Flag**      | Force la**coupure des segments en phrases**complètes.                                                                                    |
+| **`--standard_asia`**                   | Formatage            | **Flag**      | Applique un préréglage de formatage**optimisé pour l'Asie**(lignes plus courtes, typiquement 16 caractères), idéal pour le japonais. |
+| **`--word_timestamps`**                 | Formatage            | `True`            | Permet d'obtenir des**horodatages précis au niveau du mot** , essentiel pour le formatage.                                               |
+| **`--max_gap`**                         | Formatage            | `0.1`             | Traite les silences**plus longs que 0.1 seconde**comme une fin de phrase.                                                                 |
+| ---                                             | ---                  | ---                 | ---                                                                                                                                             |
+| **`--japanese`**                        | Modèle              | `blend`           | Utilise le meilleur**mélange de caractères japonais**(kanji, hiragana, etc.) pour la sortie.                                            |
+| **`--ignore_dupe_prompt`**              | Anti-Hallucination   | `2`               | Regarde les**2 segments précédents**pour éviter les répétitions (boucles d'hallucination).                                           |
+| **`--hallucination_silence_threshold`** | Anti-Hallucination   | `4`               | Aide à détecter les hallucinations en sautant les silences de**plus de 4 secondes** .                                                   |
+| **`--v3_offsets_off`**                  | Anti-Hallucination   | **Flag**      | Désactive des réglages par défaut du V3 qui pourraient causer des problèmes dans votre configuration.                                       |
 
 ---
 
@@ -92,7 +117,6 @@ voir fwxxl.py
 ---
 
 ## 📖 5. Liste complète des arguments
-
 
 ### 🛠️ 1. Configuration Générale & Fichiers
 
@@ -129,7 +153,6 @@ Arguments pour accélérer la transcription et traiter plusieurs fichiers/segmen
 | **`--skip`**                        | Ignore le fichier si le sous-titre de sortie existe déjà.                                                    | `False`         |
 | **`--print_progress`**              | Affiche une barre de progression au lieu de la transcription détaillée.                                      | `False`         |
 | **`--model_preload MODEL_PRELOAD`** | Précharge le modèle avant l'itération.                                                                      | `None`          |
-
 
 Sur  **CPU Intel** , donc le batch size va dépendre de  **ta puissance CPU et du nombre de cœurs réels disponibles** . Voici comment raisonner :
 
@@ -169,8 +192,6 @@ Exemple :
 * Observe l’utilisation CPU dans le gestionnaire des tâches.
   * Si utilisation < 80% → tu peux augmenter légèrement.
   * Si 100% → réduire pour éviter que le système rame.
-
-
 
 ### 🧠 3. Tâches, Langues & Pré-prompting (Contexte du Modèle)
 
@@ -359,8 +380,6 @@ Exporter vers Sheets
 | `--threads`      | nombre                        | Nombre de threads CPU                   |
 | `--beam_size`    | nombre                        | Augmente précision mais ralentit       |
 | `--best_of`      | nombre                        | Teste plusieurs propositions de phrases |
-
-
 
 ---
 
