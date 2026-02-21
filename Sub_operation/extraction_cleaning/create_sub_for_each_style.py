@@ -55,7 +55,7 @@ def extract_styles_separately(input_path: str, output_folder: str, target_styles
 
 if __name__ == "__main__":
     # Fichier d'entrée
-    input_file = "C:/Users/babak/Videos/PSO/Video/op.ass"
+    input_file = r"C:\Users\babak\Videos\PSO\Song\op2 const.ass"
 
     # Dossier où enregistrer les fichiers créés
     output_folder = "C:/Users/babak/Videos/PSO/Video/"

@@ -5,9 +5,8 @@ import shutil
 # ===============================
 # ⚙️ CONFIGURATION UTILISATEUR
 # ===============================
-
 # 🟢 1. Chemin du fichier vidéo ou audio à traiter
-input_file = r"C:\Users\babak\Videos\PSO\Video\PSO33.mp4"   # ← change ici ton chemin
+input_file = r"C:\Users\babak\Videos\PSO\Video\PSO35.mp4"   # ← change ici ton chemin
 
 # 🟢 2. Dossier de sortie pour les sous-titres
 output_dir = r"C:\Users\babak\Videos\PSO\Sub"                # ← change ici ton dossier
@@ -19,7 +18,6 @@ whisper_exe = "faster-whisper-xxl.exe"  # Si l’exécutable est dans le Path sy
 # ===============================
 # 🚀 EXÉCUTION AUTOMATIQUE
 # ===============================
-
 # Vérifie que les chemins existent
 if not os.path.exists(input_file):
     raise FileNotFoundError(f"❌ Fichier introuvable : {input_file}")
@@ -45,14 +43,13 @@ cmd = [
     "--output_format", "srt",
     "--output_dir", output_dir,
     "--vad_filter", "True", 
-    "--vad_method", "silero_v5_fw",
+    "--vad_method", "pyannote_onnx_v3",
     "--max_gap", "0.1",
     "--vad_speech_pad_ms", "200",
     "--sentence",
     "--standard_asia",
     "--word_timestamps", "True",
     "--ignore_dupe_prompt", "2",
-    "--hallucination_silence_threshold", "4",
     "--v3_offsets_off",
     "--threads", "4",
     "--print_progress",
