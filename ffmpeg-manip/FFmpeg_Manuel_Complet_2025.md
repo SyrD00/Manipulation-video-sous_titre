@@ -5,7 +5,9 @@
 ---
 
 
-- [1. Introduction générale](#1-introduction-generale)
+
+<h2 id="section-1">1. Introduction generale</h2>
+
 
 # 📑 Sommaire
 
