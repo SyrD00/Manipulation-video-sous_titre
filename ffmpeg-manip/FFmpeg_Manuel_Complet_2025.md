@@ -10,80 +10,53 @@ Ce document est mon **guide personnel ultime** pour FFmpeg.Il regroupe :
 
 # Table des matières
 
-## 1. Introduction générale
+### 1. [🎯 Introduction générale](https://www.google.com/search?q=%231-introduction-g%C3%A9n%C3%A9rale)
 
-- [1.1 Pourquoi j’ai créé ce guide](#11-pourquoi-j’ai-créé-ce-guide)
-- [1.2 FFmpeg : ce que ça permet vraiment](#12-ffmpeg--ce-que-ça-permet-vraiment)
-- [1.3 Mon matériel principal](#13-mon-matériel-principal)
-- [1.4 Codec vs Conteneur](#14-codec-vs-conteneur)
-- [1.5 Pourquoi réencoder](#15-pourquoi-réencoder)
-- [1.6 CPU vs GPU](#16-cpu-vs-gpu)
+* [1.1 Pourquoi j’ai créé ce guide](https://www.google.com/search?q=%2311-pourquoi-jai-cr%C3%A9%C3%A9-ce-guide)
+* [1.2 FFmpeg : ce que ça permet vraiment](https://www.google.com/search?q=%2312-ffmpeg--ce-que-%C3%A7a-permet-vraiment-)
+* [1.3 Mon matériel principal](https://www.google.com/search?q=%2313-mon-mat%C3%A9riel-principal-%EF%B8%8F)
+* [1.4 Codec vs Conteneur](https://www.google.com/search?q=%2314-codec-vs-conteneur-)
+* [1.5 Pourquoi réencoder ?](https://www.google.com/search?q=%2315-pourquoi-r%C3%A9encoder-)
+* [1.6 CPU vs GPU](https://www.google.com/search?q=%2316-cpu-vs-gpu-)
 
-## 2. Installation & Configuration
+### 2. [🛠️ Installation &amp; Configuration](https://www.google.com/search?q=%232-%EF%B8%8F-installation--configuration-de-ffmpeg)
 
-- [2.1 Téléchargement](#21-téléchargement)
-- [2.2 Ajouter FFmpeg au PATH](#22-ajouter-ffmpeg-au-path)
-- [2.3 Vérifier les encodeurs](#23-vérifier-les-encodeurs)
-- [2.4 Vérifier les accélérations matérielles](#24-vérifier-les-accélérations-matérielles)
-- [2.5 Comprendre -hwaccel](#25-comprendre--hwaccel)
+* [2.1 Téléchargement](https://www.google.com/search?q=%2321--t%C3%A9l%C3%A9chargement)
+* [2.2 Ajouter FFmpeg au PATH](https://www.google.com/search?q=%2322--ajouter-ffmpeg-au-path-windows)
+* [2.3 Vérifier les encodeurs](https://www.google.com/search?q=%2323--v%C3%A9rifier-les-encodeurs-cpugpu)
+* [2.4 Vérifier les accélérations](https://www.google.com/search?q=%2324--v%C3%A9rifier-les-acc%C3%A9l%C3%A9rations-mat%C3%A9rielles)
+* [2.5 Comprendre -hwaccel](https://www.google.com/search?q=%2325-%EF%B8%8F-comprendre--hwaccel-acc%C3%A9l%C3%A9ration-mat%C3%A9rielle)
 
-## 3. Commandes essentielles
+### 3. [📘 Commandes essentielles](https://www.google.com/search?q=%233--commandes-ffmpeg-essentielles)
 
-- [3.1 Structure de base](#31-structure-de-base)
-- [3.2 Options fondamentales](#32-options-fondamentales)
-- [3.3 Copier un flux sans réencodage](#33-copier-un-flux-sans-réencodage)
-- [3.4 MKV → MP4 sans réencodage](#34-mkv--mp4-sans-réencodage)
-- [3.5 Quand le copy échoue](#35-quand-le-copy-échec)
+* [3.1 Structure de base](https://www.google.com/search?q=%2331--structure-de-base)
+* [3.2 Options fondamentales](https://www.google.com/search?q=%2332-%EF%B8%8F-options-fondamentales)
+* [3.3 Copier un flux](https://www.google.com/search?q=%2333--copier-un-flux-sans-r%C3%A9encodage)
+* [3.4 MKV → MP4](https://www.google.com/search?q=%2334-%EF%B8%8F-mkv--mp4-sans-r%C3%A9encodage)
+* [3.5 Quand le copy échoue](https://www.google.com/search?q=%2335--quand-le-copy-%C3%A9choue-dtseac3flac)
 
-## 4. Encodage CPU (libx264)
+### 4. [🧠 Encodage CPU](https://www.google.com/search?q=%234--encodage-cpu-avec-libx264)
 
-- [4.1 Pourquoi choisir le CPU](#41-pourquoi-choisir-le-cpu)
-- [4.2 CRF](#42-crf)
-- [4.3 Presets libx264](#43-presets-libx264)
-- [4.4 Commandes pratiques](#44-commandes-pratiques)
-- [4.5 Réencodage audio AAC](#45-réencodage-audio-aac)
+* [4.1 Pourquoi le CPU](https://www.google.com/search?q=%2341--pourquoi-choisir-le-cpu)
+* [4.2 CRF](https://www.google.com/search?q=%2342-%EF%B8%8F-crf-qualit%C3%A9)
+* [4.3 Presets libx264](https://www.google.com/search?q=%2343--presets-libx264-vitesse--qualit%C3%A9)
+* [4.4 Commandes pratiques](https://www.google.com/search?q=%2344--commandes-utiles-libx264)
+* [4.5 Réencodage audio AAC](https://www.google.com/search?q=%2345-%EF%B8%8F-r%C3%A9encodage-audio-aac)
 
-## 5. Intel Quick Sync (QSV)
+### 5. [💠 Intel Quick Sync (QSV)](https://www.google.com/search?q=%235--encodage-mat%C3%A9riel-intel-quick-sync-qsv)
 
-- [5.1 Introduction à QSV](#51-introduction-à-qsv)
-- [5.2 Décodage matériel vs logiciel](#52-décodage-matériel-vs-logiciel)
-- [5.3 Encodage h264_qsv](#53-encodage-h264_qsv)
-- [5.4 Décodage hevc_qsv](#54-décodage-hevc_qsv)
-- [5.5 Pipeline HEVC 10 bits → H.264 8 bits](#55-pipeline-hevc-10-bits--h264-8-bits)
-- [5.6 Importance du format NV12](#56-importance-du-format-nv12)
-- [5.7 hwupload / hwdownload](#57-hwupload--hwdownload)
-- [5.8 Commandes rapides QSV](#58-commandes-rapides-qsv)
-- [5.9 look_ahead](#59-look_ahead)
-- [5.10 Erreurs QSV](#510-erreurs-qsv)
+* [5.1 Intro QSV](https://www.google.com/search?q=%2351--introduction-%C3%A0-qsv)
+* [5.2 Décodage matériel](https://www.google.com/search?q=%2352--d%C3%A9codage-mat%C3%A9riel-vs-logiciel)
+* [5.3 Encodage h264_qsv](https://www.google.com/search?q=%2353--encodage-h264_qsv)
+* [5.5 Pipeline HEVC 10 bits](https://www.google.com/search?q=%2355--pipeline-complet--hevc-10-bits--h264-8-bits)
+* [5.10 Erreurs QSV](https://www.google.com/search?q=%23510--erreurs-courantes-qsv-et-corrections)
 
-## 6. Nvidia NVENC
+### 8. [✨ Hardsub](https://www.google.com/search?q=%238--hardsub--sous-titres-incrust%C3%A9s)
 
-- [6.1 Principes](#61-principes)
-- [6.2 Contrôle CQ](#62-contrôle-cq)
-- [6.3 Presets NVENC](#63-presets-nvenc)
-- [6.4 Commandes rapides](#64-commandes-rapides)
-
-## 7. AMD AMF
-
-- [7.1 Présentation](#71-présentation)
-- [7.2 d3d11va vs dxva2](#72-d3d11va-vs-dxva2)
-- [7.3 Mode CQP](#73-mode-cqp)
-- [7.4 QP I / P / B](#74-qp-i--p--b)
-- [7.5 Compatibilité 8/10 bits](#75-compatibilité-810-bits)
-- [7.6 Commandes AMD](#76-commandes-amd)
-
-## 8. Hardsub
-
-- [8.1 ASS vs SRT](#81-ass-vs-srt)
-- [8.2 Lire les pistes MKV](#82-lire-les-pistes-mkv)
-- [8.3 Identifier une piste](#83-identifier-une-piste)
-- [8.4 Hardsub ASS externe](#84-hardsub-ass-externe)
-- [8.5 Hardsub depuis MKV](#85-hardsub-depuis-mkv)
-- [8.6 Pipeline QSV hardsub](#86-pipeline-qsv-hardsub)
-- [8.7 Hardsub AMD](#87-hardsub-amd)
-- [8.8 Hardsub NVENC](#88-hardsub-nvenc)
-- [8.9 Intel : hwdownload obligatoire](#89-intel--hwdownload-obligatoire)
-- [8.10 Erreurs courantes](#810-erreurs-courantes)
+* [8.1 ASS vs SRT](https://www.google.com/search?q=%2381-%EF%B8%8F-ass-vs-srt)
+* [8.4 Hardsub externe](https://www.google.com/search?q=%2384-%EF%B8%8F-hardsub-dun-fichier-srtass)
+* [8.6 Pipeline QSV hardsub](https://www.google.com/search?q=%2386-%EF%B8%8F-pipeline-complet-hardsub-intel-qsv-hevc-10-bits--h264)
+* [8.9 Intel : hwdownload](https://www.google.com/search?q=%2389-%EF%B8%8F-intel--cas-o%C3%B9-hwdownload--formatnv12-sont-obligatoires)
 
 ## 9. Conversion vidéo
 
