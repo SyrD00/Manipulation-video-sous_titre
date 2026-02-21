@@ -4,6 +4,71 @@
 
 ---
 
+- [1.3 Mon matériel principal](#13-mon-materiel-principal)
+- [1.5 Pourquoi réencoder ?](#15-pourquoi-reencoder)
+
+- [2.1 Téléchargement](#21-telechargement)
+- [2.5 Comprendre -hwaccel (accélération matérielle)](#25-comprendre--hwaccel-acceleration-materielle)
+
+
+- [3.2 Options fondamentales](#32-options-fondamentales)
+- 
+
+- [4.2 CRF (qualité)](#42-crf-qualite)
+
+
+- [5.4 Décodage hevc_qsv](#54-decodage-hevc_qsv)
+- [5.7 hwupload / hwdownload](#57-hwupload--hwdownload)
+
+- [6.2 Contrôle CQ](#62-controle-cq)
+
+
+- [7.3 Mode CQP](#73-mode-cqp-constant-quantization-parameter)
+- [7.5 Compatibilité 8/10 bits](#75-compatibilite-810-bits)
+- [7.6 Commandes AMD pratiques](#76-commandes-amd-pratiques)
+
+
+- [8.5 Hardsub depuis sous-titres internes MKV](#85-hardsub-a-partir-des-sous-titres-internes-mkv)
+- [8.6 Pipeline complet Hardsub Intel QSV](#86-pipeline-complet-hardsub-intel-qsv-hevc-10-bits--h264)
+
+
+- [9.4 Exemples selon GPU](#94-exemples-selon-gpu)
+- 
+
+- [10.4 Mesurer le temps FFmpeg](#104-mesurer-le-temps-ffmpeg)
+
+
+- [11.1 yuv420p (8 bits)](#111-yuv420p-8-bits)
+- [11.2 yuv420p10le (10 bits)](#112-yuv420p10le-10-bits)
+
+
+- [12.1 CRF](#121-crf-constant-rate-factor)
+- [12.2 CQP](#122-cqp-constant-quantization-parameter)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # 📑 Sommaire
 
 
