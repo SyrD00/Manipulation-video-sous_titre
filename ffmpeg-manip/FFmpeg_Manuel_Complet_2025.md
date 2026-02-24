@@ -4,73 +4,7 @@
 
 ---
 
-- [1.3 Mon matériel principal](#13-mon-materiel-principal)
-- [1.5 Pourquoi réencoder ?](#15-pourquoi-reencoder)
-
-- [2.1 Téléchargement](#21-telechargement)
-- [2.5 Comprendre -hwaccel (accélération matérielle)](#25-comprendre--hwaccel-acceleration-materielle)
-
-
-- [3.2 Options fondamentales](#32-options-fondamentales)
-- 
-
-- [4.2 CRF (qualité)](#42-crf-qualite)
-
-
-- [5.4 Décodage hevc_qsv](#54-decodage-hevc_qsv)
-- [5.7 hwupload / hwdownload](#57-hwupload--hwdownload)
-
-- [6.2 Contrôle CQ](#62-controle-cq)
-
-
-- [7.3 Mode CQP](#73-mode-cqp-constant-quantization-parameter)
-- [7.5 Compatibilité 8/10 bits](#75-compatibilite-810-bits)
-- [7.6 Commandes AMD pratiques](#76-commandes-amd-pratiques)
-
-
-- [8.5 Hardsub depuis sous-titres internes MKV](#85-hardsub-a-partir-des-sous-titres-internes-mkv)
-- [8.6 Pipeline complet Hardsub Intel QSV](#86-pipeline-complet-hardsub-intel-qsv-hevc-10-bits--h264)
-
-
-- [9.4 Exemples selon GPU](#94-exemples-selon-gpu)
-- 
-
-- [10.4 Mesurer le temps FFmpeg](#104-mesurer-le-temps-ffmpeg)
-
-
-- [11.1 yuv420p (8 bits)](#111-yuv420p-8-bits)
-- [11.2 yuv420p10le (10 bits)](#112-yuv420p10le-10-bits)
-
-
-- [12.1 CRF](#121-crf-constant-rate-factor)
-- [12.2 CQP](#122-cqp-constant-quantization-parameter)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # 📑 Sommaire
-
 
 - [1. Introduction générale](#1-introduction-generale)
 
@@ -1044,7 +978,127 @@ ffmpeg -i IP39.mkv -vf "subtitles=IP39.mkv" -c:v h264_qsv -preset veryfast -c:a 
 
 ➡️ **Conclusion : cette commande est la plus lente** à cause du filtre vidéo.
 
-OU PLUS RAPIDE
+ffmpeg -i DSP.mkv -vf subtitles=DSP.mkv -c:v h264_qsv -global_quality 23 -preset veryfast -c:a aac -b:a 192k DSP.mp4
+
+# Comparaison de commandes FFmpeg pour hard-sub avec QSV
+
+On compare deux commandes différentes pour encoder une vidéo MKV avec sous-titres gravés (hard-sub) en MP4 avec accélération matérielle Intel QSV.
+
+---
+
+
+## NB
+
+
+* **`-vf "subtitles=..."`** : Garde l'incrustation visuelle (Hardsub).
+* **`-sn`** : Ignore toutes les pistes de sous-titres lors de la création du fichier (plus de piste 3 dans LosslessCut).
+
+
+ffmpeg -i IPM.mkv -vf "subtitles=IPM.mkv" -c:v libx264 -preset veryfast -crf 23 -c:a copy -sn IPM_fast_propre.mp4
+
+Si tu ne veux pas tout ré-encoder (ce qui prend du temps), tu peux simplement supprimer la piste 3 de ton fichier actuel avec LosslessCut (en l'exportant avec la ligne 3 décochée) ou avec cette commande ultra-rapide :
+
+ffmpeg -i IPM.mp4 -map 0:v -map 0:a -c copy IPM_final.mp4
+
+
+
+
+## 🅰️ Commande 1
+
+```bash
+ffmpeg -i IPM.mkv -vf "subtitles=IPM.mkv,format=nv12" -c:v h264_qsv -preset veryfast -global_quality 23 -c:a copy IPM_final.mp4
+```
+
+### ✅ Avantages
+
+* Audio copié → pas de réencodage → gain de temps
+* Format `nv12` → compatible GPU QSV
+* Pipeline plus “propre” pour matériel moderne
+
+### ❌ Inconvénients
+
+* `format=nv12` force une conversion vidéo supplémentaire
+* Plus d’aller-retour CPU ⇄ GPU
+* Peut ralentir sur anciens GPU (ex: Intel HD 520)
+* Plus sensible aux vidéos 10-bit
+
+## 🅱️ Commande 2
+
+```bash
+ffmpeg -i DSP.mkv -vf subtitles=DSP.mkv -c:v h264_qsv -global_quality 23 -preset veryfast -c:a aac -b:a 192k DSP.mp4
+```
+
+### ✅ Avantages
+
+* Pipeline plus simple
+* Moins de conversions internes
+* Plus stable sur Intel HD 520
+* Chez moi, peut atteindre **1.6x speed**
+
+### ❌ Inconvénients
+
+* Réencode l’audio (légèrement plus lent pour l’audio)
+* Légère perte audio (FLAC → AAC)
+* Fichier final audio différent de l’original
+
+---
+
+## 🎯 Lequel est le plus rapide ?
+
+* **Chez moi** : la commande 2 (DSP.mkv) est plus rapide.
+* Même si elle encode l’audio, elle évite la conversion `format=nv12` et c’est plus efficace sur mon GPU ancien.
+
+---
+
+## 🧠 Pourquoi ?
+
+* Les transferts CPU ⇄ GPU coûtent cher sur Intel HD 520.
+* Le filtre `subtitles` casse l’accélération complète.
+* Ajouter `format=nv12` ajoute une conversion supplémentaire.
+
+**Conclusion** : version plus simple = plus rapide sur mon PC.
+
+---
+
+* **Commande 1 (IPM.mkv + format=nv12 + audio copy)** → 45 min, 3,27 Go
+* **Commande 2 (DSP.mkv + audio réencodé AAC)** → 49 min, 2,17 Go
+
+---
+
+# 🔎 Pourquoi le résultat réel est différent
+
+1. **Audio réencodé coûte du temps**
+   * La commande 2 réencode l’audio en AAC 192k
+   * Même si le pipeline GPU est simple, la conversion audio prend du temps → +4 min
+2. **Taille du fichier**
+   * La commande 1 est plus grosse (3,27 Go) → moins compressée
+   * La commande 2 est plus petite (2,17 Go) → compression AAC et QSV plus optimisée
+   * Plus de compression = plus lent pour la vidéo car le GPU/encodeur compresse plus serré
+3. **Pipeline “format=nv12” vs pipeline simple**
+   * Sur certains GPU comme HD 520, forcer `format=nv12` n’est pas si lent qu’on pensait
+   * Le décodage HEVC 10-bit + conversion nv12 + encodeur QSV = pipeline très efficace
+   * Paradoxalement, **version “techniquement plus lourde” finit plus rapide** sur ta machine
+
+---
+
+# ⚖️ Résumé pratique
+
+| Commande   | Temps  | Taille  | Avantage pratique                     |
+| ---------- | ------ | ------- | ------------------------------------- |
+| Commande 1 | 45 min | 3,27 Go | Plus rapide, audio copié             |
+| Commande 2 | 49 min | 2,17 Go | Fichier plus léger, audio réencodé |
+
+---
+
+# 🎯 Conclusion
+
+✅  **Sur ton PC** , malgré la théorie,  **la commande 1 est réellement plus rapide** , même si la commande 2 produit un fichier plus petit.
+
+Donc la leçon :  **les tests réels priment toujours sur la théorie** , surtout avec les anciens iGPU comme HD 520 et du HEVC 10-bit + hard-sub.
+
+<pre class="overflow-visible! px-0!" data-start="844" data-end="972"><div class="w-full my-4"><div class=""><div class="relative"><div class="h-full min-h-0 min-w-0"><div class="h-full min-h-0 min-w-0"><div class="border corner-superellipse/1.1 border-token-border-light bg-token-bg-elevated-secondary rounded-3xl"><div class="pointer-events-none absolute inset-x-4 top-12 bottom-4"><div class="pointer-events-none sticky z-40 shrink-0 z-1!"><div class="sticky bg-token-border-light"></div></div></div></div></div></div></div></div></div></pre>
+
+## Sans graver sous titre
 
 ffmpeg -i DSP.mkv -c:v h264_qsv -global_quality 23 -preset veryfast -c:a aac -b:a 192k DSP.mp4
 
