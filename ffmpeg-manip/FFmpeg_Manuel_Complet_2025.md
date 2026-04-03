@@ -369,7 +369,7 @@ ffmpeg -i input.mkv -c:v copy -c:a aac -b:a 192k output.mp4
 
 ---
 
-## 4.3 📈 Presets libx264 (vitesse ↔ qualité)
+## 4.3 📈 Presets libx264 et h264_qsv (vitesse ↔ qualité)
 
 | Preset    | Vitesse | Qualité  | Taille  |
 | --------- | ------- | --------- | ------- |
@@ -377,6 +377,16 @@ ffmpeg -i input.mkv -c:v copy -c:a aac -b:a 192k output.mp4
 | veryfast  | ⚡      | 🙂 ok     | moyen   |
 | slow      | 🐢      | 😊 haute  | petit   |
 | veryslow  | 🐌      | 🤩 max    | min     |
+
+## H264_qsv
+
+veryfast
+faster
+fast
+medium
+slow
+slower
+veryslow
 
 ---
 
@@ -872,15 +882,23 @@ Correspondances typiques :
 | QSV avec hwdownload/hwupload | GPU      | CPU + transfert GPU | moyen, overhead du transfert                  |
 | QSV simple (ma commande)     | GPU      | CPU                 | rapide et simple, souvent plus rapide que CPU |
 
+#### Pour SRT: -vf "subtitles=1.srt"
+
 #### CPU (libx264)
 
 ```
 ffmpeg -i video.mp4 -vf "ass=subs.ass" -c:v libx264 -preset fast -c:a copy out.mp4
 ```
 
+```
+ffmpeg -i e2.mp4 -vf "subtitles=1.srt" -c:v libx264 -preset ultrafast -c:a copy out.mp4
+```
+
 #### Intel QSV simple
 
-ffmpeg -hwaccel qsv -i input.mp4 -vf subtitles=subs.ass -c:v h264_qsv -preset veryfast -c:a copy out_intel.mp4
+```
+ffmpeg -i PSO45.mp4 -vf "subtitles=PSO45eng.ass" -c:v h264_qsv -preset veryfast -c:a copy "PSO45 english.mp4"
+```
 
 #### Intel QSV (nécessite hwdownload)
 
@@ -899,6 +917,7 @@ ffmpeg -i input.mp4 -vf subtitles=subs.ass -c:v h264_amf -quality speed -c:a cop
 ffmpeg -hwaccel cuda -i input.mp4 -vf subtitles=subs.ass -c:v h264_nvenc -preset fast -c:a copy out_nv.mp4
 
 Pour srt tu remplace juste .ass par .srt
+
 
 ### 8.4.2 Hardsub sur une portion video
 
@@ -986,22 +1005,16 @@ On compare deux commandes différentes pour encoder une vidéo MKV avec sous-tit
 
 ---
 
-
 ## NB
-
 
 * **`-vf "subtitles=..."`** : Garde l'incrustation visuelle (Hardsub).
 * **`-sn`** : Ignore toutes les pistes de sous-titres lors de la création du fichier (plus de piste 3 dans LosslessCut).
-
 
 ffmpeg -i IPM.mkv -vf "subtitles=IPM.mkv" -c:v libx264 -preset veryfast -crf 23 -c:a copy -sn IPM_fast_propre.mp4
 
 Si tu ne veux pas tout ré-encoder (ce qui prend du temps), tu peux simplement supprimer la piste 3 de ton fichier actuel avec LosslessCut (en l'exportant avec la ligne 3 décochée) ou avec cette commande ultra-rapide :
 
 ffmpeg -i IPM.mp4 -map 0:v -map 0:a -c copy IPM_final.mp4
-
-
-
 
 ## 🅰️ Commande 1
 

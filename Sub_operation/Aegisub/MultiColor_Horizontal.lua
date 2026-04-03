@@ -38,14 +38,17 @@ AUTEUR :
 - Version : 3.0
 
 ]]
-script_name = "MulticolorHV (Dégradé équitable)"
-script_description = "Dégradé multicolore horizontal ou vertical, segments équitables"
+
+-- MulticolorHV_degrade_equitable_glow.lua
+
+script_name = "MulticolorHV (Dégradé équitable + Glow optionnel)"
+script_description = "Dégradé multicolore avec glow optionnel et sauvegarde config"
 script_author = "GPT"
-script_version = "3.0"
+script_version = "8.2 FIX \\N"
 
-local tr = aegisub.gettext
-
--- Fonction pour découper une chaîne UTF-8 en caractères
+--------------------------------------------------
+-- UTF8 split
+--------------------------------------------------
 local function utf8_to_table(str)
     local t = {}
     for c in str:gmatch("[%z\1-\127\194-\244][\128-\191]*") do
@@ -54,9 +57,13 @@ local function utf8_to_table(str)
     return t
 end
 
--- Convertir couleur hex → RGB
+--------------------------------------------------
+-- HEX → RGB
+--------------------------------------------------
 local function hex2rgb(hex)
-    if type(hex) ~= "string" then return 255,255,255 end
+    if type(hex) ~= "string" then
+        return 255,255,255
+    end
     local r,g,b = hex:match("#(%x%x)(%x%x)(%x%x)")
     if r and g and b then
         return tonumber(r,16), tonumber(g,16), tonumber(b,16)
@@ -64,165 +71,251 @@ local function hex2rgb(hex)
     return 255,255,255
 end
 
--- Convertir RGB → couleur ASS (&HBBGGRR&)
+--------------------------------------------------
+-- RGB → ASS
+--------------------------------------------------
 local function rgb2ass(r,g,b)
     return string.format("&H%02X%02X%02X&", b,g,r)
 end
 
--- Interpolation linéaire
-local function lerp(a,b,t) return a+(b-a)*t end
+--------------------------------------------------
+-- interpolation
+--------------------------------------------------
+local function lerp(a,b,t)
+    return a + (b-a)*t
+end
 
--- RGB -> Lab
-local function rgb2lab(r, g, b)
-    r, g, b = r/255, g/255, b/255
-    local function invgamma(u) return (u > 0.04045) and ((u+0.055)/1.055)^2.4 or u/12.92 end
-    r, g, b = invgamma(r), invgamma(g), invgamma(b)
+--------------------------------------------------
+-- RGB → Lab
+--------------------------------------------------
+local function rgb2lab(r,g,b)
+    r,g,b = r/255,g/255,b/255
+    local function invgamma(u)
+        return (u>0.04045) and ((u+0.055)/1.055)^2.4 or u/12.92
+    end
+    r,g,b = invgamma(r),invgamma(g),invgamma(b)
     local x = (r*0.4124 + g*0.3576 + b*0.1805) / 0.95047
     local y = (r*0.2126 + g*0.7152 + b*0.0722) / 1.00000
     local z = (r*0.0193 + g*0.1192 + b*0.9505) / 1.08883
-    local function f(t) return (t > 0.008856) and t^(1/3) or (7.787*t + 16/116) end
+    local function f(t)
+        return (t>0.008856) and t^(1/3) or (7.787*t + 16/116)
+    end
     local L = 116*f(y) - 16
     local A = 500*(f(x)-f(y))
     local B = 200*(f(y)-f(z))
-    return L, A, B
+    return L,A,B
 end
 
--- Lab -> RGB
-local function lab2rgb(L, A, B)
+--------------------------------------------------
+-- Lab → RGB
+--------------------------------------------------
+local function lab2rgb(L,A,B)
     local y = (L+16)/116
     local x = A/500 + y
     local z = y - B/200
-    local function f(t) return (t^3 > 0.008856) and t^3 or (t-16/116)/7.787 end
-    x, y, z = f(x)*0.95047, f(y)*1.00000, f(z)*1.08883
+    local function f(t)
+        return (t^3 > 0.008856) and t^3 or (t-16/116)/7.787
+    end
+    x,y,z = f(x)*0.95047, f(y)*1.00000, f(z)*1.08883
     local r = x* 3.2406 + y*-1.5372 + z*-0.4986
     local g = x*-0.9689 + y* 1.8758 + z* 0.0415
     local b = x* 0.0557 + y*-0.2040 + z* 1.0570
-    local function gamma(u) return (u>0.0031308) and (1.055*u^(1/2.4)-0.055) or 12.92*u end
-    r, g, b = gamma(r), gamma(g), gamma(b)
+    local function gamma(u)
+        return (u>0.0031308) and (1.055*u^(1/2.4)-0.055) or 12.92*u
+    end
+    r,g,b = gamma(r),gamma(g),gamma(b)
     r = math.max(0, math.min(255, r*255))
     g = math.max(0, math.min(255, g*255))
     b = math.max(0, math.min(255, b*255))
-    return math.floor(r), math.floor(g), math.floor(b)
+    return math.floor(r),math.floor(g),math.floor(b)
 end
 
--- Chemin fichier config
-local config_path = aegisub.decode_path("?data/MulticolorHV_config.lua")
-
--- Valeurs par défaut
+--------------------------------------------------
+-- CONFIG
+--------------------------------------------------
+local config_path = aegisub.decode_path("?data/MulticolorHV_glow_config.lua")
 local config = {
     mode = "Horizontal",
-    tag = "\\c",
+    tag = "\\3c",
     ncolors = 2,
+    blur = 6,
+    glow = true,
     colors = {"#FFFFFF","#FFFFFF"}
 }
 
--- Charger config précédente si elle existe
 local f = io.open(config_path,"r")
 if f then
     f:close()
-    local ok, loaded = pcall(dofile, config_path)
-    if ok and loaded then
-        config = loaded
-    end
+    local ok,loaded = pcall(dofile,config_path)
+    if ok and loaded then config = loaded end
 end
 
+--------------------------------------------------
+-- SCRIPT
+--------------------------------------------------
 function apply_gradient_equitable(subs, sel)
-    -- Étape 1 : boîte de dialogue principale
+
     local main_dialog = {
-        {class="label", label="Type de dégradé :", x=0, y=0},
-        {class="dropdown", name="mode", items={"Horizontal","Vertical"}, value=config.mode, x=1, y=0},
-        {class="label", label="Tag à colorer :", x=0, y=2},
-        {class="dropdown", name="tag", items={"\\c","\\2c","\\3c","\\4c"}, value=config.tag, x=1, y=2},
-        {class="label", label="Nombre de couleurs :", x=0, y=1},
-        {class="intedit", name="ncolors", value=config.ncolors, min=2, max=10, x=1, y=1},
+        {class="label",label="Type de dégradé",x=0,y=0},
+        {class="dropdown", name="mode", items={"Horizontal","Vertical"}, value=config.mode, x=1,y=0},
+        {class="label",label="Tag à colorer",x=0,y=1},
+        {class="dropdown", name="tag", items={"\\c","\\2c","\\3c","\\4c"}, value=config.tag, x=1,y=1},
+        {class="label",label="Nombre de couleurs",x=0,y=2},
+        {class="intedit", name="ncolors", value=config.ncolors, min=1, max=10, x=1,y=2},
+        {class="checkbox", name="glow", label="Activer glow", value=config.glow, x=0,y=3},
+        {class="label",label="Glow blur",x=0,y=4},
+        {class="floatedit", name="blur", value=config.blur, min=0, max=20, x=1,y=4}
     }
-    local btns = {"Suivant", "Annuler"}
-    local pressed, res = aegisub.dialog.display(main_dialog, btns)
+
+    local pressed,res = aegisub.dialog.display(main_dialog,{"Suivant","Annuler"})
     if pressed ~= "Suivant" then return end
 
     local n = res.ncolors
 
-    -- Étape 2 : boîte de dialogue couleurs
     local color_dialog = {}
     for i=1,n do
-        table.insert(color_dialog, {class="label", label="Couleur "..i..":", x=0, y=i-1})
-        table.insert(color_dialog, {
-            class="color", name="col"..i, x=1, y=i-1,
-            value = (config.colors[i] or "#FFFFFF")
-        })
+        table.insert(color_dialog, {class="label",label="Couleur "..i,x=0,y=i-1})
+        table.insert(color_dialog, {class="color", name="col"..i, x=1, y=i-1, value=config.colors[i] or "#FFFFFF"})
     end
-    local btns2 = {"Appliquer", "Annuler"}
-    local pressed2, cols = aegisub.dialog.display(color_dialog, btns2)
+
+    local pressed2,cols = aegisub.dialog.display(color_dialog,{"Appliquer","Annuler"})
     if pressed2 ~= "Appliquer" then return end
 
-    -- Extraire les couleurs choisies
     local colors = {}
-    for i=1,n do
-        table.insert(colors, cols["col"..i])
-    end
+    for i=1,n do table.insert(colors,cols["col"..i]) end
 
-    -- Sauvegarder config
     config.mode = res.mode
     config.tag = res.tag
     config.ncolors = n
+    config.blur = res.blur
+    config.glow = res.glow
     config.colors = colors
 
-    -- Sérialisation simple
-    local f = io.open(config_path, "w")
+    local f = io.open(config_path,"w")
     if f then
         f:write("return {\n")
-        f:write(string.format("mode=%q,\n", config.mode))
-        f:write(string.format("tag=%q,\n", config.tag))
-        f:write(string.format("ncolors=%d,\n", config.ncolors))
+        f:write(string.format("mode=%q,\n",config.mode))
+        f:write(string.format("tag=%q,\n",config.tag))
+        f:write(string.format("ncolors=%d,\n",config.ncolors))
+        f:write(string.format("blur=%d,\n",config.blur))
+        f:write(string.format("glow=%s,\n",tostring(config.glow)))
         f:write("colors={")
         for i,v in ipairs(config.colors) do
-            f:write(string.format("%q", v))
+            f:write(string.format("%q",v))
             if i<#config.colors then f:write(",") end
         end
         f:write("}\n}")
         f:close()
     end
 
-    -- Étape 3 : appliquer le dégradé équitable
-    for _, i in ipairs(sel) do
+    local glow_tag = ""
+    if res.glow and res.blur > 0 then
+        glow_tag = "\\blur"..res.blur
+    end
+
+    for _,i in ipairs(sel) do
         local line = subs[i]
         local text = line.text
         local chars = utf8_to_table(text)
-        -- Compter les caractères visibles (hors balises et espaces)
+
         local visibles = {}
         local in_tag = false
-        for idx, c in ipairs(chars) do
-            if c == "{" then in_tag = true end
-            if not in_tag and c:match("%S") and c ~= "\\" then
-                table.insert(visibles, idx)
-            end
-            if c == "}" then in_tag = false end
-        end
-        local len = #visibles
-        if len < 2 then goto continue end -- rien à faire
 
-        -- Calcul des bornes de segments
+        for idx,c in ipairs(chars) do
+            if c=="{" then in_tag=true end
+            if not in_tag and c:match("%S") and c~="\\" then
+                table.insert(visibles,idx)
+            end
+            if c=="}" then in_tag=false end
+        end
+
+        local len = #visibles
+
+        if n == 1 then
+            local r,g,b = hex2rgb(colors[1])
+            local col = rgb2ass(r,g,b)
+
+            local newtext = ""
+            local in_tag_1 = false
+            local idx = 1
+
+            while idx <= #chars do
+                local c = chars[idx]
+
+                if c == "\\" and chars[idx+1] == "N" then
+                    newtext = newtext .. "\\N"
+                    idx = idx + 2
+
+                elseif c=="{" then
+                    in_tag_1=true
+                    newtext = newtext .. c
+                    idx = idx + 1
+
+                elseif c=="}" then
+                    in_tag_1=false
+                    newtext = newtext .. c
+                    idx = idx + 1
+
+                elseif in_tag_1 then
+                    newtext = newtext .. c
+                    idx = idx + 1
+
+                elseif c:match("%S") and c~="\\" then
+                    newtext = newtext .. string.format("{%s%s%s}%s", res.tag, col, glow_tag, c)
+                    idx = idx + 1
+
+                else
+                    newtext = newtext .. c
+                    idx = idx + 1
+                end
+            end
+
+            line.text = newtext
+            subs[i] = line
+            goto continue
+        end
+
+        if len < 2 then goto continue end
+
         local segs = n-1
-        local seg_size = math.floor(len / segs)
-        local reste = len % segs
+        local seg_size = math.floor(len/segs)
+        local reste = len%segs
         local seg_bounds = {}
         local pos = 1
+
         for s=1,segs do
-            local this_size = seg_size + (s <= reste and 1 or 0)
-            seg_bounds[s] = {start=pos, stop=pos+this_size-1}
+            local this_size = seg_size + (s<=reste and 1 or 0)
+            seg_bounds[s] = {start=pos,stop=pos+this_size-1}
             pos = pos + this_size
         end
 
-        -- Application
         local newtext = ""
-        local in_tag = false
         local visible_ptr = 1
-        for idx, c in ipairs(chars) do
-            if c == "{" then in_tag = true; newtext = newtext .. c
-            elseif c == "}" then in_tag = false; newtext = newtext .. c
-            elseif in_tag then newtext = newtext .. c
-            elseif c:match("%S") and c ~= "\\" then
-                -- Trouver le segment
+        in_tag = false
+        local idx = 1
+
+        while idx <= #chars do
+            local c = chars[idx]
+
+            if c == "\\" and chars[idx+1] == "N" then
+                newtext = newtext .. "\\N"
+                idx = idx + 2
+
+            elseif c=="{" then
+                in_tag=true
+                newtext = newtext .. c
+                idx = idx + 1
+
+            elseif c=="}" then
+                in_tag=false
+                newtext = newtext .. c
+                idx = idx + 1
+
+            elseif in_tag then
+                newtext = newtext .. c
+                idx = idx + 1
+
+            elseif c:match("%S") and c~="\\" then
                 local seg_idx = 1
                 for s=1,#seg_bounds do
                     if visible_ptr >= seg_bounds[s].start and visible_ptr <= seg_bounds[s].stop then
@@ -230,36 +323,42 @@ function apply_gradient_equitable(subs, sel)
                         break
                     end
                 end
-                -- Progression dans le segment
+
                 local seg = seg_bounds[seg_idx]
                 local t = (visible_ptr - seg.start) / (seg.stop - seg.start)
-                if seg.stop == seg.start then t = 0 end -- éviter division par zéro
+                if seg.stop == seg.start then t = 0 end
 
-                -- Interpolation Lab
                 local r1,g1,b1 = hex2rgb(colors[seg_idx])
                 local r2,g2,b2 = hex2rgb(colors[seg_idx+1])
-                local L1,a1,b1 = rgb2lab(r1,g1,b1)
-                local L2,a2,b2 = rgb2lab(r2,g2,b2)
+                local L1,a1,b1_lab = rgb2lab(r1,g1,b1)
+                local L2,a2,b2_lab = rgb2lab(r2,g2,b2)
+
                 local L = lerp(L1,L2,t)
                 local A = lerp(a1,a2,t)
-                local B = lerp(b1,b2,t)
+                local B = lerp(b1_lab,b2_lab,t)
+
                 local r,g,b = lab2rgb(L,A,B)
                 local col = rgb2ass(r,g,b)
-                newtext = newtext .. string.format("{%s%s}%s",res.tag,col,c)
+
+                newtext = newtext .. string.format("{%s%s%s}%s", res.tag, col, glow_tag, c)
+
                 visible_ptr = visible_ptr + 1
+                idx = idx + 1
+
             else
                 newtext = newtext .. c
+                idx = idx + 1
             end
         end
+
         line.text = newtext
         subs[i] = line
+
         ::continue::
     end
 end
 
 aegisub.register_macro(script_name, script_description, apply_gradient_equitable)
-
-
 
 --[[ 
 Le code la fait pareil mais est tres legerement moins fluide que l'autre c-a d on passe plus 

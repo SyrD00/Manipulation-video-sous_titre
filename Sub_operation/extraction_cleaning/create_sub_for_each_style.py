@@ -58,9 +58,10 @@ if __name__ == "__main__":
     input_file = r"C:\Users\babak\Videos\PSO\Song\op2 const.ass"
 
     # Dossier où enregistrer les fichiers créés
-    output_folder = "C:/Users/babak/Videos/PSO/Video/"
+    output_folder = "C:/Users/babak/Downloads/"
 
     # Liste des styles à extraire
-    styles_to_extract = ["color", "ripple", "zeal", "meteor"]
+    #styles_to_extract = ["color", "ripple", "zeal", "meteor"]
+    styles_to_extract = ["color rom","color eng"]
 
     extract_styles_separately(input_file, output_folder, styles_to_extract)

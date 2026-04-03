@@ -1,8 +1,8 @@
 import os
 
 # === CONFIGURATION ===
-input_path = "C:/Users/babak/Videos/PSO/Song/Fight_Might_Me.ass"
-output_path = "C:/Users/babak/Videos/PSO/Song/Fight_Might_Me2.ass"
+input_path = "C:/Users/babak/Downloads/Rain Song .ass"
+output_path = "C:/Users/babak/Downloads/1 rain.ass"
 """
 Le système de fichiers NTFS (utilisé par Windows) est par défaut insensible à la casse (case-insensitive).
 
@@ -76,3 +76,6 @@ if os.path.exists(output_path):
     print(f"Fichier généré : {output_path}")
 else:
     print("ERREUR : Le fichier de sortie n'a pas été créé !")
+
+
+    
