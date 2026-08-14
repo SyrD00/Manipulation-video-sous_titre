@@ -39,10 +39,11 @@ AUTEUR :
 
 ]]
 
+
 -- MulticolorHV_degrade_equitable_glow.lua
 
-script_name = "MulticolorHV (Dégradé équitable + Glow optionnel)"
-script_description = "Dégradé multicolore avec glow optionnel et sauvegarde config"
+script_name = "MulticolorHV "
+script_description = "Dégradé qui force les couleurs choisies même sur texte court"
 script_author = "GPT"
 script_version = "8.2 FIX \\N"
 
@@ -277,18 +278,11 @@ function apply_gradient_equitable(subs, sel)
 
         if len < 2 then goto continue end
 
-        local segs = n-1
-        local seg_size = math.floor(len/segs)
-        local reste = len%segs
-        local seg_bounds = {}
-        local pos = 1
-
-        for s=1,segs do
-            local this_size = seg_size + (s<=reste and 1 or 0)
-            seg_bounds[s] = {start=pos,stop=pos+this_size-1}
-            pos = pos + this_size
-        end
-
+        -- MODE FORCE PALETTE :
+        -- Au lieu de couper en segments fixes qui peuvent faire disparaitre la derniere couleur,
+        -- on etire toutes les couleurs choisies sur l'ensemble des caracteres visibles.
+        -- Exemple avec 5 couleurs et "BOOM!!" (6 caracteres visibles) :
+        -- debut violet, bleu, rose, vert, fin jaune bien present.
         local newtext = ""
         local visible_ptr = 1
         in_tag = false
@@ -316,29 +310,42 @@ function apply_gradient_equitable(subs, sel)
                 idx = idx + 1
 
             elseif c:match("%S") and c~="\\" then
-                local seg_idx = 1
-                for s=1,#seg_bounds do
-                    if visible_ptr >= seg_bounds[s].start and visible_ptr <= seg_bounds[s].stop then
-                        seg_idx = s
-                        break
-                    end
+                local col
+
+                -- TEXTES COURTS : on respecte les couleurs choisies sans les melanger.
+                -- Exemple BOOM!! avec 5 couleurs et 6 caracteres :
+                -- B = couleur 1, O = couleur 2, O = couleur 3, M = couleur 4, ! = couleur 5, ! = couleur 5.
+                -- Cela evite les couleurs sales/marron creees par les melanges Lab sur trop peu de lettres.
+                if len <= n + 3 then
+                    local color_idx = math.ceil(visible_ptr * n / len)
+                    if color_idx < 1 then color_idx = 1 end
+                    if color_idx > n then color_idx = n end
+
+                    local r,g,b = hex2rgb(colors[color_idx])
+                    col = rgb2ass(r,g,b)
+
+                else
+                    -- TEXTES LONGS : vrai degrade continu sur toute la palette.
+                    local global_t = (visible_ptr - 1) / (len - 1)
+                    local palette_pos = 1 + global_t * (n - 1)
+                    local seg_idx = math.floor(palette_pos)
+                    if seg_idx < 1 then seg_idx = 1 end
+                    if seg_idx > n - 1 then seg_idx = n - 1 end
+
+                    local t = palette_pos - seg_idx
+
+                    local r1,g1,b1 = hex2rgb(colors[seg_idx])
+                    local r2,g2,b2 = hex2rgb(colors[seg_idx+1])
+                    local L1,a1,b1_lab = rgb2lab(r1,g1,b1)
+                    local L2,a2,b2_lab = rgb2lab(r2,g2,b2)
+
+                    local L = lerp(L1,L2,t)
+                    local A = lerp(a1,a2,t)
+                    local B = lerp(b1_lab,b2_lab,t)
+
+                    local r,g,b = lab2rgb(L,A,B)
+                    col = rgb2ass(r,g,b)
                 end
-
-                local seg = seg_bounds[seg_idx]
-                local t = (visible_ptr - seg.start) / (seg.stop - seg.start)
-                if seg.stop == seg.start then t = 0 end
-
-                local r1,g1,b1 = hex2rgb(colors[seg_idx])
-                local r2,g2,b2 = hex2rgb(colors[seg_idx+1])
-                local L1,a1,b1_lab = rgb2lab(r1,g1,b1)
-                local L2,a2,b2_lab = rgb2lab(r2,g2,b2)
-
-                local L = lerp(L1,L2,t)
-                local A = lerp(a1,a2,t)
-                local B = lerp(b1_lab,b2_lab,t)
-
-                local r,g,b = lab2rgb(L,A,B)
-                local col = rgb2ass(r,g,b)
 
                 newtext = newtext .. string.format("{%s%s%s}%s", res.tag, col, glow_tag, c)
 
