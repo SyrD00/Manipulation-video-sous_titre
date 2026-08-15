@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Guide FFmpeg & Benchmark - Conversion 16:9 vers 9:16</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 12mm;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            margin: 0;
+            padding: 20px;
+            font-size: 10pt;
+            line-height: 1.5;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 6px solid #38bdf8;
+            margin-bottom: 20px;
+        }
+        h1 { color: #38bdf8; margin: 0 0 5px 0; font-size: 18pt; }
+        .subtitle { color: #94a3b8; margin: 0; font-size: 11pt; }
+        h2 {
+            color: #f1f5f9;
+            font-size: 12pt;
+            border-left: 4px solid #818cf8;
+            padding-left: 8px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        pre {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 10px;
+            color: #38bdf8;
+            font-size: 8.5pt;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin: 8px 0;
+        }
+        code { font-family: 'Consolas', monospace; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            background-color: #1e293b;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid #334155;
+            font-size: 8.5pt;
+        }
+        th { background-color: #334155; color: #38bdf8; }
+        .note {
+            background-color: #1e293b;
+            border-left: 4px solid #f59e0b;
+            padding: 8px 12px;
+            margin: 10px 0;
+            font-size: 8.5pt;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 7.5pt;
+            font-weight: bold;
+        }
+        .badge-cpu { background-color: #2563eb; color: white; }
+        .badge-qsv { background-color: #059669; color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Synthèse Technique FFmpeg & Benchmark</h1>
+        <p class="subtitle">Conversion 16:9 vers 9:16 avec Fond Flou (CPU vs Intel QSV vs NVENC)</p>
+    </div>
+
+    <h2>1. Commande Ultime Optimisée (CPU)</h2>
+    <pre>ffmpeg -threads 0 -i "eclair tac.mp4" -filter_complex "[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,gblur=sigma=20[bg];[0:v]scale=1080:-1[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2" -c:v libx264 -preset superfast -crf 23 -c:a copy "out_cpu.mp4" -y</pre>
+
+    <h2>2. Explication des Abréviations & Formules Mathématiques</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Option / Paramètre</th>
+                <th>Définition</th>
+                <th>Rôle / Explication</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>-i</code></td>
+                <td>Input</td>
+                <td>Spécifie le fichier vidéo source.</td>
+            </tr>
+            <tr>
+                <td><code>[0:v]</code></td>
+                <td>Flux Vidéo 0</td>
+                <td>Prend le premier flux vidéo du fichier d'entrée.</td>
+            </tr>
+            <tr>
+                <td><code>-threads 0</code></td>
+                <td>Multi-threading</td>
+                <td>Mobilise 100% des cœurs du processeur pour maximiser la vitesse.</td>
+            </tr>
+            <tr>
+                <td><code>W</code> / <code>H</code></td>
+                <td>Main Width / Height</td>
+                <td>Largeur (1080px) et Hauteur (1920px) du grand fond flou.</td>
+            </tr>
+            <tr>
+                <td><code>w</code> / <code>h</code></td>
+                <td>Overlay Width / Height</td>
+                <td>Largeur et Hauteur de la petite vidéo nette au centre.</td>
+            </tr>
+            <tr>
+                <td><code>(W-w)/2 : (H-h)/2</code></td>
+                <td>Formule de centrage</td>
+                <td>Calcule le décalage X et Y exact pour centrer parfaitement la vidéo.</td>
+            </tr>
+            <tr>
+                <td><code>gblur=sigma=20</code></td>
+                <td>Gaussian Blur</td>
+                <td>Règle l'intensité du flou (10=léger, 20=standard, 45=abstrait/fort).</td>
+            </tr>
+            <tr>
+                <td><code>-c:a copy</code></td>
+                <td>Audio Copy</td>
+                <td>Copie le flux audio d'origine sans réencodage (rendu rapide, sans perte).</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>3. Bilan Benchmark & Comparatif des Modes d'Encodage</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Mode d'encodage</th>
+                <th>Temps (clip 0.51s)</th>
+                <th>Vitesse</th>
+                <th>Cas d'usage recommandé</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="badge badge-cpu">CPU (libx264)</span></td>
+                <td><strong>1,13 s</strong></td>
+                <td>0.563x</td>
+                <td><strong>Vidéos courtes & clips légers</strong> (évite le délai d'initialisation du GPU).</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-qsv">Intel QSV (h264_qsv)</span></td>
+                <td>2,45 s</td>
+                <td>0.202x</td>
+                <td><strong>Vidéos longues & traitement par lots</strong> (évite la surchauffe du CPU).</td>
+            </tr>
+            <tr>
+                <td>Nvidia NVENC (h264_nvenc)</td>
+                <td>--</td>
+                <td>--</td>
+                <td>Uniquement disponible sur les machines équipées d'une carte GPU Nvidia.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="note">
+        <strong>Pourquoi Intel QSV est plus lent sur les courts clips ?</strong><br>
+        Le filtre <code>gblur</code> s'exécute sur le CPU. Le transfert des images traitées depuis la RAM CPU vers la mémoire de la puce graphique Intel, couplé au temps d'initialisation de l'API QSV, crée un goulot d'étranglement pour les très petits fichiers.
+    </div>
+
+</body>
+</html>

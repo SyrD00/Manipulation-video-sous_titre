@@ -1,0 +1,3 @@
+cd ~\Downloads
+$dl = "~\Downloads"
+maintenant cd $dl
