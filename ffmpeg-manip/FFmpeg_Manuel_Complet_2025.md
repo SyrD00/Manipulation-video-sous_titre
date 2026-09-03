@@ -1061,6 +1061,11 @@ ffmpeg -i DSP.mkv -vf subtitles=DSP.mkv -c:v h264_qsv -global_quality 23 -preset
 * **Chez moi** : la commande 2 (DSP.mkv) est plus rapide.
 * Même si elle encode l’audio, elle évite la conversion `format=nv12` et c’est plus efficace sur mon GPU ancien.
 
+  
+* **REMARQUE**
+* Si le fichier est déja en AAC il suffit de remplacer  -c:a aac par  -c:a copy ça augmente la vitessse
+
+
 ---
 
 ## 🧠 Pourquoi ?
