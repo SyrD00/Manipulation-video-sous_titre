@@ -48,8 +48,8 @@ Ce fichier contient des listes de coupes et des marqueurs de timeline pour monte
 """
 import json
 
-capcut_json_file = "C:/Users/babak/AppData/Local/CapCut/User Data/Projects/com.lveditor.draft/0322/draft_content.json"
-output_llc_file = r"C:\Users\babak\Downloads\47_cut.llc"
+capcut_json_file = "C:/Users/babak/AppData/Local/CapCut/User Data/Projects/com.lveditor.draft/0821/draft_content.json"
+output_llc_file = r"C:\Users\babak\Downloads\0821_cut.llc"
 
 # === Lecture du JSON CapCut ===
 with open(capcut_json_file, "r", encoding="utf-8") as f:
