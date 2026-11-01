@@ -1,7 +1,7 @@
 param (
-    [string]$InputFolder = "C:\Users\babak\Downloads\S\",
-    [string]$OutputFolder = "C:\Users\babak\Downloads\S\Output\Vitesse_Modifiee",
-    [double]$Vitesse = 1.05,
+    [string]$InputFolder = "C:\Users\babak\Downloads\SDP",
+    [string]$OutputFolder = "C:\Users\babak\Downloads\SDP\Vitesse_Modifiee",
+    [double]$Vitesse = 1.06,
     
     # [OPTIMISATION 1] On passe à 6 vidéos en même temps pour saturer la carte graphique
     [int]$MaxProcessus = 6, 
@@ -54,13 +54,13 @@ foreach ($Fichier in $Fichiers) {
     } catch {}
 
     # [OPTIMISATION 3] Ajout de "-threads $Threads" et "-preset 1" pour une vitesse de rendu maximale
-    if ($HasAudio) {
+    #if ($HasAudio) {
         Write-Host " (Audio détecté)" -ForegroundColor DarkGray
         $ArgsFFmpeg = "-threads $Threads -y -i `"$($Fichier.FullName)`" -filter_complex `"[0:v]$FiltreVideo,format=nv12`[v];[0:a]$FiltreAudio`[a]`" -map `"[v]`" -map `"[a]`" -c:v $EncodeurVideo -preset 1 -global_quality 23 -r 30 -c:a aac -b:a 192k `"$CheminSortie`""
-    } else {
-        Write-Host " (Aucun audio, mode vidéo seule)" -ForegroundColor Yellow
-        $ArgsFFmpeg = "-threads $Threads -y -i `"$($Fichier.FullName)`" -filter_complex `"[0:v]$FiltreVideo,format=nv12`[v]`" -map `"[v]`" -c:v $EncodeurVideo -preset 1 -global_quality 23 -r 30 `"$CheminSortie`""
-    }
+    #} else {
+    #    Write-Host " (Aucun audio, mode vidéo seule)" -ForegroundColor Yellow
+    #    $ArgsFFmpeg = "-threads $Threads -y -i `"$($Fichier.FullName)`" -filter_complex `"[0:v]$FiltreVideo,format=nv12`[v]`" -map `"[v]`" -c:v $EncodeurVideo -preset 1 -global_quality 23 -r 30 `"$CheminSortie`""
+    #}
 
     $Proc = Start-Process -FilePath "ffmpeg" -ArgumentList $ArgsFFmpeg -PassThru -NoNewWindow
     $ProcessusActifs += $Proc

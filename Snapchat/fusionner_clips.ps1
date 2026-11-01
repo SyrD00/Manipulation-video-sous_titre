@@ -33,7 +33,7 @@ foreach ($file in $files) {
     $count++
 }
 
-Write-Host "Étape 2 : Génération de la liste des fichiers sains..." -ForegroundColor Cyan
+Write-Host "Étape 2 : Génération de la liste des fichiers sains..." -ForegroundColor Cyan 
 $listContent = $files | ForEach-Object { "file '$tmpDir/$_'" }
 Out-File -FilePath liste_fixed.txt -InputObject ($listContent -join "`r`n") -Encoding ascii
 
