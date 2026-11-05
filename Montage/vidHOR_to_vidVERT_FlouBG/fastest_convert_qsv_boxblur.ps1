@@ -4,10 +4,10 @@
 
 # 1. CONFIGURATION DES DOSSIERS ET PARAMÈTRES
 
-$dossierVideos = "C:\Users\babak\Downloads\Black Clover\Clips\Vitesse_Modifiee" 
+$dossierVideos = "C:\Users\babak\Downloads\Precure\SDP35_segments\R" 
 
 # [NOUVEAU] DOSSIER DE SORTIE : Là où les vidéos terminées seront sauvegardées
-$dossierSortie = "C:\Users\babak\Downloads\Black Clover\Clips\9_16"
+$dossierSortie = "C:\Users\babak\Downloads\Precure\SDP35_segments\R\9_16"
 
 
 # ==============================================================================
