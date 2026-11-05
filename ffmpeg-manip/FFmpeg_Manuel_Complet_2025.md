@@ -1734,3 +1734,251 @@ Fix :
 - **CQP** : qualité constante GPU
 - **NV12** : format idéal GPU
 - **10 bits** : HEVC HDR, incompatible H.264 QSV
+
+
+# 15. Changer la résolution d'une video
+
+ ```
+   ffmpeg -i "s.mp4" -vf "scale=1920:1080:flags=fast_bilinear" -c:v h264_qsv -preset veryfast -global_quality 25 -c:a copy -movflags +faststart "s_1080p.mp4"
+  ```
+
+
+Elle réalise principalement quatre opérations :
+
+1. Lit ta vidéo originale.
+2. Redimensionne l'image en 1920 × 1080.
+3. Encode la vidéo en H.264 avec Intel Quick Sync.
+4. Copie l'audio sans le réencoder.
+
+Voyons chaque élément.
+
+### A. `ffmpeg`
+
+C'est le programme qui effectue le traitement audio et vidéo.
+
+Il peut notamment :
+- Convertir des vidéos.
+- Modifier leur résolution.
+- Changer leur codec.
+- Améliorer certains aspects visuels.
+- Extraire ou modifier les pistes audio.
+- Assembler plusieurs fichiers.
+
+### B. `-i "s.mp4"`
+
+`-i` signifie Input (entrée).
+
+C'est tout simplement le fichier source que FFmpeg doit traiter.
+
+Dans ton cas :
+- Fichier : `s.mp4`
+- Format : MP4.
+
+Tu pourrais également utiliser :
+
+```powershell
+-i "C:\Videos\mon_live.mp4"
+```
+
+### C. `-vf "scale=1920:1080:flags=fast_bilinear"`
+
+C'est une partie particulièrement importante de ta commande.
+
+`-vf` signifie Video Filter.
+
+Il permet d'appliquer un ou plusieurs filtres à la vidéo.
+
+Ici, tu utilises le filtre `scale`.
+
+**1. `scale=1920:1080`**
+
+Il impose une résolution de sortie de :
+- Largeur : 1920 pixels.
+- Hauteur : 1080 pixels.
+
+Cela correspond à une résolution Full HD.
+
+Attention : cela ne garantit pas que l'image originale soit réellement plus détaillée.
+
+**2. `flags=fast_bilinear`**
+
+C'est l'algorithme utilisé pour redimensionner l'image.
+
+Il existe plusieurs possibilités :
+
+| Algorithme | Caractéristique |
+|---|---|
+| `fast_bilinear` | Très rapide, qualité plus simple |
+| `bilinear` | Rapide, qualité correcte |
+| `bicubic` | Bon compromis qualité/vitesse |
+| `lanczos` | Bonne préservation des détails, plus coûteux |
+
+Tu as choisi `fast_bilinear` parce que tu privilégies la vitesse.
+
+ [ffmpeg.org](https://www.ffmpeg.org/ffmpeg-scaler.html?utm_source=chatgpt.com)
+
+### D. `-c:v h264_qsv`
+
+C'est probablement l'un des paramètres les plus intéressants de ta configuration.
+
+Décomposons :
+
+- `-c` : codec.
+- `v` : vidéo.
+- `h264` : codec vidéo H.264.
+- `qsv` : Intel Quick Sync Video.
+
+Tu demandes donc à FFmpeg d'utiliser l'encodeur matériel Intel Quick Sync plutôt que l'encodeur logiciel classique x264.
+
+Ton Intel HD 520 prend en charge Quick Sync.
+
+**Avantage :** tu peux profiter de l'accélération matérielle pour encoder ta vidéo beaucoup plus rapidement.
+
+### E. `-preset veryfast`
+
+Ce paramètre définit le compromis entre vitesse d'encodage et qualité d'encodage.
+
+Pour Quick Sync, FFmpeg propose notamment :
+
+| Preset | Vitesse |
+|---|---|
+| `veryfast` | Très rapide |
+| `faster` | Rapide |
+| `fast` | Rapide |
+| `medium` | Intermédiaire |
+| `slow` | Plus lent |
+| `slower` | Encore plus lent |
+| `veryslow` | Le plus lent |
+
+Tu utilises `veryfast`.
+
+C'est un choix logique pour une vidéo de deux heures.
+
+Attention : le preset ne détermine pas directement la qualité finale. Il influence également la manière dont l'encodeur travaille. [ffmpeg.org](https://www.ffmpeg.org/ffmpeg-codecs.html?utm_source=chatgpt.com)
+
+### F. `-global_quality 25`
+
+Ce paramètre contrôle la qualité de l'encodage QSV en mode qualité constante.
+
+C'est un paramètre important !
+
+Pour Intel Quick Sync, la plage ICQ va de 1 à 51 :
+
+- 1 : qualité maximale.
+- 18 : qualité élevée.
+- 22 : bonne qualité.
+- 25 : compromis qualité/taille.
+- 30 : compression plus importante.
+- 35 : qualité plus faible.
+
+Attention : ce ne sont pas des équivalences universelles avec les valeurs CRF de x264.
+
+**Ton réglage actuel : 25.**
+
+Il privilégie un compromis entre qualité visuelle et taille du fichier.
+
+Si tu souhaites conserver davantage de détails, tu peux essayer 22.
+
+En contrepartie, ton fichier risque d'être plus volumineux. [ffmpeg.org](https://www.ffmpeg.org/ffmpeg-codecs.html?utm_source=chatgpt.com)
+
+### G. `-c:a copy`
+
+C'est un excellent choix pour gagner du temps.
+
+Décomposons :
+
+- `-c` : codec.
+- `a` : audio.
+- `copy` : copie directe.
+
+Cela signifie que FFmpeg ne réencode pas l'audio.
+
+Par exemple, si ton fichier original contient une piste AAC :
+
+- Il récupère cette piste.
+- Il la transfère dans le nouveau MP4.
+- Il conserve son encodage original.
+
+**Avantages :**
+- Pas de perte de qualité audio liée à un nouvel encodage.
+- Pas de temps perdu à réencoder le son.
+- Conservation du codec audio original.
+
+### H. `-movflags +faststart`
+
+Ce paramètre concerne le conteneur MP4.
+
+Normalement, certaines informations nécessaires à la lecture du fichier sont placées à la fin du MP4.
+
+`+faststart` demande à FFmpeg de déplacer ces informations au début du fichier.
+
+Résultat :
+- Démarrage plus rapide de la lecture.
+- Meilleure compatibilité avec la lecture en streaming progressif.
+- Navigation plus pratique dans certains lecteurs.
+
+Il ne modifie pas la qualité vidéo.
+
+Il ne rend pas non plus l'encodage plus rapide de manière significative. [ffmpeg.org](https://www.ffmpeg.org/ffmpeg-formats.html?utm_source=chatgpt.com)
+
+### I. `"s_1080p.mp4"`
+
+C'est simplement le nom du fichier de sortie.
+
+FFmpeg va créer :
+
+`s_1080p.mp4`
+
+Ton fichier original `s.mp4` ne sera pas écrasé.
+
+---
+
+# 3. Pourquoi obtiens-tu 5.33x ?
+
+Ta commande utilise une combinaison intéressante :
+
+| Opération | Technologie |
+|---|---|
+| Lecture du fichier | FFmpeg |
+| Redimensionnement | Filtre scale |
+| Encodage vidéo | Intel Quick Sync |
+| Encodage audio | Aucun, copie directe |
+| Conteneur | MP4 |
+
+Le gros avantage est que tu n'utilises pas de filtre supplémentaire comme `unsharp`.
+
+Tu as d'ailleurs constaté toi-même la différence :
+
+- Sans `unsharp` : 5.33x.
+- Avec `unsharp` : 1.37x.
+
+Le filtre de netteté ajoutait une opération de traitement coûteuse, vraisemblablement sur le CPU.
+
+# 4. Les paramètres que je te conseille de tester
+
+Je conserverais ta commande actuelle comme référence.
+
+Mais voici trois variantes intéressantes :
+
+| Variante | Modification | Objectif |
+|---|---|---|
+| A | `global_quality 25` | Ta configuration actuelle |
+| B | `global_quality 22` | Meilleure conservation des détails |
+| C | `global_quality 28` | Réduire la taille du fichier |
+
+Je ne changerais qu'un paramètre à la fois pour mesurer les différences.
+
+# 5. Mon avis final
+
+Pour tes lives de Princess Orchestra, tes vidéos Bilibili et tes autres vidéos longues, ta commande actuelle est une très bonne base.
+
+Elle présente trois avantages :
+- Rapidité : tu as obtenu 5.33x.
+- Conservation de l'audio original.
+- Conversion en Full HD sans traitement inutile.
+
+**Une dernière distinction importante :** ta commande améliore la résolution de sortie, mais elle ne réalise pas de véritable reconstruction IA des détails.
+
+Si ton objectif est d'obtenir une image plus propre et plus nette tout en conservant une vitesse supérieure à 2,5x, il faudra étudier les filtres FFmpeg les moins coûteux en performances.
+
+Je privilégierais toujours un test sur 60 secondes avant de lancer les deux heures complètes.
