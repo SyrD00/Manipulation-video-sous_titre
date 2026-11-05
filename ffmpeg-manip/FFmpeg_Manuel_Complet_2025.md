@@ -67,6 +67,10 @@
   - [8.2 Lire les pistes d’un MKV](#82--lire-les-pistes-dun-mkv)
   - [8.3 Identifier la piste (si)](#83--identifier-la-piste-si)
   - [8.4 Hardsub d’un fichier externe](#84--hardsub-dun-fichier-srtass)
+
+    - [8.4.1 Hardsub d'un fichier ASS externe](#841--Hardsub-d'-un-fichier-ASS-externe)
+    - [8.4.2 Hardsub sur une portion video](#842--Hardsub-sur-une-portion-video)
+    
   - [8.5 Hardsub depuis sous-titres internes MKV](#85--hardsub-à-partir-des-sous-titres-internes-mkv)
   - [8.6 Pipeline complet Hardsub Intel QSV](#86--pipeline-complet-hardsub-intel-qsv-hevc-10-bits--h264)
   - [8.7 Hardsub AMD](#87--hardsub-amd-amf)
